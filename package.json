@@ -1,0 +1,16 @@
+{
+  "name": "authentication_api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Inovatecjp/Authentication-API.git",
+  "author": "-",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.4"
+  },
+  "scripts": {
+    "dev": "nodemon ./src/index.js"
+  }
+}
