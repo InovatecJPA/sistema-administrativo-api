@@ -1,5 +1,6 @@
-const axios = require("axios");
-export default async function validarCEP(cep) {
+import axios from "axios";
+
+export default async function validarCEP(cep: string): Promise<boolean> {
 	// Remover caracteres não numéricos
 	cep = cep ? cep.replace(/\D+/g, "") : "";
 
