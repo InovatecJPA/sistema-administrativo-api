@@ -87,3 +87,14 @@ _Observação_: Onde tem `<BLANK LINE>` significa que temos que deixar uma linha
 
 Aqui vou exemplificar uma sequência de alguns commits, comparando e mostrando a diferença entre apenas commitar e commitar usando commits semânticos:
 
+<p align="center"><sub>Exemplo de commit semantico</sub></p>
+
+<p align="center">
+    <img alt="Exemplo de commit semantico" title="Exemplo de commit semantico" width="550" src="./assets/imgs/exemplo-commit-semantico.jpeg" />
+</p>
+
+<p align="center">
+    <img alt="Exemplo de commit semantico" title="Exemplo de commit semantico" width="950" src="./assets/imgs/exemplo-commit-2.png" />
+</p>
+
+A parte mais importante de uma mensagem de commit é o fato de que ela deve ser clara e significativa.
