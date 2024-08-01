@@ -49,12 +49,11 @@ Para criar um histórico de revisão útil, a equipe primeiro devem concordar qu
 
 ### Padrões nos nomes dos Commits
 
-```markdown
+```javascript
 <type>(<scope>): <subject>
 <BLANK LINE>
-
-<body>  
-<BLANK LINE>  
+<body>
+<BLANK LINE>
 <footer>
 ```
 
