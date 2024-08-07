@@ -7,14 +7,9 @@ dotenv.config({ path: envFile });
 console.log(process.env.DATABASE_HOST);
 
 const dbConfig = {
-	/* SQLite */
-	// dialect: 'sqlite',
-	// storage: './db.sqlite',
-
-	/* MySQL / MariaDB */
 	dialect: "postgres" as Dialect,
 	host: process.env.DATABASE_HOST,
-	port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT) : 5432, // Default port
+	port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT) : 5432,
 	username: process.env.DATABASE_USERNAME,
 	password: process.env.DATABASE_PASSWORD,
 	database: process.env.DATABASE,
@@ -22,15 +17,12 @@ const dbConfig = {
 		ssl: {
 			require: true,
 			rejectUnauthorized: false,
+			native:true,
+			// timezone: 'America/Sao_Paulo',
 		},
+		// timezone: 'America/Sao_Paulo',
 	},
 
-	// dialectOptions: {
-	//   timezone: 'America/Sao_Paulo',
-	// },
-	// timezone: 'America/Sao_Paulo',
-
-	/* ALL */
 	define: {
 		timestamps: true,
 		underscored: true,
