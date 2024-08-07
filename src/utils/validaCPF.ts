@@ -1,44 +1,44 @@
-export default class ValidaCPF {
-	constructor(cpfEnviado) {
-		Object.defineProperty(this, "cpfLimpo", {
+export default class CpfValidator {
+	constructor(invalidatedCpf: string) {
+		Object.defineProperty(this, "cpf", {
 			writable: false,
 			enumerable: true,
 			configurable: false,
-			value: cpfEnviado ? cpfEnviado.replace(/\D+/g, "") : "",
+			value: invalidatedCpf ? invalidatedCpf.replace(/\D+/g, "") : "",
 		});
 	}
 
-	ehSeq() {
-		return this.cpfLimpo.charAt(0).repeat(11) === this.cpfLimpo;
+	private static isSequence(cpfDigitsString: string) {
+		return cpfDigitsString.charAt(0).repeat(11) === cpfDigitsString;
 	}
 
-	geraNovoCpf() {
-		const cpfSemDigitos = this.cpfLimpo.slice(0, -2);
-		const digito1 = ValidaCPF.geraDigito(cpfSemDigitos);
-		const digito2 = ValidaCPF.geraDigito(cpfSemDigitos + digito1);
-		this.novoCPF = cpfSemDigitos + digito1 + digito2;
-	}
+	private static generateDigit(cpfWithoutDigits: string) {
+		let total: number = 0;
+		let pointer: number = cpfWithoutDigits.length + 1;
 
-	static geraDigito(cpfSemDigitos) {
-		let total = 0;
-		let reverso = cpfSemDigitos.length + 1;
-
-		for (let stringNumerica of cpfSemDigitos) {
-			total += reverso * Number(stringNumerica);
-			reverso--;
+		for (let cpfNumbers of cpfWithoutDigits) {
+			total += pointer * Number(cpfNumbers);
+			pointer--;
 		}
 
-		const digito = 11 - (total % 11);
-		return digito <= 9 ? String(digito) : "0";
+		const digit: number = 11 - (total % 11);
+		return digit <= 9 ? String(digit) : "0";
 	}
 
-	valida() {
-		if (!this.cpfLimpo) return false;
-		if (typeof this.cpfLimpo !== "string") return false;
-		if (this.cpfLimpo.length !== 11) return false;
-		if (this.ehSeq()) return false;
-		this.geraNovoCpf();
+	private static generateValidCpf(cpfDigitsString: string) {
+		const cpfWithoutDigits: string = cpfDigitsString.slice(0, -2);
+		const firstValidatorDigit: string = CpfValidator.generateDigit(cpfWithoutDigits);
+		const secondValidatorDigit: string = CpfValidator.generateDigit(cpfWithoutDigits + firstValidatorDigit);
+		return cpfWithoutDigits + firstValidatorDigit + secondValidatorDigit;
+	}
 
-		return this.novoCPF === this.cpfLimpo;
+	static validate(cpf: string) {
+		if (!cpf) return false;
+		if (typeof cpf !== "string") return false;
+		if (cpf.length !== 11) return false;
+		if (CpfValidator.isSequence(cpf)) return false;
+		let validCpf = CpfValidator.generateValidCpf(cpf);
+
+		return validCpf === cpf;
 	}
 }
