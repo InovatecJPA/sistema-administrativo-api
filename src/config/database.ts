@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
-import { Dialect, Sequelize } from "sequelize";
+import { Dialect } from "sequelize";
 
-dotenv.config();
+const envFile = process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.deploy";
+dotenv.config({ path: envFile });
 
 console.log(process.env.DATABASE_HOST);
 
-module.exports = {
+const dbConfig = {
 	/* SQLite */
 	// dialect: 'sqlite',
 	// storage: './db.sqlite',
@@ -23,6 +24,7 @@ module.exports = {
 			rejectUnauthorized: false,
 		},
 	},
+
 	// dialectOptions: {
 	//   timezone: 'America/Sao_Paulo',
 	// },
@@ -37,3 +39,5 @@ module.exports = {
 		updatedAt: "updated_at",
 	},
 };
+
+export default dbConfig;

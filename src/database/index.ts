@@ -1,52 +1,19 @@
-import { Op, WhereOptions, Order } from "sequelize";
-import { Request } from "express";
+import dbConnection from "./connection";
+import Sequelize from "sequelize";
 
-// Loc src/apps/Auth/models/auth
-// Ainda não implementado
-// const User = require("../apps/Auth/models/User");
-// const Grant = require("../apps/Auth/models/grant");
-// const Profile = require("../apps/Auth/models/profile");
-// const ProfileGrant = require("../apps/Auth/models/profileGrant");
+const Op = Sequelize.Op;
 
-// /** Associations */
+// Associations
 
-// Profile.belongsToMany(Grant, { through: ProfileGrant, as: "grants" });
-// Grant.belongsToMany(Profile, { through: ProfileGrant, as: "profiles" });
-// ProfileGrant.belongsTo(Profile);
-// ProfileGrant.belongsTo(Grant);
+// cont
+const DB = {};
 
-// User.belongsTo(Profile, { as: "profilesId", foreignKey: "profiles_id" });
+const MAX_PAGE_NUMER = 500;
 
-const db = {};
-
-const MAX_PAGE_NUMBER = 500;
-
-const isDate = (str: string): boolean => {
+const isDate = (date: string): boolean => {
 	try {
-		return !isNaN(Date.parse(str));
-	} catch (error) {
+		return !isNaN(Date.parse(date));
+	} catch (error: any) {
 		return false;
 	}
 };
-
-function renameKeys<T extends Record<string, any>>(
-	obj: T,
-	newKeys: Record<string, string>
-): T {
-	const keyValues = Object.keys(obj).map((key) => {
-		const newKey = newKeys[key] || key;
-		return { [newKey]: obj[key] };
-	});
-	return Object.assign({}, ...keyValues);
-}
-
-interface PaginateOptions {
-	filter?: any;
-	order?: any;
-	include?: any;
-	[key: string]: any;
-}
-
-// paginate
-
-module.exports = db;
