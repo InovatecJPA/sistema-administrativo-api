@@ -1,8 +1,10 @@
+# docker build -t sistema_administrativo_api .
+
 FROM node:22.5.1
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package*.json ./
+COPY package* .
 
 RUN npm install
 
@@ -10,4 +12,5 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+ENTRYPOINT [ "npm", "run" ]
+CMD [ "dev" ]
