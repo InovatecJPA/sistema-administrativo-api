@@ -7,7 +7,7 @@
 		"strict": true,
 		"skipLibCheck": true,
 		"rootDir": "./src",
-		"outDir": "./dist",
+		"outDir": "./out",
 		"resolveJsonModule": true
 	},
 	"include": ["src/**/*"],
