@@ -1,4 +1,7 @@
 # docker build -t sistema_administrativo_api .
+# docker-compose down
+# docker-compose up --build
+
 
 FROM node:22.5.1
 
