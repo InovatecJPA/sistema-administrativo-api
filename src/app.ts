@@ -33,20 +33,18 @@ class App {
 		this.app = express();
 		this.middlewares();
 		this.routes();
-
 		this.errorHandling();
 	}
 
-	middlewares() {
+	middlewares(): void {
 		this.app.use(cors(corsOptions));
 		this.app.use(helmet());
 		this.app.use(express.json());
 		this.app.use(express.urlencoded({ extended: true }));
-
 		this.app.use(validateResponse);
 	}
 
-	routes() {
+	routes(): void {
 		//this.app.use("/api-docs", swaggerUi.serve);
 		//this.app.get("/api-docs", swaggerUi.setup(swaggerDocument));
 
