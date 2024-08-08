@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
 import { Dialect } from "sequelize";
 
-const envFile = process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.deploy";
+const envFile: string = process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.deploy";
 dotenv.config({ path: envFile });
 
 console.log(process.env.DATABASE_HOST);
 
-const dbConfig = {
+const dbConfig: Object = {
 	dialect: "postgres" as Dialect,
 	host: process.env.DATABASE_HOST,
 	port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT) : 5432,
