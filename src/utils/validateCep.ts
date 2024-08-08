@@ -1,10 +1,8 @@
 import axios from "axios";
 
-export default async function validarCEP(cep: string): Promise<boolean> {
-	// Remover caracteres não numéricos
+export default async function validateCep(cep: string): Promise<boolean> {
 	cep = cep ? cep.replace(/\D+/g, "") : "";
 
-	// Verificar se o CEP tem 8 dígitos
 	if (cep.length !== 8) {
 		return false;
 	}
@@ -14,6 +12,6 @@ export default async function validarCEP(cep: string): Promise<boolean> {
 	if (result.status == 200 && !result.data.erro) {
 		return true;
 	}
-	// Formato válido
-	return true;
+
+	return false;
 }
