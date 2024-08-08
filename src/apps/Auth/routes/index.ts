@@ -1,8 +1,8 @@
 import { Router } from "express";
 
-import validateResponserMiddleware from "../../../middlewares/validateResponse";
+import setCORSMiddleware from "../../../middlewares/setCORS";
 
 const router: Router = Router();
-router.use(validateResponserMiddleware);
+router.use(setCORSMiddleware);
 
 export default router;

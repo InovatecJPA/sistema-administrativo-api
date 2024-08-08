@@ -4,7 +4,7 @@ import express, { Request, Response, Application, NextFunction } from "express";
 import cors, { CorsOptions } from "cors";
 import helmet from "helmet";
 
-import validateResponse from "./middlewares/validateResponse";
+import validateResponse from "./middlewares/setCORS";
 import dbConnection from "./database/connection";
 
 // import v1 from "./apps";
