@@ -6,7 +6,7 @@
 
 FROM node:22.5.1
 
-WORKDIR /app
+WORKDIR /api
 
 COPY package*.json ./
 
