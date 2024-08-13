@@ -1,6 +1,6 @@
 "use strict";
 import bcryptjs from "bcryptjs";
-import dbConnection from "../../../database/data-source";
+import dbConnection from "../../../database/dbConnection";
 import Profile from "./Profile";
 import {
 	Column,

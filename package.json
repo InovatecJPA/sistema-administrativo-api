@@ -16,7 +16,7 @@
 		"helmet": "^7.1.0",
 		"jsonwebtoken": "^9.0.2",
 		"pg": "^8.4.0",
-		"reflect-metadata": "^0.1.13",
+		"reflect-metadata": "^0.2.2",
 		"swagger-ui-express": "^5.0.1",
 		"tsoa": "^6.4.0",
 		"typeorm": "0.3.20",
@@ -24,10 +24,14 @@
 	},
 	"scripts": {
 		"start": "nodemon src/server.js",
-		"dev": "cross-env NODE_ENV=dev env-cmd -f .env.dev nodemon src/server.js",
+		"dev": "cross-env NODE_ENV=dev env-cmd -f .env.development nodemon src/server.js",
 		"build": "tsc -p .",
 		"swagger": "tsoa spec",
-		"typeorm": "ts-node-dev ./node_modules/typeorm/cli.js"
+    
+		"typeorm": "ts-node-dev ./node_modules/typeorm/cli.js",
+		"typeorm:gen-migrations": "ts-node-dev ./node_modules/typeorm/cli.js migration:generate -d src/database/dbConnection.ts -o src/database/migrations/",
+		"typeorm:run-migrations": "ts-node-dev ./node_modules/typeorm/cli.js migration:run -d src/database/dbConnection.ts",
+		"typeorm:drop": "ts-node-dev ./node_modules/typeorm/cli.js schema:drop -d src/database/dbConnection.ts"
 	},
 	"nodemonConfig": {
 		"watch": [

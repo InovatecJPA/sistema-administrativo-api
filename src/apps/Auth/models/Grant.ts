@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import dbConnection from "../../../database/data-source";
+import dbConnection from "../../../database/dbConnection";
 
 @Entity("grants")
 class Grant {

@@ -1,5 +1,5 @@
 "use strict";
-import dbConnection from "../../../database/data-source";
+import dbConnection from "../../../database/dbConnection";
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity("profile_grants")

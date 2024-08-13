@@ -1,6 +1,7 @@
 import "reflect-metadata";
 const dotenv = require("dotenv");
 import { DataSourceOptions } from "typeorm";
+import path from "path";
 
 dotenv.config();
 
@@ -13,8 +14,8 @@ export const dbConfig: DataSourceOptions = {
 	database: process.env.DATABASE,
 	synchronize: false,
 	logging: true,
-	entities: [__dirname + "/../apps/**/models/*.ts"],
-	migrations: [__dirname + "/database/migrations/*.ts"],
+	entities: [path.join(__dirname + "/../apps/**/models/*.ts")],
+	migrations: [path.join(__dirname, "/../database/migrations/*{.ts,.js}")],
 };
 
 console.log(

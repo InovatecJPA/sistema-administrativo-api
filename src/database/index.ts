@@ -1,9 +1,6 @@
-import dbConnection from "./data-source";
-import Sequelize from "sequelize";
+import dbConnection from "./dbConnection";
 
-const Op = Sequelize.Op;
-
-// Associations
+// Op = ...
 
 // cont
 const DB = {};
