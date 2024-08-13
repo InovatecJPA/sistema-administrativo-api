@@ -1,10 +1,11 @@
 version: '3'
 
 services:
-  backend:
+  api:
     build: .
+    command: npm run dev
     ports:
-      - "3010:3000"
+      - "3010:3010"
     environment:
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=bolinha
@@ -16,7 +17,7 @@ services:
       - APP_URL=https://localhost:3010
       - JWT_SECRET=123
     volumes:
-      - .:/sistema-administrativo-api
+      - .:/api
     container_name: sistema_administrativo_api
     restart: always
     depends_on:

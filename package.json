@@ -23,8 +23,8 @@
 		"typescript": "^5.5.4"
 	},
 	"scripts": {
-		"start": "ts-node src/index.ts",
-		"dev": "cross-env NODE_ENV=development env-cmd -f .env.development nodemon",
+		"start": "nodemon src/server.js",
+		"dev": "cross-env NODE_ENV=dev env-cmd -f .env.dev nodemon src/server.js",
 		"build": "tsc -p .",
 		"swagger": "tsoa spec",
 		"typeorm": "ts-node-dev ./node_modules/typeorm/cli.js"
