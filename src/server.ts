@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
 import app from "./app";
 
-const envFile = process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.deploy";
+const envFile =
+	process.env.NODE_ENV === "development" ? ".env.development" : ".env.deploy";
 dotenv.config({ path: envFile });
 
 const port = process.env.APP_PORT;

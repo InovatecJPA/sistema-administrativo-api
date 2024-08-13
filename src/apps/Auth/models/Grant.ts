@@ -1,14 +1,25 @@
-import { Model, DataTypes } from "sequelize";
-import dbConnection from "../../../database/connection";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import dbConnection from "../../../database/data-source";
 
-class Grant extends Model {
-	declare id: string;
-	declare grant: string;
-	declare note: string;
-	declare routeFilter: string;
-	declare route: string;
+@Entity("grants")
+class Grant {
+	@PrimaryGeneratedColumn("uuid") // Define o tipo UUID
+	id: string;
+
+	@Column({ type: "varchar", nullable: false })
+	grant: string;
+
+	@Column({ type: "text", nullable: true })
+	note: string;
+
+	@Column({ type: "varchar", nullable: true })
+	routeFilter: string;
+
+	@Column({ type: "varchar", nullable: false })
+	route: string;
 }
 
+/* 
 Grant.init(
 	{
 		id: {
@@ -28,5 +39,5 @@ Grant.init(
 		underscored: true,
 	}
 );
-
+ */
 export default Grant;

@@ -5,7 +5,7 @@ import cors, { CorsOptions } from "cors";
 import helmet from "helmet";
 
 import validateResponse from "./middlewares/setCORS";
-import dbConnection from "./database/connection";
+import dbConnection from "./database/data-source";
 
 // import v1 from "./apps";
 // import swaggerUi from "swagger-ui-express";

@@ -1,7 +1,17 @@
 "use strict";
-import { Model, DataTypes } from "sequelize";
-import dbConnection from "../../../database/connection";
+import dbConnection from "../../../database/data-source";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
+@Entity("profile_grants")
+class ProfileGrant {
+	@PrimaryGeneratedColumn("uuid")
+	id: string;
+
+	@Column({ type: "varchar", nullable: true })
+	status: string;
+}
+
+/* 
 class ProfileGrant extends Model {
 	declare id: string;
 	declare status: string;
@@ -23,3 +33,6 @@ ProfileGrant.init(
 		underscored: true,
 	}
 );
+ */
+
+export default ProfileGrant;
