@@ -1,4 +1,4 @@
-import { dbConfig } from "../config/database";
+import { dbConfig } from "./database";
 import { DataSource } from "typeorm";
 
 // (Sequelize as any).postgres.DECIMAL.parse = function (value: any): number {
