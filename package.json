@@ -19,7 +19,7 @@
 		"reflect-metadata": "^0.2.2",
 		"swagger-ui-express": "^5.0.1",
 		"tsoa": "^6.4.0",
-		"typeorm": "0.3.20",
+		"typeorm": "^0.3.20",
 		"typescript": "^5.5.4"
 	},
 	"scripts": {
@@ -27,7 +27,6 @@
 		"dev": "cross-env NODE_ENV=dev env-cmd -f .env.development nodemon src/server.js",
 		"build": "tsc -p .",
 		"swagger": "tsoa spec",
-    
 		"typeorm": "ts-node-dev ./node_modules/typeorm/cli.js",
 		"typeorm:gen-migrations": "ts-node-dev ./node_modules/typeorm/cli.js migration:generate -d src/database/dbConnection.ts -o src/database/migrations/",
 		"typeorm:run-migrations": "ts-node-dev ./node_modules/typeorm/cli.js migration:run -d src/database/dbConnection.ts",
