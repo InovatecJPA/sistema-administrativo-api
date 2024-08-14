@@ -7,7 +7,7 @@ class Profile {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
-	@Column({ type: "varchar", nullable: true })
+	@Column({ type: "varchar", unique: true, nullable: true })
 	name: string;
 
 	@Column({ type: "varchar", nullable: true, unique: true })
