@@ -1,1 +1,2 @@
 http://localhost:3010/dev/accounts/users/ - POST
+http://localhost:3010/dev/accounts/tokens/ - GET
