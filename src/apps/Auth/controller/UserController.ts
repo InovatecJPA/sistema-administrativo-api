@@ -1,5 +1,5 @@
-import Profile from "../models/Profile";
-import User from "../models/User";
+import Profile from "../model/Profile";
+import User from "../model/User";
 
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
