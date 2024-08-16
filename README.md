@@ -124,7 +124,7 @@ Condições ideais:
     <img alt="GitHub Flow" title="GitHub Flow" width="900" src="./assets/imgs/github-flow2.jpg" />
 </p>
 
-O Gitflow é um modelo alternativo de ramificação do Git que consiste no uso de ramificações de recursos e várias ramificações primárias.
+O [Gitflow](https://www.alura.com.br/artigos/git-flow-o-que-e-como-quando-utilizar) é um modelo alternativo de ramificação do Git que consiste no uso de ramificações de recursos e várias ramificações primárias.
 
 <p align="center">
     <img alt="GitHub Flow" title="GitHub Flow" width="900" src="./assets/imgs/gitflow.png" />
@@ -132,7 +132,7 @@ O Gitflow é um modelo alternativo de ramificação do Git que consiste no uso d
 
 ### Trunk-based Development (Desenvolvimento Baseado em Tronco)
 
-O desenvolvimento baseado em tronco segue um ritmo rápido para entregar código à produção. Manter commits e ramificações pequenas permite um ritmo mais rápido de merges e implementações.
+O [desenvolvimento baseado em tronco](https://www.objective.com.br/insights/trunk-based-development/) segue um ritmo rápido para entregar código à produção. Manter commits e ramificações pequenas permite um ritmo mais rápido de merges e implementações.
 
 Pequenas mudanças de um par de commits ou modificação de algumas linhas de código minimizam a sobrecarga cognitiva. É muito mais fácil para as equipes terem conversas significativas e tomar decisões rápidas ao revisar uma área limitada de código versus um conjunto extenso de alterações.
 
