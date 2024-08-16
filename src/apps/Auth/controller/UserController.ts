@@ -2,6 +2,7 @@ import Profile from "../model/Profile";
 import User from "../model/User";
 
 import { Request, Response } from "express";
+import AppDataSource from "../../../database/dbConnection";
 import jwt from "jsonwebtoken";
 
 import CpfValidator from "../utils/cpfValidator";
