@@ -11,80 +11,86 @@ import dbConnection from "./database/dbConnection";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerDocument from "../swagger.json";
 
+// Temp. desenvolvimento das rotas
+import devRoutes from "./apps/index";
+
 const whiteList = ["http://localhost:3000"];
 
 const corsOptions: CorsOptions = {
-	origin: function (
-		origin: string | undefined,
-		callback: (err: Error | null, allow?: boolean) => void
-	) {
-		if (whiteList.indexOf(origin || "") !== -1 || !origin) {
-			callback(null, true);
-		} else {
-			callback(new Error("Not allowed by CORS"));
-		}
-	},
+  origin: function (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) {
+    if (whiteList.indexOf(origin || "") !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
 };
 
 class App {
-	public app: express.Application;
+  public app: express.Application;
 
-	constructor() {
-		this.app = express();
-		this.middlewares();
-		this.routes();
-		this.errorHandling();
-	}
+  constructor() {
+    this.app = express();
+    this.middlewares();
+    this.routes();
+    this.errorHandling();
+  }
 
-	middlewares(): void {
-		this.app.use(cors(corsOptions));
-		this.app.use(helmet());
-		this.app.use(express.json());
-		this.app.use(express.urlencoded({ extended: true }));
-		this.app.use(validateResponse);
-	}
+  middlewares(): void {
+    this.app.use(cors(corsOptions));
+    this.app.use(helmet());
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(validateResponse);
+  }
 
-	routes(): void {
-		//this.app.use("/api-docs", swaggerUi.serve);
-		//this.app.get("/api-docs", swaggerUi.setup(swaggerDocument));
+  routes(): void {
+    // Dev-back routes
+    this.app.use("/dev", devRoutes);
 
-		//this.app.use("/v1", v1);
-		this.app.get("/", (req: Request, res: Response) => {
-			res.send("Hello World!");
-		});
-		this.app.get("/testDB", async (req: Request, res: Response) => {
-			try {
-				// Verifica se a conexão já está inicializada
-				if (!dbConnection.isInitialized) {
-					await dbConnection.initialize();
-				}
+    //this.app.use("/api-docs", swaggerUi.serve);
+    //this.app.get("/api-docs", swaggerUi.setup(swaggerDocument));
 
-				res.send("Connected to database");
-				const entities = dbConnection.entityMetadatas.map(
-					(entity) => entity.name
-				);
-				console.log("Entidades registradas:", entities);
+    //this.app.use("/v1", v1);
+    this.app.get("/", (req: Request, res: Response) => {
+      res.send("Hello World!");
+    });
+    this.app.get("/testDB", async (req: Request, res: Response) => {
+      try {
+        // Verifica se a conexão já está inicializada
+        if (!dbConnection.isInitialized) {
+          await dbConnection.initialize();
+        }
 
-				// Listar migrações encontradas
-				const migrations = dbConnection.migrations.map(
-					(migration) => migration.name
-				);
-				console.log("Migrações encontradas:", migrations);
-			} catch (error) {
-				console.error("Error connecting to database:", error);
-				res.status(500).send("Error connecting to database");
-			}
-		});
-	}
+        res.send("Connected to database");
+        const entities = dbConnection.entityMetadatas.map(
+          (entity) => entity.name
+        );
+        console.log("Entidades registradas:", entities);
 
-	private errorHandling(): void {
-		this.app.use(
-			(err: Error, req: Request, res: Response, next: NextFunction) => {
-				console.error(err.stack);
-				res.status(500).send("Something broke!");
-			}
-		);
-	}
+        // Listar migrações encontradas
+        const migrations = dbConnection.migrations.map(
+          (migration) => migration.name
+        );
+        console.log("Migrações encontradas:", migrations);
+      } catch (error) {
+        console.error("Error connecting to database:", error);
+        res.status(500).send("Error connecting to database");
+      }
+    });
+  }
+
+  private errorHandling(): void {
+    this.app.use(
+      (err: Error, req: Request, res: Response, next: NextFunction) => {
+        console.error(err.stack);
+        res.status(500).send("Something broke!");
+      }
+    );
+  }
 }
 
 export default new App().app;

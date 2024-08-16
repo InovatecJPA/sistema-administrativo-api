@@ -14,8 +14,8 @@ export const dbConfig: DataSourceOptions = {
   database: process.env.DATABASE,
   synchronize: false,
   logging: true,
-  entities: [path.join(__dirname + "../apps/**/models/*{.ts,.js}")],
-  migrations: [path.join(__dirname + "./migrations/*{.ts,.js}")],
+  entities: [path.join(__dirname + "/../apps/**/models/*{.ts,.js}")],
+  migrations: [path.join(__dirname, "/../database/migrations/*{.ts,.js}")],
 };
 
 console.log(
