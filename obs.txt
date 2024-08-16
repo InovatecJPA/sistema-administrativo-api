@@ -1,1 +1,1 @@
-// eslint-plugin-import -  conflito com a verão do eslint
+// Refatorar questão de erros de validação
