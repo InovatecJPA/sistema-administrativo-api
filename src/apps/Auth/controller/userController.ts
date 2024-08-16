@@ -13,6 +13,8 @@ import moment from "moment";
 
 class UserController {
   async store(req: Request, res: Response): Promise<Response> {
+    const { password, cpf, name, email, phone } = req.body;
+    
     return res.send("OIE");
   }
 }
