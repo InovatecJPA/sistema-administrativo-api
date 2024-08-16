@@ -5,6 +5,6 @@ const validateResponserMiddleware = require("../../../middlewares/validateRespon
 const router = Router();
 router.use(validateResponserMiddleware);
 
-router.post("/", tokenController.store());
+router.post("/", tokenController.store);
 
 export default router;
