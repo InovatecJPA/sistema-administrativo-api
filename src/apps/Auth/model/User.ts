@@ -32,7 +32,7 @@ class User {
   phone: string;
 
   @Column({ type: "uuid", nullable: false })
-  profiles_id: string;
+  profile_id: string;
 
   @ManyToOne(() => Profile, (profile) => profile.users, {
     nullable: true,
