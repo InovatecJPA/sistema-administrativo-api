@@ -7,7 +7,6 @@ import AppDataSource from "../../../database/dbConnection";
 export default class TokenController {
   private static userRepository: Repository<User> =
     AppDataSource.getRepository(User);
-    
 
   static async store(req: Request, res: Response): Promise<Response> {
     const { email = "", password = "" } = req.body;
