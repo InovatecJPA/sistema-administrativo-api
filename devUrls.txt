@@ -7,3 +7,4 @@ Exemplo de json usuario:
   "email": "johndoeaw@example.com",
   "phone": "1234561780"
 }
+http://localhost:3010/dev/accounts/tokens/ - GET
