@@ -9,6 +9,8 @@ import {
   BeforeUpdate,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 
 @Entity("users")
@@ -25,20 +27,17 @@ class User {
   @Column({ type: "varchar", unique: true, nullable: false })
   email: string;
 
-  @Column({ type: "date", nullable: false })
+  @Column({ type: "date", nullable: true })
   birthDate: Date;
 
   @Column({ type: "varchar", unique: true, nullable: true })
   phone: string;
 
-  @Column({ type: "uuid", nullable: false })
-  profile_id: string;
-
   @ManyToOne(() => Profile, (profile) => profile.users, {
-    nullable: true,
+    nullable: false,
     onDelete: "SET NULL",
   })
-  @JoinColumn({ name: "profiles_id" })
+  @JoinColumn({ name: "profile_id" })
   profile: Profile;
 
   @Column({ type: "boolean", default: true })
@@ -48,6 +47,12 @@ class User {
   password_hash: string;
 
   password: string;
+
+  @CreateDateColumn({ type: "timestamp with time zone", nullable: false })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: "timestamp with time zone", nullable: false })
+  updated_at: Date;
 
   @BeforeInsert()
   @BeforeUpdate()

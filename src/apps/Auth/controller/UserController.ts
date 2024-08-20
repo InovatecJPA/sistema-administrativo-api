@@ -65,6 +65,8 @@ class UserController {
           isAtivo: true,
         });
 
+        newUser.password = password;
+
         await userRepository.save(newUser);
 
         const token = jwt.sign(

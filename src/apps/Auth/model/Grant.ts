@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("grants")
 class Grant {
@@ -16,6 +16,12 @@ class Grant {
 
   @Column({ type: "varchar", nullable: false })
   route: string;
+
+  @CreateDateColumn({ type: "timestamp with time zone", nullable: false })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: "timestamp with time zone", nullable: false })
+  updated_at: Date;
 }
 
 export default Grant;
