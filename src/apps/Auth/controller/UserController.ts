@@ -6,7 +6,7 @@ import User from "../model/User";
 import Profile from "../model/Profile";
 import { Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
-import CpfValidator from "../utils/cpfValidator";
+import CpfValidator from "../utils/CpfValidator";
 
 // const sendMailPromise = require('../../Emails/mailer/mailer');
 // const helper = require('../../Emails/controllers/candidatoHelper');
