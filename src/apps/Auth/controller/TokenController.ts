@@ -31,10 +31,11 @@ export default class TokenController {
       });
     }
 
-    const { id, profile_id, name } = user;
+    const { id, profile, name } = user;
 
+    const profileId: string = profile.id;
     const token: string = jwt.sign(
-      { id, name, email, profile_id },
+      { id, name, email, profileId },
       process.env.TOKEN_SECRET,
       {
         expiresIn: process.env.TOKEN_EXPIRATION,
