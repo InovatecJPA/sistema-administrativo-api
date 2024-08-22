@@ -8,8 +8,8 @@ import { Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
 import CpfValidator from "../utils/CpfValidator";
 
-// const sendMailPromise = require('../../Emails/mailer/mailer');
-// const helper = require('../../Emails/controllers/candidatoHelper');
+import { sendMailPromise } from "../../mail/mailer";
+import helper from "../../mail/helpers/mailHelper";
 //
 
 class UserController {
@@ -120,6 +120,56 @@ class UserController {
       }
 
       console.error(err.message);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+
+  async RecoveryPassword(req: Request, res: Response): Promise<Response> {
+    try {
+      const { email = "" } = req.body;
+      let errors: String[] = [];
+      let emailData = helper.createDefaultEmailConfig(email);
+
+      if (!email) {
+        errors.push("Um e-mail é obrigatório.");
+      }
+
+      if (errors.length > 0) {
+        return res.status(400).json({ errors });
+      }
+
+      try {
+        const userRepository: Repository<User> =
+          AppDataSource.getRepository(User);
+        const user: User = await userRepository.findOneBy({ email: email });
+
+        if (!user) {
+          return res.status(404).json({
+            errors: ["Email não registrado."],
+          });
+        }
+
+        let domain = email.substring(email.indexOf("@"));
+        let newPassword = domain + "1234";
+
+        emailData.variables.user = user;
+        emailData.variables.userName = user.cpf;
+        emailData.variables.password = newPassword;
+
+        user.password = newPassword;
+        userRepository.update(user);
+
+        sendMailPromise(
+          emailData.email,
+          emailData.subject,
+          emailData.message,
+          emailData.template,
+          emailData.variables
+        );
+      } catch (error: any) {
+        return res.status(500).json({ error: "Erro interno do servidor" });
+      }
+    } catch (error: any) {
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
