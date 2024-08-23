@@ -1,4 +1,4 @@
-export default class UserValidationError extends Error {
+export default class CustomValidationError extends Error {
     public statusCode: number;
   
     constructor(message: string, statusCode: number) {
