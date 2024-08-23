@@ -11,7 +11,6 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  VirtualColumn,
 } from "typeorm";
 
 @Entity("users")
@@ -47,7 +46,6 @@ class User {
   @Column({ type: "varchar", nullable: false })
   password_hash: string;
 
-  @VirtualColumn()
   password: string;
 
   @CreateDateColumn({ type: "timestamp with time zone", nullable: false })

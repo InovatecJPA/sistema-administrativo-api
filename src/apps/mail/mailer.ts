@@ -1,19 +1,28 @@
 import nodemailer, { Transporter } from "nodemailer";
-import hbs from "nodemailer-express-handlebars";
-
+import hbs, {
+  NodemailerExpressHandlebarsOptions,
+} from "nodemailer-express-handlebars";
 import mailConfig from "../../config/mailConfig";
 
-const options = {
+interface MailContext {
+  [key: string]: any; // Defina o tipo das variáveis de contexto conforme necessário
+}
+
+interface SendMailCallback {
+  (error: Error | null, info: string | null): void;
+}
+
+const options: NodemailerExpressHandlebarsOptions = {
   viewEngine: {
-    partialsDir: __dirname + "/views/partials",
-    layoutsDir: __dirname + "/views/layouts",
+    // partialsDir: __dirname + "/views/partials",
+    layoutsDir: __dirname + "/view/layout",
     extname: ".hbs",
   },
   extName: ".hbs",
-  viewPath: __dirname + "/views/",
+  viewPath: __dirname + "/view/",
 };
 
-const transporter = nodemailer.createTransport({
+const transporter: Transporter = nodemailer.createTransport({
   host: mailConfig.host,
   port: mailConfig.port,
   secure: mailConfig.secure,
@@ -22,20 +31,11 @@ const transporter = nodemailer.createTransport({
     pass: mailConfig.pass,
   },
   tls: {
-    // do not fail on invalid certs
-    rejectUnauthorized: false,
+    rejectUnauthorized: false, // do not fail on invalid certs
   },
 });
 
 transporter.use("compile", hbs(options));
-
-interface MailContext {
-  [key: string]: any;
-}
-
-interface SendMailCallback {
-  (error: Error | null, response: string | null): void;
-}
 
 const sendMail = async (
   to: string,
@@ -54,7 +54,7 @@ const sendMail = async (
     context: context,
   };
 
-  transporter.sendMail(mailOptions, function (error, info) {
+  transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.error(error);
       cb(error, null);
@@ -70,11 +70,9 @@ const sendMailPromise = (
   subject: string,
   message: string,
   template: string,
-  context: MailContext,
-  cb?: SendMailCallback
-) => {
+  context: MailContext
+): Promise<string> => {
   return new Promise((resolve, reject) => {
-    console.log(mailConfig.user);
     const mailOptions = {
       from: mailConfig.user,
       to: to,
@@ -84,7 +82,15 @@ const sendMailPromise = (
       context: context,
     };
 
-    resolve(transporter.sendMail(mailOptions));
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        reject(error);
+      } else {
+        console.log(info.response);
+        resolve(info.response);
+      }
+    });
   });
 };
 

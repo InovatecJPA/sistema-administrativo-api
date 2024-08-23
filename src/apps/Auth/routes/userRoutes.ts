@@ -8,6 +8,7 @@ const router: Router = Router();
 router.use(validateResponseMiddleware);
 
 router.post("/", userController.store);
+router.post("/recover", userController.recoveryPassword);
 
 export default router;
 

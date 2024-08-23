@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import moment from "moment";
 
@@ -9,7 +9,7 @@ import AppDataSource from "../../../database/dbConnection";
 import CpfValidator from "../utils/CpfValidator";
 
 import { sendMailPromise } from "../../mail/mailer";
-import helper from "../../mail/helpers/mailHelper";
+import helper from "../../mail/helper/mailHelper";
 //
 
 class UserController {
@@ -124,7 +124,7 @@ class UserController {
     }
   }
 
-  async RecoveryPassword(req: Request, res: Response): Promise<Response> {
+  async recoveryPassword(req: Request, res: Response): Promise<Response> {
     try {
       const { email = "" } = req.body;
       let errors: String[] = [];
@@ -152,12 +152,12 @@ class UserController {
         let domain = email.substring(email.indexOf("@"));
         let newPassword = domain + "1234";
 
-        emailData.variables.user = user;
+        emailData.variables.user = user.name;
         emailData.variables.userName = user.cpf;
         emailData.variables.password = newPassword;
 
         user.password = newPassword;
-        userRepository.update(user);
+        userRepository.save(user);
 
         sendMailPromise(
           emailData.email,
@@ -166,10 +166,16 @@ class UserController {
           emailData.template,
           emailData.variables
         );
+
+        return res.json({
+          message: "Sucesso! Verifique seu e-mail para obter a nova senha.",
+        });
       } catch (error: any) {
+        console.log(error);
         return res.status(500).json({ error: "Erro interno do servidor" });
       }
     } catch (error: any) {
+      console.log(error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
