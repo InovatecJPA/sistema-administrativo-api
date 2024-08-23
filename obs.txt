@@ -1,3 +1,7 @@
-// Refatorar questão de erros de validação
-// lembrar da questao de perfil voltar a ser not-null e ter um valor padrão
-// criar Services
+Refatorar questão de erros de validação
+
+lembrar da questao de perfil voltar a ser not-null e ter um valor padrão
+
+Existe Services no typeORM? Criamos services ou ficamos apenas com os Repositries?
+
+Continuar desenvolvimento do Controller de Grant
