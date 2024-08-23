@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../model/User";
 import { Repository } from "typeorm";
 import { Request, Response, NextFunction } from "express";
-import UserValidationError from "../error/UserValidationError";
+import CustomValidationError from "../error/CustomValidationError";
 
 export default class TokenController {
   private userRepository: Repository<User>;
@@ -16,17 +16,17 @@ export default class TokenController {
       const { email = "", password = "" } = req.body;
 
       if (!email || !password) {
-        throw new UserValidationError("Email ou senha não está sendo enviado.", 401);
+        throw new CustomValidationError("Email ou senha não está sendo enviado.", 401);
       }
 
       const user: User = await this.userRepository.findOneBy({ email });
 
       if (!user) {
-        throw new UserValidationError("Usuário não registrado.", 401);
+        throw new CustomValidationError("Usuário não registrado.", 401);
       }
 
       if (!(await user.validPassword(password))) {
-        throw new UserValidationError("Senha do usuário inválida.", 401);
+        throw new CustomValidationError("Senha do usuário inválida.", 401);
       }
 
       const { id, profile, name } = user;
