@@ -6,6 +6,7 @@ import helmet from "helmet";
 
 import validateResponse from "./middlewares/setCORS";
 import dbConnection from "./database/dbConnection";
+import errorsHandle from "./middlewares/errorsHandle";
 
 // import v1 from "./apps";
 // import swaggerUi from "swagger-ui-express";
@@ -45,6 +46,7 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(validateResponse);
+    this.app.use(errorsHandle);
   }
 
   routes(): void {
