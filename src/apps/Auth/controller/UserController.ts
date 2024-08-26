@@ -10,7 +10,6 @@ import CpfValidator from "../utils/CpfValidator";
 
 // const sendMailPromise = require('../../Emails/mailer/mailer');
 // const helper = require('../../Emails/controllers/candidatoHelper');
-//
 
 class UserController {
   async store(req: Request, res: Response): Promise<Response> {

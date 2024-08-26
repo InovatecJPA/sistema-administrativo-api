@@ -16,6 +16,7 @@ Exemplo de json usuario:
   "phone": "(83) 93345-3243",
   "profile": ""
 }
+
 {
   "password": "1234",
   "cpf": "48174880003",
@@ -23,6 +24,12 @@ Exemplo de json usuario:
   "email": "arthur.ramon@example.com",
   "phone": "(83) 98234-1561",
   "profile": "admin"
+{
+    "password":"test",
+    "cpf":"17857122092",
+    "name":"usuario",
+    "email":"test@gmail.com",
+    "phone":"(83)99907-7889"
 }
 
 http://localhost:3010/dev/accounts/tokens/ - GET
