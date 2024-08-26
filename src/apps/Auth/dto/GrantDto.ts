@@ -1,23 +1,25 @@
+import Grant from "../model/Grant";
+
 export default class GrantDto {
-    private grant: string;
+    private name: string;
     private note: string;
     private routeFilter: string;
     private route: string;
   
-    constructor(grant: string, note: string, routeFilter: string, route: string) {
-      this.grant = grant;
+    constructor(name: string, note: string, routeFilter: string, route: string) {
+      this.name = name;
       this.note = note;
       this.routeFilter = routeFilter;
       this.route = route;
     }
   
-    public getGrant(): string {
-      return this.grant;
+    public getName(): string {
+      return this.name;
     }
   
-    public setGrant(grant: string): void {
-        if (grant !== null && grant.trim() !== "") 
-            this.grant = grant;
+    public setName(name: string): void {
+        if (name !== null && name.trim() !== "") 
+            this.name = name;
     }
   
     public getNote(): string {
@@ -48,12 +50,16 @@ export default class GrantDto {
     }
 
     public isValid(): boolean {
-        return (
-          this.grant !== null && this.grant.trim() !== "" &&
-          this.note !== null && this.note.trim() !== "" &&
-          this.routeFilter !== null && this.routeFilter.trim() !== "" &&
-          this.route !== null && this.route.trim() !== ""
-        );
-      }
+      return (
+        this.name !== null && this.name.trim() !== "" &&
+        this.note !== null && this.note.trim() !== "" &&
+        this.routeFilter !== null && this.routeFilter.trim() !== "" &&
+        this.route !== null && this.route.trim() !== ""
+      );
+    }
+
+    public toGrant(): Grant {
+      const now: Date = new Date();
+      return new Grant(this.name, this.note, this.route, this.routeFilter, now, now);
   }
-  
+}  
