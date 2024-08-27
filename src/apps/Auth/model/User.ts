@@ -62,8 +62,16 @@ class User {
     }
   }
 
-  public async validPassword(password: string): Promise<boolean> {
+  public async comparePassword(password: string): Promise<boolean> {
     return bcryptjs.compare(password, this.password_hash);
+  }
+
+  public getFirstName(): string {
+    return this.name.split(" ")[0];
+  }
+
+  public getLastName(): string {
+    return this.name.split(" ")[1];
   }
 }
 

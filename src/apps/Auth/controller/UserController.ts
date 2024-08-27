@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import moment from "moment";
 
@@ -10,119 +10,47 @@ import CpfValidator from "../utils/CpfValidator";
 
 import { sendMailPromise } from "../../mail/mailer";
 import helper from "../../mail/helper/mailHelper";
-//
+import { UserService, userService } from "../service/UserService";
+import * as UserDTO from "../dto/UserDTO";
+
+declare global {
+  namespace Express {
+    interface Request {
+      userInfo?: {
+        id: string;
+      };
+    }
+  }
+}
 
 class UserController {
-  async store(req: Request, res: Response): Promise<Response> {
-    let { cpf, name, email, profile, password, phone } = req.body;
+  private userService: UserService;
 
-    let errors: String[] = [];
+  constructor(userService: UserService) {
+    this.userService = userService;
+  }
 
-    const profileRepository: Repository<Profile> =
-      AppDataSource.getRepository(Profile);
-
-    const userRepository: Repository<User> = AppDataSource.getRepository(User);
-
+  public store = async (req: Request, res: Response): Promise<Response> => {
     try {
-      let user: User = await userRepository.findOne({
-        where: { cpf: cpf },
-      });
+      const { cpf, name, email, profileName, password, phone } = req.body;
 
-      if (user) {
-        return res.status(400).json({
-          errors: `Um usuário com o CPF: ${cpf} já está registrado. Verifique se o usuário está correto.`,
-        });
-      }
-
-      if (!CpfValidator.validate(cpf)) {
-        errors.push("O CPF inserido é inválido.");
-      }
-
-      if (!name) {
-        errors.push("Um nome é obrigatório.");
-      }
-
-      if (!email) {
-        errors.push("Um e-mail é obrigatório.");
-      }
-
-      if (!password) {
-        errors.push("Uma senha é obrigatória.");
-      }
-
-      if (profile) {
-        try {
-          profile = await profileRepository.findOne({
-            where: { name: profile },
-          });
-        } catch (error: any) {
-          errors.push("O perfil inserido é inválido.");
-        }
-      }
-
-      if (!profile) {
-        profile = await profileRepository.findOne({
-          where: { name: "default_user" },
-        });
-
-        if (!profile) {
-          profile = profileRepository.create({
-            name: "default_user",
-            description: "Permissão de usuário padrão do sistema.",
-            isAdmin: false,
-          });
-          await profileRepository.save(profile);
-        }
-      }
-
-      if (!phone) {
-        errors.push("Um número de telefone é obrigatório.");
-      }
-
-      if (errors.length > 0) {
-        return res.status(400).json({ errors });
-      }
-
-      user = userRepository.create({
+      const userDTO: UserDTO.CreateUserDTO = {
         cpf,
         name,
         email,
-        profile,
+        profileName: profileName, 
+        password,
         phone,
-        isAtivo: true,
-      });
+      };
 
-      user.password = password;
+      const result = await this.userService.store(userDTO);
 
-      await userRepository.save(user);
-
-      const token = jwt.sign(
-        {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          profile_id: user.profile.id,
-        },
-        process.env.TOKEN_SECRET as string,
-        {
-          expiresIn: process.env.TOKEN_EXPIRATION,
-        }
-      );
-
-      return res.json({
-        token,
-        user: { name: user.name, email: user.email },
-      });
-    } catch (err: any) {
-      if (err.name === "QueryFailedError" && err.code === "23505") {
-        const errorMessages = (err.detail || "Erro de unicidade").split("\n");
-        return res.status(400).json({ errors: errorMessages });
-      }
-
-      console.error(err.message);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+      return res.status(200).json(result);
+    } catch (e: any) {
+      console.log(e);
+      return res.status(400).json({ errors: e.message.split("; ") });
     }
-  }
+  };
 
   async recoveryPassword(req: Request, res: Response): Promise<Response> {
     try {
@@ -152,7 +80,7 @@ class UserController {
         let domain = email.substring(email.indexOf("@"));
         let newPassword = domain + "1234";
 
-        emailData.variables.user = user.name;
+        emailData.variables.user = user.getFirstName();
         emailData.variables.userName = user.cpf;
         emailData.variables.password = newPassword;
 
@@ -179,6 +107,184 @@ class UserController {
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
+
+  async changePassword(req: Request, res: Response): Promise<Response> {
+    const { password, newPassword, newPasswordConfirm } = req.body;
+    try {
+      console.log(req.userInfo);
+      const userRepository: Repository<User> =
+        AppDataSource.getRepository(User);
+
+      const user: User = await userRepository.findOne({
+        where: { id: req.userInfo.id },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          errors: ["Usuário não encontrado."],
+        });
+      }
+
+      if (!(await user.comparePassword(password))) {
+        return res.status(401).json({
+          errors: ["Senha atual incorreta."],
+        });
+      }
+
+      if (newPassword !== newPasswordConfirm) {
+        return res.status(401).json({
+          errors: ["As senhas não coincidem."],
+        });
+      }
+
+      user.password = newPassword;
+      await userRepository.save(user);
+
+      return res.status(200).json({
+        message: "Senha alterada com sucesso.",
+      });
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+
+  async show(req: Request, res: Response): Promise<Response> {
+    try {
+      const userRepository: Repository<User> =
+        AppDataSource.getRepository(User);
+
+      const user: User = await userRepository.findOne({
+        where: { id: req.userInfo.id },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          errors: ["Usuário não encontrado."],
+        });
+      }
+
+      return res.json({
+        user: {
+          name: user.getFirstName(),
+          last_name: user.getLastName(),
+          email: user.email,
+          cpf: user.cpf,
+          phone: user.phone,
+          birthDate: moment(user.birthDate).format("DD/MM/YYYY"),
+        },
+      });
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+
+  async indexAll(req: Request, res: Response): Promise<Response> {
+    try {
+      const userRepository: Repository<User> =
+        AppDataSource.getRepository(User);
+      const page =
+        req.query.page == undefined || req.query.page == null
+          ? 1
+          : Number(req.query.page);
+      const limit = 10;
+      let lastPage = 1;
+      const countUser = await userRepository.count();
+
+      if (countUser !== 0) {
+        lastPage = Math.ceil(countUser / limit);
+
+        const userObj = await userRepository
+          .createQueryBuilder("user")
+          .select([
+            "user.email",
+            "SUBSTRING(user.name, 1, POSITION(' ' IN user.name) - 1) AS firstName", // Usando SUBSTRING para PostgreSQL
+          ])
+          .orderBy("user.id", "ASC")
+          .offset(Number(page * limit - limit))
+          .limit(limit)
+          .getRawMany();
+
+        let pagination = {
+          path: "/users",
+          page: page,
+          prev_page_url: page - 1 >= 1 ? page - 1 : false,
+          next_page_url: page + 1 > lastPage ? false : page + 1,
+          total: countUser,
+        };
+
+        return res.json({ listUser: userObj, pagination: pagination });
+      } else {
+        return res.status(404).json({ error: "Nenhum usuário encontrado." });
+      }
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    try {
+      const userRepository: Repository<User> =
+        AppDataSource.getRepository(User);
+
+      const { name, email, cpf, phone, birthDate } = req.body;
+
+      const user = await userRepository.findOne({
+        where: { id: req.userInfo.id },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          errors: ["Usuário não encontrado."],
+        });
+      }
+
+      const updatedUser = userRepository.merge(user, {
+        name,
+        email,
+        cpf,
+        phone,
+        birthDate,
+      });
+
+      await userRepository.save(updatedUser);
+
+      return res.json({
+        message: "Usuário atualizado com sucesso.",
+      });
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const userRepository: Repository<User> =
+        AppDataSource.getRepository(User);
+
+      const user = await userRepository.findOne({
+        where: { id: req.userInfo.id },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          errors: ["Usuário não encontrado."],
+        });
+      }
+
+      await userRepository.update(user.id, { isAtivo: false });
+
+      return res.json({
+        message: "Usuário desativado com sucesso.",
+      });
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
 }
 
-export default new UserController();
+export default new UserController(userService);

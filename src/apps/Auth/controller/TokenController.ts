@@ -25,7 +25,7 @@ export default class TokenController {
       });
     }
 
-    if (!(await user.validPassword(password))) {
+    if (!(await user.comparePassword(password))) {
       return res.status(401).json({
         errors: ["Senha do usuário inválida."],
       });
