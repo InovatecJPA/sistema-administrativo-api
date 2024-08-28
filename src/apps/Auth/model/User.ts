@@ -1,38 +1,76 @@
 "use strict";
 import bcryptjs from "bcryptjs";
 import Profile from "./Profile";
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  BeforeInsert,
-  BeforeUpdate,
-  ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, BeforeInsert, BeforeUpdate, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, } from "typeorm";
 
+/**
+ * Represents a user in the system.
+ * 
+ * @@Entity("users")
+ */
 @Entity("users")
-class User {
+export default class User {
+  
+  /**
+   * The unique identifier for the user.
+   * 
+   * @type {string}
+   * @memberof User
+   */
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
+  /**
+   * The name of the user.
+   * 
+   * @type {string}
+   * @memberof User
+   */
   @Column({ type: "varchar", nullable: false })
   name: string;
 
+  /**
+   * The CPF (Cadastro de Pessoas Físicas) of the user, which is a unique identifier in Brazil.
+   * 
+   * @type {string}
+   * @memberof User
+   */
   @Column({ type: "varchar", unique: true, nullable: false })
   cpf: string;
 
+  /**
+   * The email address of the user. It must be unique.
+   * 
+   * @type {string}
+   * @memberof User
+   */
   @Column({ type: "varchar", unique: true, nullable: false })
   email: string;
 
-  @Column({ type: "date", nullable: true })
+  /**
+   * The birth date of the user.
+   * 
+   * @type {Date}
+   * @memberof User
+   */
+  @Column({ type: "date", nullable: true, name: "birth_date" })
   birthDate: Date;
 
+  /**
+   * The phone number of the user. It must be unique.
+   * 
+   * @type {string}
+   * @memberof User
+   */
   @Column({ type: "varchar", unique: true, nullable: true })
   phone: string;
 
+  /**
+   * The profile associated with the user.
+   * 
+   * @type {Profile}
+   * @memberof User
+   */
   @ManyToOne(() => Profile, (profile) => profile.users, {
     nullable: false,
     onDelete: "SET NULL",
@@ -40,31 +78,72 @@ class User {
   @JoinColumn({ name: "profile_id" })
   profile: Profile;
 
-  @Column({ type: "boolean", default: true })
-  isAtivo: boolean;
+  /**
+   * Indicates whether the user's account is active.
+   * 
+   * @type {boolean}
+   * @memberof User
+   */
+  @Column({ type: "boolean", default: true, name: "is_active" })
+  isActive: boolean;
 
-  @Column({ type: "varchar", nullable: false })
-  password_hash: string;
+  /**
+   * The hashed password of the user.
+   * 
+   * @type {string}
+   * @memberof User
+   */
+  @Column({ type: "varchar", nullable: false, name: "password_hash" })
+  passwordHash: string;
 
+  /**
+   * The plain-text password provided by the user for authentication purposes.
+   * 
+   * @type {string}
+   * @memberof User
+   */
   password: string;
 
-  @CreateDateColumn({ type: "timestamp with time zone", nullable: false })
-  created_at: Date;
+  /**
+   * The timestamp when the user was created.
+   * 
+   * @type {Date}
+   * @memberof User
+   */
+  @CreateDateColumn({ type: "timestamp with time zone", nullable: false, name: "created_at" })
+  createdAt: Date;
 
-  @UpdateDateColumn({ type: "timestamp with time zone", nullable: false })
-  updated_at: Date;
+  /**
+   * The timestamp when the user was last updated.
+   * 
+   * @type {Date}
+   * @memberof User
+   */
+  @UpdateDateColumn({ type: "timestamp with time zone", nullable: false, name: "updated_at" })
+  updatedAt: Date;
 
+  /**
+   * Hashes the user's password before inserting or updating the user record in the database.
+   * 
+   * @private
+   * @memberof User
+   */
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
     if (this.password) {
-      this.password_hash = await bcryptjs.hash(this.password, 10);
+      this.passwordHash = await bcryptjs.hash(this.password, 10);
     }
   }
 
+  /**
+   * Validates the provided password against the stored password hash.
+   * 
+   * @param {string} password - The plain-text password to validate.
+   * @returns {Promise<boolean>} - Returns `true` if the password is valid, otherwise `false`.
+   * @memberof User
+   */
   public async validPassword(password: string): Promise<boolean> {
-    return bcryptjs.compare(password, this.password_hash);
+    return bcryptjs.compare(password, this.passwordHash);
   }
 }
-
-export default User;
