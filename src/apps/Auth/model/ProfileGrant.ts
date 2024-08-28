@@ -1,5 +1,6 @@
 "use strict";
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from "typeorm";
+import Grant from "./Grant";
 
 /**
  * Represents a profile-grant association entity in the system.
@@ -26,6 +27,17 @@ export default class ProfileGrant {
    */
   @Column({ type: "varchar", nullable: true })
   status: string;
+
+  /**
+   * The grant associated with the profile. This establishes a one-to-one relationship with the `Grant` entity.
+   * 
+   * @type {Grant}
+   * @memberof ProfileGrant
+   * @relation
+   */
+  @OneToOne(() => Grant)
+  @JoinColumn()
+  grant: Grant;
 
   /**
    * The timestamp when the profile-grant association was created.
