@@ -1,6 +1,6 @@
 import Grant from "../model/Grant";
 import GrantDto from "../dto/GrantDto";
-import GrantService from "../service/GrantService";
+import { grantService } from "../service/GrantService";
 import CustomValidationError from "../error/CustomValidationError";
 
 import { DeleteResult } from "typeorm";
@@ -9,7 +9,7 @@ import { Request, Response, NextFunction } from "express";
 /**
  * Controller for handling requests related to `Grant` resources.
  */
-export default class GrantController {
+export class GrantController {
     private grantService: GrantService;
 
     /**
@@ -170,3 +170,7 @@ export default class GrantController {
         }
     }
 }
+
+// Initialize the controller with the service instance and export it
+const grantController = new GrantController(grantService);
+export default grantController;

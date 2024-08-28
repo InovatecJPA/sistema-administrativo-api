@@ -4,11 +4,12 @@ import ServiceInterface from "../interface/ServiceInterface";
 import CustomValidationError from "../error/CustomValidationError";
 
 import { DeleteResult, Repository } from "typeorm";
+import AppDataSource from "../../../database/dbConnection";
 
 /**
  * Service class for managing `Grant` entities.
  */
-export default class GrantService implements ServiceInterface<Grant, GrantDto> {
+export class GrantService implements ServiceInterface<Grant, GrantDto> {
 
     private grantRepository: Repository<Grant>;
 
@@ -111,3 +112,7 @@ export default class GrantService implements ServiceInterface<Grant, GrantDto> {
         return await this.grantRepository.delete({ name });
     }
 }
+
+// Initialize the GrantService with the TypeORM repository and export it.
+const grantRepository: Repository<Grant> = AppDataSource.getRepository(Grant);
+export const grantService = new GrantService(grantRepository);
