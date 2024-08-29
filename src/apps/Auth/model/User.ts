@@ -149,7 +149,6 @@ class User {
   async hashPassword(): Promise<void> {
     try {
       if (this.password) {
-        console.log("fazendo hash da senha!!!");
         this.passwordHash = await bcryptjs.hash(this.password, 10);
       }
     } catch (e) {
