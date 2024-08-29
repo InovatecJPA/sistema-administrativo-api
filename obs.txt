@@ -15,5 +15,6 @@ Classes para traduzir e refatorar:
     ProfileController.ts 
     grantsRoutes.ts 
     profileRoutes.ts 
-    multerConfig.ts oq eh?
-    s3.ts vai ser utilizado?
+    multerConfig.ts (configurações para armazenar imagens e arquivos)
+    s3.ts (caso seja necessário armazenar arquivos tipo imagens e pdf)
+    Refatorar classes relacionadas ao email
