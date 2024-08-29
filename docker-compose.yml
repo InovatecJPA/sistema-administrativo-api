@@ -35,5 +35,5 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=teste
+      - POSTGRES_DB=api-sistema-administrativo
     restart: always
