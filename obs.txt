@@ -10,3 +10,10 @@ Continuar desenvolvimento do Controller de Grant
 Falta refatorar as classes para desacoplamento e adequação MVC
 
 Ver como ficariam os objetos de requisição e de transações
+
+Classes para traduzir e refatorar:
+    ProfileController.ts 
+    grantsRoutes.ts 
+    profileRoutes.ts 
+    multerConfig.ts oq eh?
+    s3.ts vai ser utilizado?
