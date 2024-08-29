@@ -2,7 +2,7 @@ import { Repository } from "typeorm";
 import jwtLib from "jsonwebtoken";
 
 import User from "../model/User";
-import * as UserDTO from "../dto/UserDTO";
+import * as UserDTO from "../interface/userInterfaces";
 import ProfileDTO from "../dto/ProfileDTO";
 import CpfValidator from "../utils/CpfValidator";
 
@@ -36,7 +36,7 @@ export class UserService {
   }
 
   public async store(
-    userDTO: UserDTO.CreateUserDTO
+    userDTO: UserDTO.createUserDTO
   ): Promise<{ token: string; user: Object }> {
     let validationErrors: string[] = [];
     try {

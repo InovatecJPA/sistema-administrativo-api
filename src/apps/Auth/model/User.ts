@@ -11,6 +11,7 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  AfterLoad,
 } from "typeorm";
 
 @Entity("users")
@@ -36,6 +37,7 @@ class User {
   @ManyToOne(() => Profile, (profile) => profile.users, {
     nullable: false,
     onDelete: "SET NULL",
+    //eager: true
   })
   @JoinColumn({ name: "profile_id" })
   profile: Profile;
@@ -54,11 +56,16 @@ class User {
   @UpdateDateColumn({ type: "timestamp with time zone", nullable: false })
   updated_at: Date;
 
-  @BeforeInsert()
   @BeforeUpdate()
-  async hashPassword() {
-    if (this.password) {
-      this.password_hash = await bcryptjs.hash(this.password, 10);
+  @BeforeInsert()
+  async hashPassword() : Promise<void> {
+    try {
+      if (this.password) {
+        console.log("fazendo hash da senha!!!")
+        this.password_hash = await bcryptjs.hash(this.password, 10);
+      }
+    } catch (e) {
+      console.log("Error on hashPassword: ", e);
     }
   }
 

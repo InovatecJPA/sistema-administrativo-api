@@ -1,7 +1,7 @@
 import { Router } from "express";
 import UserController from "../controller/UserController";
 
-//import AuthMiddlware...
+import { authMiddleware } from "../../../middlewares/auth";
 import validateResponseMiddleware from "../../../middlewares/validateResponse";
 
 const router: Router = Router();
@@ -12,6 +12,8 @@ router.post("/recover", UserController.recoveryPassword);
 
 router.get("/AllUsers", UserController.indexAll);
 router.delete("/:id", UserController.delete);
+router.post("/login", UserController.login);
+router.get("/profile", authMiddleware, UserController.show);
 
 export default router;
 

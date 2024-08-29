@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import * as jwt from "./../../../config/jwt";
 import moment from "moment";
 
 import User from "../model/User";
@@ -11,17 +11,7 @@ import CpfValidator from "../utils/CpfValidator";
 import { sendMailPromise } from "../../mail/mailer";
 import helper from "../../mail/helper/mailHelper";
 import { UserService, userService } from "../service/UserService";
-import * as UserDTO from "../dto/UserDTO";
-
-declare global {
-  namespace Express {
-    interface Request {
-      userInfo?: {
-        id: string;
-      };
-    }
-  }
-}
+import * as UserDTO from "../interface/userInterfaces";
 
 class UserController {
   private userService: UserService;
@@ -32,16 +22,7 @@ class UserController {
 
   public store = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { cpf, name, email, profileName, password, phone } = req.body;
-
-      const userDTO: UserDTO.CreateUserDTO = {
-        cpf,
-        name,
-        email,
-        profileName: profileName, 
-        password,
-        phone,
-      };
+      const userDTO: UserDTO.createUserDTO = req.body;
 
       const result = await this.userService.store(userDTO);
 
@@ -69,7 +50,7 @@ class UserController {
       try {
         const userRepository: Repository<User> =
           AppDataSource.getRepository(User);
-        const user: User = await userRepository.findOneBy({ email: email });
+        const user: User | null = await userRepository.findOneBy({ email: email });
 
         if (!user) {
           return res.status(404).json({
@@ -78,32 +59,35 @@ class UserController {
         }
 
         let domain = email.substring(email.indexOf("@"));
-        let newPassword = domain + "1234";
+        let newPassword = "1234";
 
         emailData.variables.user = user.getFirstName();
         emailData.variables.userName = user.cpf;
         emailData.variables.password = newPassword;
 
-        user.password = newPassword;
-        userRepository.save(user);
+        
+        user.password = newPassword; 
+        
+        await user.hashPassword();
+        await userRepository.save(user, {data: user.password}); 
 
-        sendMailPromise(
-          emailData.email,
-          emailData.subject,
-          emailData.message,
-          emailData.template,
-          emailData.variables
-        );
+        // sendMailPromise(
+        //   emailData.email,
+        //   emailData.subject,
+        //   emailData.message,
+        //   emailData.template,
+        //   emailData.variables
+        // );
 
         return res.json({
           message: "Sucesso! Verifique seu e-mail para obter a nova senha.",
         });
       } catch (error: any) {
-        console.log(error);
+        console.log("Erro ao buscar usuário ou atualizar senha:", error);
         return res.status(500).json({ error: "Erro interno do servidor" });
       }
     } catch (error: any) {
-      console.log(error);
+      console.log("Erro ao processar a recuperação de senha:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
@@ -154,9 +138,11 @@ class UserController {
       const userRepository: Repository<User> =
         AppDataSource.getRepository(User);
 
-      const user: User = await userRepository.findOne({
+      const user: User | undefined = await userRepository.findOne({
         where: { id: req.userInfo.id },
       });
+
+      console.log(user);
 
       if (!user) {
         return res.status(404).json({
@@ -171,7 +157,9 @@ class UserController {
           email: user.email,
           cpf: user.cpf,
           phone: user.phone,
-          birthDate: moment(user.birthDate).format("DD/MM/YYYY"),
+          birthDate: user.birthDate
+            ? moment(user.birthDate).format("DD/MM/YYYY")
+            : null,
         },
       });
     } catch (error: any) {
@@ -280,6 +268,51 @@ class UserController {
       return res.json({
         message: "Usuário desativado com sucesso.",
       });
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+
+  // Não vai ficar aqui...
+  async login(req: Request, res: Response): Promise<Response> {
+    try {
+      const userLogin: UserDTO.userLogin = req.body;
+
+      if (!userLogin || !userLogin.email || !userLogin.password) {
+        return res.status(400).json({
+          errors: ["E-mail e senha são obrigatórios."],
+        });
+      }
+
+      const userRepository: Repository<User> =
+        AppDataSource.getRepository(User);
+
+      const user = await userRepository.findOne({
+        where: {
+          email: userLogin.email,
+        },
+        relations: ["profile"],
+      });
+
+      //console.log(user);
+
+      if (!user || !(await user.comparePassword(userLogin.password))) {
+        return res.status(404).json({
+          errors: ["E-mail ou senha incorretos"],
+        });
+      }
+
+      const profile = user.profile.name;
+
+      const token = jwt.signToken({
+        id: user.id,
+        email: user.email,
+        isAdmin: profile === "admin" ? true : false,
+        profile_id: user.profile.id,
+      });
+
+      res.status(200).json({ auth: true, token: token });
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ error: "Erro interno do servidor" });

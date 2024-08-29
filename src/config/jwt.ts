@@ -6,7 +6,7 @@ import jwt, {
 } from "jsonwebtoken";
 
 interface JwtPayloadCustom extends JwtPayload {
-  [key: string]: any; // Permite adicionar propriedades personalizadas ao payload
+  [key: string]: any; 
 }
 
 const JWT_SECRET: Secret = process.env.TOKEN_SECRET || "BOLINHA";

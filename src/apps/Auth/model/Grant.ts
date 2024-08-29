@@ -4,11 +4,13 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import ProfileGrant from "./ProfileGrant";
 
 @Entity("grants")
 class Grant {
-  @PrimaryGeneratedColumn("uuid") // Defines the primary key as a UUID
+  @PrimaryGeneratedColumn("uuid") // Chave primária do tipo UUID
   id: string;
 
   @Column({ type: "varchar", unique: true, nullable: false })
@@ -28,6 +30,10 @@ class Grant {
 
   @UpdateDateColumn({ type: "timestamp with time zone", nullable: false })
   updated_at: Date;
+
+  // Relação com ProfileGrant
+  @OneToMany(() => ProfileGrant, (profileGrant) => profileGrant.grant)
+  profileGrants: ProfileGrant[];
 }
 
 export default Grant;
