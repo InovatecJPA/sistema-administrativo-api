@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import Profile from "../model/Profile";
-import ProfileDTO from "../dto/ProfileDTO";
 import AppDataSource from "../../../database/dbConnection";
+import {storeProfile} from "../dto/ProfileDTO";
 
 export class ProfileService {
   private profileRepository: Repository<Profile>;
@@ -11,98 +11,42 @@ export class ProfileService {
   }
 
   // buscar um perfil por ID
-  public async getProfileById(profileId: string): Promise<ProfileDTO | null> {
+  public async getProfileById(profileId: string): Promise<Profile| null> {
     const profile = await this.profileRepository.findOne({
       where: { id: profileId },
     });
 
-    if (!profile) {
-      return null;
-    }
-
-    return new ProfileDTO(
-      profile.id,
-      profile.name,
-      profile.description,
-      profile.isAdmin,
-      profile.created_at,
-      profile.updated_at
-    );
+    return profile ? profile : null;
   }
 
   // buscar perfil por nome
-  public async getProfileByName(name: string): Promise<ProfileDTO | null> {
+  public async getProfileByName(name: string): Promise<Profile | null> {
     const profile = await this.profileRepository.findOne({ where: { name } });
 
-    if (!profile) {
-      return null;
-    }
-
-    return new ProfileDTO(
-      profile.id,
-      profile.name,
-      profile.description,
-      profile.isAdmin,
-      profile.created_at,
-      profile.updated_at
-    );;
+    return profile ? profile : null;
   }
 
   // Método para criar um novo perfil
-  public async createProfile(profileDTO: ProfileDTO): Promise<ProfileDTO> {
-    const profile = this.profileRepository.create({
-      name: profileDTO.name,
-      description: profileDTO.description,
-      isAdmin: profileDTO.isAdmin,
-    });
+  public async createProfile(_profile: storeProfile): Promise<Profile | null> {
+    try {
+      console.log(_profile);
+      const profile = this.profileRepository.create({
+        name: _profile.name,
+        description: _profile.description,
+      });
 
-    await this.profileRepository.save(profile);
+      await this.profileRepository.save(profile);
 
-    return new ProfileDTO(
-      profile.id,
-      profile.name,
-      profile.description,
-      profile.isAdmin,
-      profile.created_at,
-      profile.updated_at
-    );
+      return profile;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   }
 
   // Método para atualizar um perfil existente
-  public async updateProfile(
-    profileId: string,
-    profileDTO: ProfileDTO
-  ): Promise<ProfileDTO | null> {
-    const profile = await this.profileRepository.findOne({
-      where: { id: profileId },
-    });
 
-    if (!profile) {
-      return null;
-    }
-
-    profile.name = profileDTO.name ?? profile.name;
-    profile.description = profileDTO.description ?? profile.description;
-    profile.isAdmin =
-      profileDTO.isAdmin !== undefined ? profileDTO.isAdmin : profile.isAdmin;
-
-    await this.profileRepository.save(profile);
-
-    return new ProfileDTO(
-      profile.id,
-      profile.name,
-      profile.description,
-      profile.isAdmin,
-      profile.created_at,
-      profile.updated_at
-    );
-  }
-
-  // Método para deletar um perfil por ID
-  public async deleteProfile(profileId: string): Promise<boolean> {
-    const result = await this.profileRepository.delete(profileId);
-    return result.affected !== undefined && result.affected > 0;
-  }
+  // Método para deletar um perfil
 }
 
 const profileRepository: Repository<Profile> =

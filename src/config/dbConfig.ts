@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { DataSourceOptions } from "typeorm";
 import path from "path";
+import {SnakeNamingStrategy} from "typeorm-naming-strategies";
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -16,6 +17,7 @@ export const dbConfig: DataSourceOptions = {
   logging: true,
   entities: [path.join(__dirname + "/../apps/**/model/*{.ts,.js}")],
   migrations: [path.join(__dirname, "/../database/migrations/*{.ts,.js}")],
+  namingStrategy: new SnakeNamingStrategy(),
 };
 
 console.log(

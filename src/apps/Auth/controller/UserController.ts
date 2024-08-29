@@ -50,7 +50,9 @@ class UserController {
       try {
         const userRepository: Repository<User> =
           AppDataSource.getRepository(User);
-        const user: User | null = await userRepository.findOneBy({ email: email });
+        const user: User | null = await userRepository.findOneBy({
+          email: email,
+        });
 
         if (!user) {
           return res.status(404).json({
@@ -65,11 +67,10 @@ class UserController {
         emailData.variables.userName = user.cpf;
         emailData.variables.password = newPassword;
 
-        
-        user.password = newPassword; 
-        
+        user.password = newPassword;
+
         await user.hashPassword();
-        await userRepository.save(user, {data: user.password}); 
+        await userRepository.save(user, { data: user.password });
 
         // sendMailPromise(
         //   emailData.email,
@@ -253,7 +254,7 @@ class UserController {
       const userRepository: Repository<User> =
         AppDataSource.getRepository(User);
 
-      const user = await userRepository.findOne({
+      const user: User | null = await userRepository.findOne({
         where: { id: req.userInfo.id },
       });
 
@@ -263,7 +264,7 @@ class UserController {
         });
       }
 
-      await userRepository.update(user.id, { isAtivo: false });
+      await userRepository.update(user.id, { isActive: false });
 
       return res.json({
         message: "Usuário desativado com sucesso.",

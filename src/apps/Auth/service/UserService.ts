@@ -3,12 +3,13 @@ import jwtLib from "jsonwebtoken";
 
 import User from "../model/User";
 import * as UserDTO from "../interface/userInterfaces";
-import ProfileDTO from "../dto/ProfileDTO";
 import CpfValidator from "../utils/CpfValidator";
 
 // Dependencia
 import { profileService, ProfileService } from "./ProfileService";
 import AppDataSource from "../../../database/dbConnection";
+import { storeProfile } from "../dto/ProfileDTO";
+import Profile from "../model/Profile";
 
 export class UserService {
   private userRepository: Repository<User>;
@@ -40,7 +41,6 @@ export class UserService {
   ): Promise<{ token: string; user: Object }> {
     let validationErrors: string[] = [];
     try {
-      console.log(userDTO);
       //Verifica se nao teve nenum erro de validação
       if (!CpfValidator.validate(userDTO.cpf)) {
         validationErrors.push("CPF inválido");
@@ -76,28 +76,26 @@ export class UserService {
       }
 
       // Processar perfil
-      let profile = null;
+      let profile: Profile | null = null;
+
       if (userDTO.profileName) {
         profile = await this.profileService.getProfileByName(
-          userDTO.profileName || null
+          userDTO.profileName
         );
+
         if (!profile) {
-          profile = await this.profileService.createProfile(
-            new ProfileDTO(undefined, userDTO.profileName, "", false)
-          );
+          throw new Error("Perfil não encontrado");
         }
       } else {
-        // Usar perfil padrão se não for fornecido
         profile = await this.profileService.getProfileByName("default_user");
+
         if (!profile) {
-          profile = await this.profileService.createProfile(
-            new ProfileDTO(
-              undefined,
-              "default_user",
-              "Permissão de usuário padrão do sistema",
-              false
-            )
-          );
+          const defaultProfile: storeProfile = {
+            name: "default_user",
+            description: "Perfil padrão",
+          };
+          // Usar perfil padrão se não for fornecido
+          profile = await this.profileService.createProfile(defaultProfile);
         }
       }
 
@@ -106,13 +104,15 @@ export class UserService {
         cpf: userDTO.cpf,
         name: userDTO.name,
         email: userDTO.email,
-        profile: profile.id,
+        profile: profile,
         phone: userDTO.phone,
-        isAtivo: true,
+        isActive: true,
       });
 
       user.password = userDTO.password!;
       //user.profile = profile;
+
+      console.log(user);
 
       await this.userRepository.save(user);
 
@@ -140,8 +140,6 @@ export class UserService {
       throw new Error(error.message || "Erro interno do servidor");
     }
   }
-
-  
 }
 
 const userRepository: Repository<User> = AppDataSource.getRepository(User);

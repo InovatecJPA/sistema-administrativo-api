@@ -30,7 +30,11 @@ export default class Grant {
    * @type {string}
    * @memberof Grant
    */
-  @Column({ type: "varchar", unique: true, nullable: false })
+  @Column({
+    type: "varchar",
+    unique: true,
+    nullable: false,
+  })
   public name: string;
 
   /**
@@ -39,7 +43,10 @@ export default class Grant {
    * @type {string}
    * @memberof Grant
    */
-  @Column({ type: "text", nullable: true })
+  @Column({
+    type: "text",
+    nullable: true,
+  })
   public note: string;
 
   /**
@@ -48,7 +55,10 @@ export default class Grant {
    * @type {string}
    * @memberof Grant
    */
-  @Column({ type: "varchar", nullable: true, name: "route_filter" })
+  @Column({
+    type: "varchar",
+    nullable: true,
+  })
   public routeFilter: string;
 
   /**
@@ -57,7 +67,10 @@ export default class Grant {
    * @type {string}
    * @memberof Grant
    */
-  @Column({ type: "varchar", nullable: false })
+  @Column({
+    type: "varchar",
+    nullable: false,
+  })
   public route: string;
 
   /**
@@ -69,12 +82,14 @@ export default class Grant {
   @CreateDateColumn({
     type: "timestamp with time zone",
     nullable: false,
-    name: "created_at",
   })
   public createdAt: Date;
 
-  @UpdateDateColumn({ type: "timestamp with time zone", nullable: false })
-  updated_at: Date;
+  @UpdateDateColumn({
+    type: "timestamp with time zone",
+    nullable: false,
+  })
+  updatedAt: Date;
 
   // Relação com ProfileGrant
   @OneToMany(() => ProfileGrant, (profileGrant) => profileGrant.grant)

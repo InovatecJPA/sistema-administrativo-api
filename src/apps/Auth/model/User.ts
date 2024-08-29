@@ -62,7 +62,7 @@ class User {
    * @type {Date}
    * @memberof User
    */
-  @Column({ type: "date", nullable: true, name: "birth_date" })
+  @Column({ type: "date", nullable: true })
   birthDate: Date;
 
   /**
@@ -94,7 +94,7 @@ class User {
    * @type {boolean}
    * @memberof User
    */
-  @Column({ type: "boolean", default: true, name: "is_active" })
+  @Column({ type: "boolean", default: true })
   isActive: boolean;
 
   /**
@@ -103,7 +103,7 @@ class User {
    * @type {string}
    * @memberof User
    */
-  @Column({ type: "varchar", nullable: false, name: "password_hash" })
+  @Column({ type: "varchar", nullable: false })
   passwordHash: string;
 
   /**
@@ -123,7 +123,6 @@ class User {
   @CreateDateColumn({
     type: "timestamp with time zone",
     nullable: false,
-    name: "created_at",
   })
   createdAt: Date;
 
@@ -136,14 +135,13 @@ class User {
   @UpdateDateColumn({
     type: "timestamp with time zone",
     nullable: false,
-    name: "updated_at",
   })
   updatedAt: Date;
 
   @BeforeUpdate()
   /**
    * Hashes the user's password before inserting or updating the user record in the database.
-   * 
+   *
    * @private
    * @memberof User
    */

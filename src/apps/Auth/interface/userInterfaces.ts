@@ -5,7 +5,7 @@ export interface createUserDTO {
   profileName: string | null;
   password: string;
   phone: string;
-  isAtivo?: boolean;
+  isActive?: boolean;
 }
 
 export interface userInfo {

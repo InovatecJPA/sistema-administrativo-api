@@ -44,15 +44,6 @@ export default class Profile {
   description: string;
 
   /**
-   * Indicates if the profile has admin privileges.
-   *
-   * @type {boolean}
-   * @memberof Profile
-   */
-  @Column({ type: "boolean", default: false, name: "is_admin" })
-  isAdmin: boolean;
-
-  /**
    * The users associated with this profile.
    *
    * @type {User[]}
@@ -73,7 +64,6 @@ export default class Profile {
   @CreateDateColumn({
     type: "timestamp with time zone",
     nullable: false,
-    name: "created_at",
   })
   createdAt: Date;
 
@@ -86,7 +76,6 @@ export default class Profile {
   @UpdateDateColumn({
     type: "timestamp with time zone",
     nullable: false,
-    name: "updated_at",
   })
   updatedAt: Date;
 }
