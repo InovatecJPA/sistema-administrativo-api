@@ -1,5 +1,5 @@
 
-const randomGuestPassword = (length: number) => {
+const generateTemporaryPassword = (length: number) => {
   let result = "";
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -11,8 +11,7 @@ const randomGuestPassword = (length: number) => {
 };
 
 const helper = {
-  createDefaultEmailConfig,
-  randomGuestPassword,
+  generateTemporaryPassword,
 };
 
 export default helper;

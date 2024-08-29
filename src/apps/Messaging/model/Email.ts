@@ -1,8 +1,8 @@
-import mailConfig from "../../config/mailConfig";
+import mailConfig from "../../../config/mailConfig";
 import { EmailTemplate } from "./EmailTemplate";
 
 export default class Email {
-    public email: string;
+    public emailAddress: string;
     public subject: string;
     public message: string;
     public template: EmailTemplate;
@@ -13,7 +13,7 @@ export default class Email {
     public password?: string;
 
     constructor(
-        email: string,
+        emailAddress: string,
         subject: string,
         message: string,
         template: EmailTemplate = EmailTemplate.ActivateAccount,
@@ -23,7 +23,7 @@ export default class Email {
         userName?: string,
         password?: string
     ) {
-        this.email = email;
+        this.emailAddress = emailAddress;
         this.subject = subject;
         this.message = message;
         this.template = template;

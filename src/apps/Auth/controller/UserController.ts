@@ -3,15 +3,12 @@ import * as jwt from "./../../../config/jwt";
 import moment from "moment";
 
 import User from "../model/User";
-import Profile from "../model/Profile";
 import { Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
-import CpfValidator from "../utils/CpfValidator";
 
-import { sendMailPromise } from "../../mail/mailer";
-import helper from "../../mail/helper/mailHelper";
 import { UserService, userService } from "../service/UserService";
 import * as UserDTO from "../interface/userInterfaces";
+import Email from "../../Messaging/model/Email";
 
 class UserController {
   private userService: UserService;
@@ -35,23 +32,21 @@ class UserController {
 
   async recoveryPassword(req: Request, res: Response): Promise<Response> {
     try {
-      const { email = "" } = req.body;
+       const { emailAddress, subject, message, template, link, imageUrl, user, userName, password } = req.body;
       let errors: String[] = [];
-      let emailData = helper.createDefaultEmailConfig(email);
 
-      if (!email) {
+      if (!emailAddress) {
         errors.push("Um e-mail é obrigatório.");
-      }
-
-      if (errors.length > 0) {
         return res.status(400).json({ errors });
       }
+
+      const email: Email = new Email(emailAddress, subject, message, template, link, imageUrl, user, userName, password);
 
       try {
         const userRepository: Repository<User> =
           AppDataSource.getRepository(User);
         const user: User | null = await userRepository.findOneBy({
-          email: email,
+          email: email.emailAddress,
         });
 
         if (!user) {
