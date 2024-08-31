@@ -11,7 +11,7 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
+  OneToOne,
 } from "typeorm";
 import Token from "./Token";
 
@@ -167,11 +167,11 @@ class User {
   }
 
   public getLastName(): string {
-    return this.name.split(" ")[1];
+    return this.name.split(" ").slice(1).join(" ");
   }
 
-  @OneToMany(() => Token, (token) => token.user)
-  tokens: Token[]; // Define o relacionamento inverso OneToMany
+  @OneToOne(() => Token, (token) => token.user)
+  token: Token;
 }
 
 export default User;

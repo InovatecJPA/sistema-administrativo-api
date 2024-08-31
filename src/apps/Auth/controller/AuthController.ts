@@ -64,9 +64,9 @@ export class AuthController {
       console.log("token no controller", token);
       const { password } = req.body;
 
-      await this.authService.resetPassword(token, password);
+      const loginToken = await this.authService.resetPassword(token, password);
 
-      res.status(200).json("Senha redefinida com sucesso.");
+      res.status(200).json(loginToken);
     } catch (error) {
       next(error);
     }

@@ -115,13 +115,22 @@ export class AuthService {
   public resetPassword = async (
     token: string,
     newPassword: string
-  ): Promise<string> => {
-    const user = await tokenService.validateResetToken(token);
+  ): Promise<{ token: string }> => {
+    let user = await tokenService.validateResetToken(token);
 
     user.password = newPassword;
-    await this.userService.updateUser(user);
+    user = await this.userService.updateUser(user);
 
-    return "Senha redefinida com sucesso.";
+    const userInformation: UserDTO.userInfo = {
+      id: user.id,
+      email: user.email,
+      isAdmin: user.profile.name === "admin" ? true : false,
+      profile_id: user.profile.id,
+    };
+
+    const loginToken = jwt.signToken(userInformation);
+
+    return { token: loginToken };
   };
 }
 
