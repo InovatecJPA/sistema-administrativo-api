@@ -1,7 +1,7 @@
 import * as jwt from "../config/jwt";
 import Grant from "../apps/Auth/model/Grant";
 import ProfileGrant from "../apps/Auth/model/ProfileGrant";
-import * as UserDTO from "../apps/Auth/interface/userInterfaces";
+import * as UserDTO from "../apps/Auth/dto/user.dto";
 import { NextFunction, Request, Response } from "express";
 import AppDataSource from "../database/dbConnection";
 
@@ -9,9 +9,12 @@ const checkRoutePermission = (
   userInfo: UserDTO.userInfo,
   profileGrants: ProfileGrant[]
 ) => {
-  console.log(userInfo.path)
+  console.log(userInfo.path);
   // Verifica se o caminho atual é permitido por padrão
-  const defaultAllowedPaths = ["/dev/accounts/users/profile", `/users/${userInfo.id}`];
+  const defaultAllowedPaths = [
+    "/dev/accounts/users/profile",
+    `/users/${userInfo.id}`,
+  ];
 
   if (defaultAllowedPaths.includes(userInfo.path)) return true;
 

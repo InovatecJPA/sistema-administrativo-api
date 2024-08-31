@@ -1,10 +1,10 @@
-export interface createUserDTO {
+export interface createUser {
   cpf: string;
   name: string;
   email: string;
-  profileName: string | null;
   password: string;
   phone: string;
+  profileName?: string;
   isActive?: boolean;
 }
 
@@ -16,6 +16,19 @@ export interface userInfo {
   profile_id: string;
   path?: string;
   routeFilter?: string;
+}
+
+export class userRO {
+  public user: {
+    name: string;
+    email: string;
+  };
+  public token: string;
+
+  constructor(user: { name: string; email: string }, token: string) {
+    this.user = user;
+    this.token = token;
+  }
 }
 
 export interface userLogin {

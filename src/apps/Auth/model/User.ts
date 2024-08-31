@@ -11,7 +11,9 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import Token from "./Token";
 
 /**
  * Represents a user in the system.
@@ -138,18 +140,17 @@ class User {
   })
   updatedAt: Date;
 
-  @BeforeUpdate()
   /**
    * Hashes the user's password before inserting or updating the user record in the database.
    *
    * @private
    * @memberof User
    */
+  @BeforeUpdate()
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     try {
       if (this.password) {
-        console.log("fazendo hash da senha!!!");
         this.passwordHash = await bcryptjs.hash(this.password, 10);
       }
     } catch (e) {
@@ -168,6 +169,9 @@ class User {
   public getLastName(): string {
     return this.name.split(" ")[1];
   }
+
+  @OneToMany(() => Token, (token) => token.user)
+  tokens: Token[]; // Define o relacionamento inverso OneToMany
 }
 
 export default User;

@@ -1,4 +1,4 @@
-export interface storeProfile {
+export interface createProfile {
   name: string;
   description: string;
 }

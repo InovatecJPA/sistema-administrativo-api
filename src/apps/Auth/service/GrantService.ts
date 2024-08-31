@@ -1,7 +1,7 @@
 import Grant from "../model/Grant";
 import GrantDto from "../dto/GrantDto";
 import ServiceInterface from "../interface/ServiceInterface";
-import CustomValidationError from "../error/CustomValidationError";
+import CustomValidationError from "../../../error/CustomValidationError";
 
 import { DeleteResult, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";

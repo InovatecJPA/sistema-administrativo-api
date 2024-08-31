@@ -1,7 +1,7 @@
 import Grant from "../model/Grant";
 import GrantDto from "../dto/GrantDto";
 import { grantService } from "../service/GrantService";
-import CustomValidationError from "../error/CustomValidationError";
+import CustomValidationError from "../../../error/CustomValidationError";
 
 import { DeleteResult } from "typeorm";
 import { Request, Response, NextFunction } from "express";

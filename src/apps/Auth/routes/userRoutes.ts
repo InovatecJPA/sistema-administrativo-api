@@ -7,12 +7,10 @@ import validateResponseMiddleware from "../../../middlewares/validateResponse";
 const router: Router = Router();
 router.use(validateResponseMiddleware);
 
-router.post("/", UserController.store);
-router.post("/recover", UserController.recoveryPassword);
 
-router.get("/AllUsers", UserController.indexAll);
+router.get("/", UserController.listPaginated); // lista todos os usuários
+
 router.delete("/:id", UserController.delete);
-router.post("/login", UserController.login);
 router.get("/profile", authMiddleware, UserController.show);
 
 export default router;

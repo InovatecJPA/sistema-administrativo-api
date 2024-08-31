@@ -6,7 +6,7 @@ import helmet from "helmet";
 
 import validateResponse from "./middlewares/setCORS";
 import dbConnection from "./database/dbConnection";
-import errorsHandle from "./middlewares/errorsHandle";
+import { errorsHandler } from "./middlewares/errorsHandler";
 
 // import v1 from "./apps";
 // import swaggerUi from "swagger-ui-express";
@@ -46,7 +46,6 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(validateResponse);
-    this.app.use(errorsHandle);
   }
 
   routes(): void {
@@ -86,12 +85,7 @@ class App {
   }
 
   private errorHandling(): void {
-    this.app.use(
-      (err: Error, req: Request, res: Response, next: NextFunction) => {
-        console.error(err.stack);
-        res.status(500).send("Something broke!");
-      }
-    );
+    this.app.use(errorsHandler);
   }
 }
 
