@@ -1,3 +1,4 @@
+import { changePasswordSchema } from "../schemas/userSchemas";
 import { AuthService, authService } from "../service/AuthService";
 import { NextFunction, Request, Response } from "express";
 
@@ -46,7 +47,6 @@ export class AuthController {
       const { email } = req.body;
 
       await this.authService.requestResetToken(email);
-
       res.status(200).json("Link enviado para o e-mail.");
     } catch (error) {
       next(error);
@@ -80,9 +80,9 @@ export class AuthController {
   ): Promise<void> => {
     try {
       const userInfo = req.userInfo;
-      const { newPassword, newPasswordConfirm, oldPassword } = req.body;
+      const cgPssData = changePasswordSchema.parse(req.body);
 
-      await this.authService.changePassword(userInfo, newPassword, newPasswordConfirm, oldPassword);
+      await this.authService.changePassword(userInfo, cgPssData);
 
       res.status(200).json("Senha alterada com sucesso.");
     } catch (error) {
@@ -92,3 +92,16 @@ export class AuthController {
 }
 
 export const authController = new AuthController(authService);
+
+// return res.json({
+//   user: {
+//     name: user.getFirstName(),
+//     last_name: user.getLastName(),
+//     email: user.email,
+//     cpf: user.cpf,
+//     phone: user.phone,
+//     birthDate: user.birthDate
+//       ? moment(user.birthDate).format("DD/MM/YYYY")
+//       : null,
+//   },
+// });

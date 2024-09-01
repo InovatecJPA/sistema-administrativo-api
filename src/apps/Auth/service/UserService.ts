@@ -14,6 +14,13 @@ import Token from "../model/Token";
 import { sendMailPromise } from "../../mail/mailer";
 import { AlreadyExistsError } from "../../../error/AlreadyExistsError";
 import { NotFoundError } from "../../../error/NotFoundError";
+import {
+  updateUserSchema,
+  UpdateUserDTO,
+  createUserDTO,
+} from "../schemas/userSchemas";
+import { UnauthorizedException } from "../../../error/UnauthorizedException";
+import moment from "moment";
 
 export class UserService {
   private readonly userRepository: Repository<User>;
@@ -58,7 +65,7 @@ export class UserService {
     return user ? user : null;
   }
 
-  public async createUser(_user: UserDTO.createUser): Promise<User> {
+  public async createUser(_user: createUserDTO): Promise<User> {
     if (
       await this.userRepository.findOne({
         where: [
@@ -102,9 +109,59 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  public async updateUser(user: User): Promise<User> {
-    await user.hashPassword();
-    return await this.userRepository.save(user);
+  public async updateUser(userId: string, data: UpdateUserDTO): Promise<User>;
+  public async updateUser(user: User): Promise<User>;
+
+  public async updateUser(
+    userOrUserId: string | User,
+    data?: UpdateUserDTO
+  ): Promise<User> {
+    if (typeof userOrUserId === "string") {
+      // Caso o primeiro argumento seja um ID de usuário (string)
+      const user = await this.userRepository.findOneBy({ id: userOrUserId });
+
+      if (!user) {
+        throw new NotFoundError("Usuário não encontrado.");
+      }
+
+      if (data?.profile !== undefined) {
+        throw new UnauthorizedException("Atualização de perfil não permitida.");
+      }
+
+      Object.assign(user, data);
+
+      return await this.userRepository.save(user);
+    } else {
+      // Caso o primeiro argumento seja um objeto User
+      const user = userOrUserId;
+      await user.hashPassword();
+      return await this.userRepository.save(user);
+    }
+  }
+
+  public async updateUserProfile(
+    userId: string,
+    profileId: string
+  ): Promise<User> {
+    // Busca o usuário pelo ID
+    const user = await this.getUserById(userId);
+
+    if (!user) {
+      throw new NotFoundError("Usuário não encontrado");
+    }
+
+    // Busca o perfil pelo ID
+    const profile = await this.profileService.getProfileById(profileId);
+
+    if (!profile) {
+      throw new NotFoundError("Perfil não encontrado");
+    }
+
+    user.profile = profile;
+
+    await this.userRepository.save(user);
+
+    return user;
   }
 
   // paginação de usuários
@@ -146,6 +203,25 @@ export class UserService {
     };
 
     return { listUser: users, pagination: pagination };
+  }
+
+  public async show(userId: string): Promise<Object> {
+    const user = await this.getUserById(userId);
+
+    if (!user) {
+      throw new NotFoundError("Usuário não encontrado.");
+    }
+
+    return {
+      name: user.getFirstName(),
+      last_name: user.getLastName(),
+      email: user.email,
+      cpf: user.cpf,
+      phone: user.phone,
+      birthDate: user.birthDate
+        ? moment(user.birthDate).format("DD/MM/YYYY")
+        : null,
+    };
   }
 }
 

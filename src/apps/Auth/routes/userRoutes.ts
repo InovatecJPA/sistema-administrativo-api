@@ -8,10 +8,17 @@ const router: Router = Router();
 router.use(validateResponseMiddleware);
 
 
-router.get("/", UserController.listPaginated); // lista todos os usuários
+router.post("/", authMiddleware, UserController.show); // Detalhes do usuário logado
+router.get("/list", authMiddleware, UserController.listPaginated); // lista todos os usuários
+router.patch("/:id/update", authMiddleware, UserController.update);
+router.put(
+  "/:id/update/profile",
+  authMiddleware,
+  UserController.updateUserProfile
+);
 
+//não atualizados
 router.delete("/:id", UserController.delete);
-router.get("/profile", authMiddleware, UserController.show);
 
 export default router;
 

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import * as jwt from "./../../../config/jwt";
 import moment from "moment";
 
@@ -13,6 +13,7 @@ import helper from "../../mail/helper/mailHelper";
 import { UserService, userService } from "../service/UserService";
 import * as UserDTO from "../dto/user.dto";
 import { NotFoundError } from "../../../error/NotFoundError";
+import { updateUserSchema, UpdateUserDTO } from "../schemas/userSchemas";
 
 class UserController {
   private readonly userService: UserService;
@@ -23,7 +24,8 @@ class UserController {
 
   public listPaginated = async (
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ): Promise<Response> => {
     try {
       const page = req.query.page ? Number(req.query.page) : 1;
@@ -38,124 +40,66 @@ class UserController {
 
       return res.json(result);
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+      next(error);
     }
   };
 
-  async changePassword(req: Request, res: Response): Promise<Response> {
-    const { password, newPassword, newPasswordConfirm } = req.body;
+  public update = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
-      console.log(req.userInfo);
-      const userRepository: Repository<User> =
-        AppDataSource.getRepository(User);
+      const updateData: UpdateUserDTO = updateUserSchema.parse(req.body);
 
-      const user: User = await userRepository.findOne({
-        where: { id: req.userInfo.id },
-      });
+      this.userService.updateUser(req.userInfo.id, updateData);
 
-      if (!user) {
-        return res.status(404).json({
-          errors: ["Usuário não encontrado."],
-        });
-      }
-
-      if (!(await user.comparePassword(password))) {
-        return res.status(401).json({
-          errors: ["Senha atual incorreta."],
-        });
-      }
-
-      if (newPassword !== newPasswordConfirm) {
-        return res.status(401).json({
-          errors: ["As senhas não coincidem."],
-        });
-      }
-
-      user.password = newPassword;
-      await userRepository.save(user);
-
-      return res.status(200).json({
-        message: "Senha alterada com sucesso.",
-      });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+      res.status(200).json({ message: "Usuário atualizado com sucesso." });
+    } catch (error) {
+      next(error);
     }
-  }
+  };
 
-  async show(req: Request, res: Response): Promise<Response> {
+  public updateUserProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
-      const userRepository: Repository<User> =
-        AppDataSource.getRepository(User);
+      const userId = req.userInfo.id;
+      const profileId = req.body.profileId;
 
-      const user: User | undefined = await userRepository.findOne({
-        where: { id: req.userInfo.id },
-      });
+      await this.userService.updateUserProfile(userId, profileId);
 
-      console.log(user);
-
-      if (!user) {
-        return res.status(404).json({
-          errors: ["Usuário não encontrado."],
-        });
-      }
-
-      return res.json({
-        user: {
-          name: user.getFirstName(),
-          last_name: user.getLastName(),
-          email: user.email,
-          cpf: user.cpf,
-          phone: user.phone,
-          birthDate: user.birthDate
-            ? moment(user.birthDate).format("DD/MM/YYYY")
-            : null,
-        },
-      });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+      res.status(200).json({ message: "Perfil atualizado com sucesso." });
+    } catch (error) {
+      next(error);
     }
-  }
+  };
 
-  async update(req: Request, res: Response): Promise<Response> {
+  public show = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Object> => {
     try {
-      const userRepository: Repository<User> =
-        AppDataSource.getRepository(User);
+      const userId = req.userInfo.id;
 
-      const { name, email, cpf, phone, birthDate } = req.body;
+      const showUserInstance = await this.userService.show(userId);
 
-      const user = await userRepository.findOne({
-        where: { id: req.userInfo.id },
-      });
-
-      if (!user) {
-        return res.status(404).json({
-          errors: ["Usuário não encontrado."],
-        });
-      }
-
-      const updatedUser = userRepository.merge(user, {
-        name,
-        email,
-        cpf,
-        phone,
-        birthDate,
-      });
-
-      await userRepository.save(updatedUser);
-
-      return res.json({
-        message: "Usuário atualizado com sucesso.",
-      });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+      return showUserInstance;
+    } catch (error) {
+      next(error);
     }
-  }
+  };
 
-  async delete(req: Request, res: Response): Promise<Response> {
+  // Não atualizado
+
+  public delete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response> => {
     try {
       const userRepository: Repository<User> =
         AppDataSource.getRepository(User);
@@ -175,11 +119,10 @@ class UserController {
       return res.json({
         message: "Usuário desativado com sucesso.",
       });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+    } catch (error) {
+      next(error);
     }
-  }
+  };
 }
 
 export default new UserController(userService);

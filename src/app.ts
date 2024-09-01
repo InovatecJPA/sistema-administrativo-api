@@ -8,12 +8,11 @@ import validateResponse from "./middlewares/setCORS";
 import dbConnection from "./database/dbConnection";
 import { errorsHandler } from "./middlewares/errorsHandler";
 
-// import v1 from "./apps";
+import v1 from "./apps";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerDocument from "../swagger.json";
 
 // Temp. desenvolvimento das rotas
-import devRoutes from "./apps/index";
 
 const whiteList = ["http://localhost:3000"];
 
@@ -50,15 +49,12 @@ class App {
 
   routes(): void {
     // Dev-back routes
-    this.app.use("/dev", devRoutes);
+    //this.app.use("/dev", devRoutes);
 
     //this.app.use("/api-docs", swaggerUi.serve);
     //this.app.get("/api-docs", swaggerUi.setup(swaggerDocument));
 
-    //this.app.use("/v1", v1);
-    this.app.get("/", (req: Request, res: Response) => {
-      res.send("Hello World!");
-    });
+    this.app.use("/v1", v1);
     this.app.get("/testDB", async (req: Request, res: Response) => {
       try {
         // Verifica se a conexão já está inicializada

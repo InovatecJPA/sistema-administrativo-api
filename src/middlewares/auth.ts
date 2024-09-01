@@ -136,14 +136,14 @@ export const authMiddleware = async (
   });
 
   if (!userInfo.isAdmin && !checkRoutePermission(req.userInfo, profileGrants)) {
-    return res.status(403).send();
+    return res.status(403).json({ error: "Access denied" });
   } else {
     try {
       filterRoute(req.userInfo, profileGrants);
       return next();
     } catch (error) {
       console.error(error);
-      res.status(400).send();
+      res.status(400).json({ error: "Bad request" });
     }
   }
 };

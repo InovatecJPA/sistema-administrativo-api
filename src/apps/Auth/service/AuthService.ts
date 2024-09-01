@@ -8,6 +8,7 @@ import User from "../model/User";
 import { NotFoundError } from "../../../error/NotFoundError";
 import { randomBytes } from "crypto";
 import { tokenService } from "./TokenService";
+import { createUserDTO, userLoginDTO, changePasswordDTO } from "../schemas/userSchemas";
 
 import { sendMailPromise } from "../../mail/mailer";
 
@@ -18,26 +19,8 @@ export class AuthService {
     this.userService = userService;
   }
 
-  private randomGuesPassword = (length: number): string => {
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]";
-    const charactersLength = characters.length;
-
-    // Usando 'crypto' para gerar bytes aleatórios
-    const randomBytesArray = randomBytes(length);
-
-    let result = "";
-    for (let i = 0; i < length; i++) {
-      // Usar cada byte aleatório para escolher um caractere
-      const randomIndex = randomBytesArray[i] % charactersLength;
-      result += characters[randomIndex];
-    }
-
-    return result;
-  };
-
   public login = async (
-    logindto: UserDTO.userLogin
+    logindto: userLoginDTO
   ): Promise<{ token: string }> => {
     const user = await this.userService.getUserByEmail(logindto.email);
 
@@ -59,7 +42,7 @@ export class AuthService {
   };
 
   public singUp = async (
-    userDTO: UserDTO.createUser
+    userDTO: createUserDTO
   ): Promise<{ token: string }> => {
     const newUser = await this.userService.createUser(userDTO);
 
@@ -135,20 +118,18 @@ export class AuthService {
 
   public changePassword = async (
     userInfo: UserDTO.userInfo,
-    newPassword: string,
-    newPasswordConfirm: string,
-    oldPassword: string
+    changePasswordDTO : changePasswordDTO
   ): Promise<boolean> => {
     let user = await this.userService.getUserById(userInfo.id);
 
     if (
-      newPassword !== newPasswordConfirm ||
-      !(await user.comparePassword(oldPassword))
+      changePasswordDTO.newPassword !== changePasswordDTO.newPasswordConfirm ||
+      !(await user.comparePassword(changePasswordDTO.oldPassword))
     ) {
       throw new UnauthorizedException("As senhas não coincidem.");
     }
 
-    user.password = newPassword;
+    user.password = changePasswordDTO.newPassword;
     user = await this.userService.updateUser(user);
 
     // enviar email dizendo que a senha foi alterada!!!
