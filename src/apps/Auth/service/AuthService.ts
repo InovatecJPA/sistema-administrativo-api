@@ -132,6 +132,29 @@ export class AuthService {
 
     return { token: loginToken };
   };
+
+  public changePassword = async (
+    userInfo: UserDTO.userInfo,
+    newPassword: string,
+    newPasswordConfirm: string,
+    oldPassword: string
+  ): Promise<boolean> => {
+    let user = await this.userService.getUserById(userInfo.id);
+
+    if (
+      newPassword !== newPasswordConfirm ||
+      !(await user.comparePassword(oldPassword))
+    ) {
+      throw new UnauthorizedException("As senhas não coincidem.");
+    }
+
+    user.password = newPassword;
+    user = await this.userService.updateUser(user);
+
+    // enviar email dizendo que a senha foi alterada!!!
+
+    return true;
+  };
 }
 
 export const authService = new AuthService(userService);

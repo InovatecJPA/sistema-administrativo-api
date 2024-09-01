@@ -102,6 +102,11 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
+  public async updateUser(user: User): Promise<User> {
+    await user.hashPassword();
+    return await this.userRepository.save(user);
+  }
+
   // paginação de usuários
   // Depois falta implementar opções de filtro
   public async getUsersPaginated(page: number) {
@@ -141,11 +146,6 @@ export class UserService {
     };
 
     return { listUser: users, pagination: pagination };
-  }
-
-  public async updateUser(user: User): Promise<User> {
-    await user.hashPassword();
-    return await this.userRepository.save(user);
   }
 }
 

@@ -61,12 +61,30 @@ export class AuthController {
   ): Promise<void> => {
     try {
       const { token } = req.params;
-      console.log("token no controller", token);
+      //console.log("token no controller", token);
       const { password } = req.body;
 
       const loginToken = await this.authService.resetPassword(token, password);
 
       res.status(200).json(loginToken);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // changePassword - Método para alterar a senha
+  public changePassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const userInfo = req.userInfo;
+      const { newPassword, newPasswordConfirm, oldPassword } = req.body;
+
+      await this.authService.changePassword(userInfo, newPassword, newPasswordConfirm, oldPassword);
+
+      res.status(200).json("Senha alterada com sucesso.");
     } catch (error) {
       next(error);
     }

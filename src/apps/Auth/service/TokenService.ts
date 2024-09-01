@@ -78,6 +78,23 @@ export class TokenService {
       throw new UnauthorizedException("Token inválido ou expirado.");
     }
   }
+
+  //retorna o usuário associado ao token
+  public async validateToken(token: string): Promise<User> {
+    try {
+      const payload = jwt.verifyToken(token) as { id: string };
+
+      const user = await this.userservice.getUserById(payload.id);
+
+      if (!user) {
+        throw new NotFoundError("Usuário não encontrado.");
+      }
+
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException("Token inválido ou expirado.");
+    }
+  }
 }
 
 const tokenRepository = AppDataSource.getRepository(Token);

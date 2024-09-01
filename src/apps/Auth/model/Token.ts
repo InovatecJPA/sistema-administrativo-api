@@ -26,6 +26,6 @@ export default class Token {
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;
 
-  @OneToOne(() => User, (user) => user.tokens, { onDelete: "CASCADE" })
+  @OneToOne(() => User, (user) => user.token, { onDelete: "CASCADE" })
   user: User;
 }

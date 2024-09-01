@@ -13,6 +13,7 @@ const checkRoutePermission = (
   // Verifica se o caminho atual é permitido por padrão
   const defaultAllowedPaths = [
     "/dev/accounts/users/profile",
+    "/dev/accounts/users/changePassword",
     `/users/${userInfo.id}`,
   ];
 

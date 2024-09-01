@@ -25,3 +25,9 @@ export const forgortPasswordSchema = z.object({
 export const resetPasswordSchema = z.object({
   password: z.string().min(6),
 });
+
+export const changePasswordSchema = z.object({
+  newPassword: z.string().min(6),
+  newPasswordConfirm: z.string().min(6),
+  oldPassword: z.string().min(6),
+});

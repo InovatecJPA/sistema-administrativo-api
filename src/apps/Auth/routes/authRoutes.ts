@@ -3,6 +3,7 @@ import {
   forgortPasswordSchema,
   userLoginSchema,
   resetPasswordSchema,
+  changePasswordSchema,
 } from "../schemas/userSchemas";
 import e, { Router } from "express";
 import { authController } from "../controller/AuthController";
@@ -32,5 +33,7 @@ router.post(
   validateData(resetPasswordSchema),
   authController.resetPassword
 ); // recebe token e da autorização para redefinir senha
+
+router.put("/changePassword", validateData(changePasswordSchema), authMiddleware, authController.changePassword); // redefinir senha
 
 export default router;
