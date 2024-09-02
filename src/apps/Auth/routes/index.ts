@@ -9,8 +9,8 @@ import authRoutes from "./authRoutes";
 const router: Router = Router();
 router.use(setCORSMiddleware);
 
-router.use("/users", userRoutes);
-router.use("/users", authRoutes);
+router.use("/user", userRoutes);
+router.use("/user", authRoutes);
 router.use("/tokens", tokenRoutes);
 
 export default router;
