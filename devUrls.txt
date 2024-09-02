@@ -24,6 +24,8 @@ Exemplo de json usuario:
   "email": "arthur.ramon@example.com",
   "phone": "(83) 98234-1561",
   "profile": "admin"
+}
+
 {
     "password":"test",
     "cpf":"17857122092",
@@ -35,3 +37,41 @@ Exemplo de json usuario:
 http://localhost:3010/dev/accounts/tokens/ - GET
 
 http://localhost:3010/dev/accounts/tokens/ - POST
+
+// Atuais exemplos de endpoints:
+
+http://localhost:3010/v1/accounts/user/singUp - Cadastro de usuário
+
+body:
+{
+  "password": "123456",
+  "cpf": "06093240479",
+  "name": "joao",
+  "email": "naosei0901@gmail.com",
+  "phone": "asdasdasda"
+}
+
+http://localhost:3010/v1/accounts/user/forgotPassword - Obter token de redefinição de senha
+
+body:
+{
+	"email": "naosei0901@gmail.com"
+}
+
+http://localhost:3010/v1/accounts/user/resetPassword/{TOKEN} - Url de acesso de redefinição de senha
+
+body:
+{
+	"password": "123456"
+}
+
+http://localhost:3010/v1/accounts/user/changePassword - Url de mudança de senha
+
+body:
+{
+	"newPassword": "bolinha",
+	"newPasswordConfirm": "bolinha",
+	"oldPassword": "123456"
+}
+
+http://localhost:3010/dev/accounts/users/?page={PAGE_NUM} - Url de lista de usuários páginadas
