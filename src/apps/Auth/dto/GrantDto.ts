@@ -60,6 +60,6 @@ export default class GrantDto {
 
     public toGrant(): Grant {
       const now: Date = new Date();
-      return new Grant(this.name, this.note, this.route, this.routeFilter, now, now);
+      return new Grant(this.name, this.route, now, now, this.note, this.routeFilter);
   }
 }  

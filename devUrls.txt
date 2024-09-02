@@ -75,3 +75,21 @@ body:
 }
 
 http://localhost:3010/dev/accounts/users/?page={PAGE_NUM} - Url de lista de usuários páginadas
+
+
+- Grant URLs - 
+URL Base - http://localhost:3010/v1/accounts/grant/
+
+Create new Grant:
+  HTTP Method: POST
+  Endpoint: http://localhost:3010/v1/accounts/grant/
+  Body: {
+    "name": "Admin",
+    "note": "Grant to admin features.",
+    "routeFilter": "admin",
+    "route": "http://localhost:3010/admin/"
+  }
+
+List all Grants:
+  HTTP Method: GET
+  Endpoint: localhost:3010/v1/accounts/grant/list

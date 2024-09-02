@@ -94,4 +94,20 @@ export default class Grant {
   // Relação com ProfileGrant
   @OneToMany(() => ProfileGrant, (profileGrant) => profileGrant.grant)
   profileGrants: ProfileGrant[];
+
+  constructor(
+    name: string,
+    route: string,
+    created_at: Date,
+    updated_at: Date,
+    note?: string,
+    routeFilter?: string
+  ) {
+    this.name = name;
+    this.route = route;
+    this.createdAt = created_at;
+    this.updatedAt = updated_at;
+    this.note = note || null;
+    this.routeFilter = routeFilter || null;
+  }
 }
