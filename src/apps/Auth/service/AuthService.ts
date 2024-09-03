@@ -8,7 +8,11 @@ import User from "../model/User";
 import { NotFoundError } from "../../../error/NotFoundError";
 import { randomBytes } from "crypto";
 import { tokenService } from "./TokenService";
-import { createUserDTO, userLoginDTO, changePasswordDTO } from "../schemas/userSchemas";
+import {
+  createUserDTO,
+  userLoginDTO,
+  changePasswordDTO,
+} from "../schemas/userSchemas";
 
 import { sendMailPromise } from "../../mail/mailer";
 
@@ -19,9 +23,7 @@ export class AuthService {
     this.userService = userService;
   }
 
-  public login = async (
-    logindto: userLoginDTO
-  ): Promise<{ token: string }> => {
+  public login = async (logindto: userLoginDTO): Promise<{ token: string }> => {
     const user = await this.userService.getUserByEmail(logindto.email);
 
     if (!user || !(await user.comparePassword(logindto.password))) {
@@ -44,6 +46,7 @@ export class AuthService {
   public singUp = async (
     userDTO: createUserDTO
   ): Promise<{ token: string }> => {
+    //userDTO.cpf = userDTO.cpf.replace(/\D/g, "");
     const newUser = await this.userService.createUser(userDTO);
 
     const userInformation: UserDTO.userInfo = {
@@ -118,7 +121,7 @@ export class AuthService {
 
   public changePassword = async (
     userInfo: UserDTO.userInfo,
-    changePasswordDTO : changePasswordDTO
+    changePasswordDTO: changePasswordDTO
   ): Promise<boolean> => {
     let user = await this.userService.getUserById(userInfo.id);
 

@@ -14,19 +14,24 @@ import v1 from "./apps";
 
 // Temp. desenvolvimento das rotas
 
-const whiteList = ["http://localhost:3000"];
+const whiteList = ["http://localhost:3010", "http://localhost:3000"];
 
 const corsOptions: CorsOptions = {
   origin: function (
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) {
+    console.log("Request origin:", origin); // Adicione isto para ver qual origem está sendo recebida
     if (whiteList.indexOf(origin || "") !== -1 || !origin) {
+      //console.log("Allowed by CORS");
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
 
 class App {

@@ -1,7 +1,7 @@
 const { MigrationInterface, QueryRunner } = require("typeorm");
 
-module.exports = class Aauth1725140227326 {
-    name = 'Aauth1725140227326'
+module.exports = class Aauth1725368779623 {
+    name = 'Aauth1725368779623'
 
     async up(queryRunner) {
         await queryRunner.query(`CREATE TABLE "grants" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "note" text, "route_filter" character varying, "route" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "UQ_879062f2bb2575735d550ad1dd6" UNIQUE ("name"), CONSTRAINT "PK_a25f5f89eff8b3277f7969b7094" PRIMARY KEY ("id"))`);

@@ -2,9 +2,13 @@ import { z } from "zod";
 import CpfValidator from "../utils/CpfValidator";
 
 export const userResistrationSchema = z.object({
-  cpf: z.string().refine(CpfValidator.validate, {
-    message: "invalid",
-  }),
+  cpf: z
+    .string()
+    .min(11)
+    .transform((cpf) => cpf.replace(/\D/g, ""))
+    .refine(CpfValidator.validate, {
+      message: "invalid",
+    }),
   name: z.string(),
   email: z.string().email(),
   password: z.string().min(6),
@@ -41,7 +45,11 @@ export type changePasswordDTO = z.infer<typeof changePasswordSchema>;
 export const updateUserSchema = z.object({
   // Campos que podem ser atualizados
   name: z.string().min(1).optional(), // Opcional e deve ter pelo menos 1 caractere se fornecido
-  cpf: z.string().length(11).optional(), // CPF com 11 caracteres
+  cpf: z
+    .string()
+    .min(11)
+    .transform((cpf) => cpf.replace(/\D/g, ""))
+    .optional(), // CPF com 11 caracteres
   email: z.string().email().optional(), // Email deve ser válido
   birthDate: z.date().optional(), // Data de nascimento é opcional
   phone: z.string().optional(), // Número de telefone opcional

@@ -16,9 +16,11 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> => {
     try {
+      //console.log("req.body", req.body);
       const token = await this.authService.login(req.body);
       res.status(200).json(token);
     } catch (error) {
+      //console.log(error);
       next(error);
     }
   };
@@ -30,6 +32,7 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> => {
     try {
+      // req.body.cpf = req.body.cpf.replace(/\D/g, "");
       const token = await this.authService.singUp(req.body);
       res.status(201).json(token);
     } catch (error) {
