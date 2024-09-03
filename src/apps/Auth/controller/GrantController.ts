@@ -18,7 +18,7 @@ export class GrantController {
    * @param grantService - The service instance to handle `Grant` business logic.
    */
   constructor(grantService: GrantService) {
-    grantService = grantService;
+    this.grantService = grantService;
   }
 
   /**
@@ -88,14 +88,14 @@ export class GrantController {
    *
    * @returns The `Grant` entity with the specified ID or calls the next middleware with an error.
    */
-  async getById(
+  public getById = async(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> {
+  ): Promise<Response | void> =>{
     try {
       const { id } = req.params;
-      const grant: Grant | null = await grantService.findOneById(id);
+      const grant: Grant | null = await this.grantService.findOneById(id);
 
       if (!grant)
         throw new CustomValidationError(`Permission with ID ${id} not found.`);
@@ -116,13 +116,13 @@ export class GrantController {
    *
    * @returns A list of all `Grant` entities or calls the next middleware with an error.
    */
-  async getAll(
+  public getAll = async(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> {
+  ): Promise<Response | void> =>{
     try {
-      const grants: Grant[] | null = await grantService.findAll();
+      const grants: Grant[] | null = await this.grantService.findAll();
 
       if(!grants) 
         throw new CustomValidationError("No permissions found.");
@@ -143,11 +143,11 @@ export class GrantController {
    *
    * @returns The updated `Grant` entity or calls the next middleware with an error.
    */
-  async put(
+  public put = async(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
       const { id } = req.params;
       const { name, note, routeFilter, route } = req.body;
@@ -159,7 +159,7 @@ export class GrantController {
       let updatedGrant: Grant = grantDto.toGrant();
       updatedGrant.id = id;
 
-      updatedGrant = await grantService.save(grantDto);
+      updatedGrant = await this.grantService.save(grantDto);
       return res.status(200).json(updatedGrant);
 
     } catch (error: any) {
@@ -176,14 +176,14 @@ export class GrantController {
    *
    * @returns Status 200 if the deletion was successful or calls the next middleware with an error.
    */
-  async delete(
+  public delete = async(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
       const { id } = req.params;
-      const deleted: DeleteResult = await grantService.delete(id);
+      const deleted: DeleteResult = await this.grantService.delete(id);
 
       if (deleted.affected === 0)
         throw new CustomValidationError(`Permission with ID ${id} not found.`);
