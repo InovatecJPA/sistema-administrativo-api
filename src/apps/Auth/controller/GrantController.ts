@@ -37,7 +37,7 @@ export class GrantController {
       const grantDto = new GrantDto(name, note, routeFilter, route);
 
       if (!grantDto.isValid())
-        throw new CustomValidationError('All fields of the new permission must be non-null or "".');
+        throw new CustomValidationError('All fields of the new grant must be non-null or "".');
 
       const newGrant: Grant = await this.grantService.save(grantDto);
 
@@ -64,7 +64,7 @@ export class GrantController {
       const grant: Grant | null = await this.grantService.findOne({ name });
 
       if (!grant)
-        throw new CustomValidationError(`Permission ${name} not found.`);
+        throw new CustomValidationError(`Grant ${name} not found.`);
 
       return res.status(200).json(grant);
 
@@ -89,7 +89,7 @@ export class GrantController {
       const grant: Grant | null = await this.grantService.findOneById(id);
 
       if (!grant)
-        throw new CustomValidationError(`Permission with ID ${id} not found.`);
+        throw new CustomValidationError(`Grant with ID ${id} not found.`);
 
       return res.status(200).json(grant);
 
@@ -113,7 +113,7 @@ export class GrantController {
       const grants: Grant[] | null = await this.grantService.findAll();
 
       if(!grants) 
-        throw new CustomValidationError("No permissions found.");
+        throw new CustomValidationError("No grants found.");
 
       return res.status(200).json(grants);
 
@@ -139,13 +139,13 @@ export class GrantController {
       const grantDto = new GrantDto(name, note, routeFilter, route);
 
       if(!grantDto.isValid())
-        throw new CustomValidationError('All fields of the permission must be non-null or different of \"\".');
+        throw new CustomValidationError('All fields of the grant must be non-null or different of \"\".');
 
-      let updatedGrant: Grant = grantDto.toGrant();
-      updatedGrant.id = id;
+      let grantToUpdate: Grant = grantDto.toGrant();
+      grantToUpdate.id = id;
 
-      updatedGrant = await this.grantService.save(grantDto);
-      return res.status(200).json(updatedGrant);
+      grantToUpdate = await this.grantService.update(grantToUpdate.id, grantToUpdate);
+      return res.status(200).json(grantToUpdate);
 
     } catch (error: any) {
       next(error);
@@ -162,13 +162,13 @@ export class GrantController {
    * @returns A `Response` object with status 200 if the deletion was successful, 
    * or calls the `next` middleware with an error if the `Grant` was not found or an error occurs.
    */
-  public delete = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  public deleteById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { id } = req.params;
       const deleted: DeleteResult = await this.grantService.delete(id);
 
       if (deleted.affected === 0)
-        throw new CustomValidationError(`Permission with ID ${id} not found.`);
+        throw new CustomValidationError(`Grant with ID ${id} not found.`);
 
       return res.status(200).send();
     } catch (error: any) {
