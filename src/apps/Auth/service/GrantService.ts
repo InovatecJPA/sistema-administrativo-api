@@ -29,15 +29,7 @@ export class GrantService implements ServiceInterface<Grant, GrantDto> {
    * @returns The saved `Grant` entity.
    */
   async save(grantDto: Partial<GrantDto>): Promise<Grant> {
-    const now: Date = new Date();
-    const newGrant: Grant = new Grant(
-      grantDto.getName(),
-      grantDto.getRoute(),
-      now,
-      now,
-      grantDto.getNote(),
-      grantDto.getRouteFilter()
-    );
+    const newGrant: Grant = grantDto.toGrant();
 
     return this.grantRepository.save(newGrant);
   }
