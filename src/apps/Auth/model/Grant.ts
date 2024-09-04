@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, OneToMany} from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, OneToMany, ManyToMany, JoinTable} from "typeorm";
 import ProfileGrant from "./ProfileGrant";
+import Profile from "./Profile";
 
 /**
  * Represents a grant entity in the system.
@@ -84,9 +85,19 @@ export default class Grant {
   })
   updatedAt: Date;
 
-  // Relação com ProfileGrant
-  @OneToMany(() => ProfileGrant, (profileGrant) => profileGrant.grant)
-  profileGrants: ProfileGrant[];
+  @ManyToMany(() => Profile, { eager: true })
+  @JoinTable({
+    name: 'grants_profiles',
+    joinColumn: {
+      name: 'grant_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'profile_id',
+      referencedColumnName: 'id',
+    },
+  })
+  associatedProfiles: ProfileGrant[];
 
   constructor(
     method: string,
