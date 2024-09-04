@@ -93,22 +93,22 @@ export class GrantService implements ServiceInterface<Grant, GrantDto> {
   }
 
   /**
-   * Deletes a `Grant` entity by its name.
+   * Deletes a `Grant` entity by its ID.
    *
-   * @param name - The name of the `Grant` entity to delete.
+   * @param name - The ID of the `Grant` entity to delete.
    *
    * @returns The result of the delete operation.
    *
-   * @throws CustomValidationError if no `Grant` with the specified name is found.
+   * @throws CustomValidationError if no `Grant` with the specified ID is found.
    */
-  async delete(name: string): Promise<DeleteResult> {
-    const grantToDelete = await this.grantRepository.findOneBy({ name });
+  async delete(id: string): Promise<DeleteResult> {
+    const grantToDelete = await this.grantRepository.findOneBy({ id });
 
     if (!grantToDelete) {
-      throw new CustomValidationError(`Permission with name ${name} not found`);
+      throw new CustomValidationError(`Grant with ID ${id} not found`);
     }
 
-    return await this.grantRepository.delete({ name });
+    return await this.grantRepository.delete({ id });
   }
 }
 
