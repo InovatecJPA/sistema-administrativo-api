@@ -8,17 +8,17 @@ export const errorsHandler = (
   next: NextFunction
 ) => {
   if (err instanceof SyntaxError && "body" in err) {
-    console.log("JSON inválido");
+    console.log("Invalid JSON");
     console.log(req);
     console.log("req.body", req.body);
 
     return res
       .status(400)
-      .json({ status: 400, message: "Invalid JSON format" });
+      .json({ status: 400, message: "Invalid JSON format." });
   }
 
   if (err instanceof BaseError) {
-    console.log("BASE ERROR ", err.message);
+    console.log("Base error: ", err.message);
     console.log(req);
     console.log("req.body", req.body);
 
@@ -27,9 +27,9 @@ export const errorsHandler = (
     });
   }
 
-  console.log("Erro inesperado: ", err);
+  console.log("Unexpected server error: ", err);
   res.status(500).json({
     status: 500,
-    error: "Erro interno do servidor",
+    error: "Internal server error.",
   });
 };
