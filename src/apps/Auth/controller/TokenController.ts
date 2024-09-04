@@ -12,11 +12,7 @@ export default class TokenController {
     this.userRepository = userRepository;
   }
 
-  async store(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> {
+  public store = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { email = "", password = "" } = req.body;
 
