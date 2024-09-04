@@ -10,11 +10,7 @@ router.use(validateResponseMiddleware);
 router.post("/", authMiddleware, UserController.show); // Detalhes do usuário logado
 router.get("/list", authMiddleware, UserController.listPaginated); // lista todos os usuários
 router.patch("/:id/update", authMiddleware, UserController.update);
-router.put(
-  "/:id/update/profile",
-  authMiddleware,
-  UserController.updateUserProfile
-);
+router.put("/:id/update/profile", authMiddleware, UserController.updateUserProfile);
 
 //não atualizados
 router.delete("/:id", UserController.delete);
