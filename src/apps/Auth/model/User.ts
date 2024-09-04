@@ -11,7 +11,9 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
 } from "typeorm";
+import Token from "./Token";
 
 /**
  * Represents a user in the system.
@@ -138,13 +140,13 @@ class User {
   })
   updatedAt: Date;
 
-  @BeforeUpdate()
   /**
    * Hashes the user's password before inserting or updating the user record in the database.
    *
    * @private
    * @memberof User
    */
+  @BeforeUpdate()
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     try {
@@ -165,8 +167,11 @@ class User {
   }
 
   public getLastName(): string {
-    return this.name.split(" ")[1];
+    return this.name.split(" ").slice(1).join(" ");
   }
+
+  @OneToOne(() => Token, (token) => token.user)
+  token: Token;
 }
 
 export default User;

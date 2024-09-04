@@ -1,8 +1,9 @@
-import jwt from "jsonwebtoken";
 import User from "../model/User";
+import * as jwt from "../../../config/jwt";
 import { Repository } from "typeorm";
 import { Request, Response, NextFunction } from "express";
-import CustomValidationError from "../error/CustomValidationError";
+import { UnauthorizedException } from "../../../error/UnauthorizedException";
+import { NotFoundError } from "../../../error/NotFoundError";
 
 export default class TokenController {
   private userRepository: Repository<User>;
@@ -11,34 +12,28 @@ export default class TokenController {
     this.userRepository = userRepository;
   }
 
-  async store(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+  public store = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { email = "", password = "" } = req.body;
 
       if (!email || !password) {
-        throw new CustomValidationError("Email ou senha não está sendo enviado.", 401);
+        throw new UnauthorizedException("Credenciais inválidas.");
       }
 
       const user: User = await this.userRepository.findOneBy({ email });
 
       if (!user) {
-        throw new CustomValidationError("Usuário não registrado.", 401);
+        throw new NotFoundError("Usuário não registrado.");
       }
 
       if (!(await user.comparePassword(password))) {
-        throw new CustomValidationError("Senha do usuário inválida.", 401);
+        throw new UnauthorizedException("Senha do usuário inválida.");
       }
 
       const { id, profile, name } = user;
 
       const profileId: string = profile.id;
-      const token: string = jwt.sign(
-        { id, name, email, profileId },
-        process.env.TOKEN_SECRET,
-        {
-          expiresIn: process.env.TOKEN_EXPIRATION,
-        }
-      );
+      const token: string = jwt.signToken({ id, name, email, profileId });
 
       return res.json({ token, user: { nome: user.name, email } });
     } catch (error) {

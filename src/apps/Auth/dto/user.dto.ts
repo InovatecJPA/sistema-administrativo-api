@@ -1,13 +1,3 @@
-export interface createUserDTO {
-  cpf: string;
-  name: string;
-  email: string;
-  profileName: string | null;
-  password: string;
-  phone: string;
-  isActive?: boolean;
-}
-
 export interface userInfo {
   name?: string;
   id: string;
@@ -18,10 +8,6 @@ export interface userInfo {
   routeFilter?: string;
 }
 
-export interface userLogin {
-  email: string;
-  password: string;
-}
 
 declare module "express-serve-static-core" {
   interface Request {

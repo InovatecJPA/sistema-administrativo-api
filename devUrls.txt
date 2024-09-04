@@ -1,37 +1,139 @@
-http://localhost:3010/dev/accounts/users/ - POST
-Exemplo de json usuario:
-{
-  "password": "1234",
-  "cpf": "123456789",
-  "name": "John Doe",
-  "email": "johndoeaw@example.com",
-  "phone": "1234561780"
-}
+--- User Management Endpoints ---
+  Base URL - http://localhost:3010/v1/accounts/users/
 
-{
-  "password": "1234",
-  "cpf": "963.681.250-04",
-  "name": "Dick Grayson",
-  "email": "dick.grayson@example.com",
-  "phone": "(83) 93345-3243",
-  "profile": ""
-}
+  Create New User:
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/dev/accounts/users/
+    Body:
+      {
+        "password": "1234",
+        "cpf": "123456789",
+        "name": "John Doe",
+        "email": "johndoeaw@example.com",
+        "phone": "1234561780"
+      }
+      or
+      {
+        "password": "1234",
+        "cpf": "963.681.250-04",
+        "name": "Dick Grayson",
+        "email": "dick.grayson@example.com",
+        "phone": "(83) 93345-3243",
+        "profile": ""
+      }
+      or
+      {
+        "password": "1234",
+        "cpf": "48174880003",
+        "name": "Arthur Ramon",
+        "email": "arthur.ramon@example.com",
+        "phone": "(83) 98234-1561",
+        "profile": "admin"
+      }
+      or 
+      {
+        "password": "test",
+        "cpf": "17857122092",
+        "name": "usuario",
+        "email": "test@gmail.com",
+        "phone": "(83)99907-7889"
+      }
 
-{
-  "password": "1234",
-  "cpf": "48174880003",
-  "name": "Arthur Ramon",
-  "email": "arthur.ramon@example.com",
-  "phone": "(83) 98234-1561",
-  "profile": "admin"
-{
-    "password":"test",
-    "cpf":"17857122092",
-    "name":"usuario",
-    "email":"test@gmail.com",
-    "phone":"(83)99907-7889"
-}
+  List Users (Paginated):
+    HTTP Method: GET
+    Endpoint: http://localhost:3010/dev/accounts/users/?page={PAGE_NUM}
+    Body: Not necessary
 
-http://localhost:3010/dev/accounts/tokens/ - GET
+  User Sign up:
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/v1/accounts/user/singUp
+    Body:
+      {
+        "password": "123456",
+        "cpf": "06093240479",
+        "name": "joao",
+        "email": "naosei0901@gmail.com",
+        "phone": "asdasdasda"
+      }
 
-http://localhost:3010/dev/accounts/tokens/ - POST
+  Forgot Password (Request Reset Token):
+  HTTP Method: POST
+  Endpoint: http://localhost:3010/v1/accounts/user/forgotPassword
+  Body:
+  {
+    "email": "naosei0901@gmail.com"
+  }
+
+  Reset Password:
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/v1/accounts/user/resetPassword/{TOKEN}
+    Body:
+    {
+      "password": "123456"
+    }
+
+  Change Password:
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/v1/accounts/user/changePassword
+    Body:
+    {
+      "newPassword": "bolinha",
+      "newPasswordConfirm": "bolinha",
+      "oldPassword": "123456"
+    }
+ 
+--- Token Operations ---
+  Base URL: http://localhost:3010/dev/accounts/tokens/
+
+  Get Tokens:
+    HTTP Method: GET
+    Endpoint: http://localhost:3010/dev/accounts/tokens/
+    Body: Not necessary
+    
+  Create Token:
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/dev/accounts/tokens/
+    Body: Not specified
+
+--- Grant Management Endpoints ---
+  Base URL - http://localhost:3010/v1/accounts/grant/
+
+  Create new Grant:
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/v1/accounts/grant/post
+    Body: {
+      "name": "Admin",
+      "note": "Grant to admin features.",
+      "routeFilter": "admin",
+      "route": "http://localhost:3010/admin/"
+    }
+
+  List a specific Grant by name:
+      HTTP Method: GET
+      Endpoint: localhost:3010/v1/accounts/grant/getByName/{grant.name}
+      Body: Not necessary
+
+  List a specific Grant by id:
+      HTTP Method: GET
+      Endpoint: localhost:3010/v1/accounts/grant/getById/{grant.id}
+      Body: Not necessary
+
+  List all Grants:
+    HTTP Method: GET
+    Endpoint: localhost:3010/v1/accounts/grant/getAll
+    Body: Not necessary
+
+  Update a specific Grant:
+      HTTP Method: PUT
+      Endpoint: localhost:3010/v1/accounts/grant/put/{grant.id}
+      Body: {
+        "name": "Admin",
+        "note": "Grant to admin features updated.",
+        "routeFilter": "admin",
+        "route": "http://localhost:3010/admin/"
+      }
+
+  Dele a Grant by id:
+    HTTP Method: DELETE
+    Endpoint: localhost:3010/v1/accounts/grant/delete/{grant.id}
+    Body: Not necessary

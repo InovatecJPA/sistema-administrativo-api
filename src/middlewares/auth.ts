@@ -1,6 +1,6 @@
 import * as jwt from "../config/jwt";
 import ProfileGrant from "../apps/Auth/model/ProfileGrant";
-import * as UserDTO from "../apps/Auth/interface/userInterfaces";
+import * as UserDTO from "../apps/Auth/dto/user.dto";
 import { NextFunction, Request, Response } from "express";
 import AppDataSource from "../database/dbConnection";
 
@@ -13,11 +13,14 @@ import AppDataSource from "../database/dbConnection";
 const checkRoutePermission = (
   userInfo: UserDTO.userInfo,
   profileGrants: ProfileGrant[]
-): boolean => {
+) => {
   console.log(userInfo.path);
-
-  // Define default allowed paths that all users can access
-  const defaultAllowedPaths = ["/dev/accounts/users/profile", `/users/${userInfo.id}`];
+  // Verifica se o caminho atual é permitido por padrão
+  const defaultAllowedPaths = [
+    "/dev/accounts/users/profile",
+    "/dev/accounts/users/changePassword",
+    `/users/${userInfo.id}`,
+  ];
 
   // If the user's path is in the default allowed paths, grant access
   if (defaultAllowedPaths.includes(userInfo.path)) return true;
@@ -151,15 +154,15 @@ export const authMiddleware = async (
 
   // Check if the user has permission to access the route
   if (!userInfo.isAdmin && !checkRoutePermission(req.userInfo, profileGrants)) {
-    return res.status(403).send();
+    return res.status(403).json({ error: "Access denied" });
   } else {
     try {
       // Filter and set the route filter if applicable
       filterRoute(req.userInfo, profileGrants);
       return next(); // Proceed to the next middleware or route handler
     } catch (error) {
-      console.error(error); // Log any errors
-      res.status(400).send(); // Return a bad request response on error
+      console.error(error);
+      res.status(400).json({ error: "Bad request" });
     }
   }
 };

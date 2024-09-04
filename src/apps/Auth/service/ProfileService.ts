@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import Profile from "../model/Profile";
 import AppDataSource from "../../../database/dbConnection";
-import {storeProfile} from "../dto/ProfileDTO";
+import {createProfile} from "../dto/profile.dto";
 
 export class ProfileService {
   private profileRepository: Repository<Profile>;
@@ -27,7 +27,7 @@ export class ProfileService {
   }
 
   // Método para criar um novo perfil
-  public async createProfile(_profile: storeProfile): Promise<Profile | null> {
+  public async createProfile(_profile: createProfile): Promise<Profile | null> {
     try {
       console.log(_profile);
       const profile = this.profileRepository.create({
