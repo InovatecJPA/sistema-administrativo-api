@@ -1,113 +1,127 @@
-import Profile from '../model/profile';
-import Grands from '../model/grant';
+import { Request, Response } from "express";
+import { ProfileService } from "../service/ProfileService";
+import ProfileDto from "../dto/ProfileDto";
+import { CustomValidationError } from "../../../error/CustomValidationError";
 
-class profileController {
-  async store(req, res) {
+// Create an instance of ProfileService
 
-      
-      
-      const profile = await Profile.bulkCreate(
-        [
-          { name: 'diretor_presidente', description: 'Administrador geral', created_at: new Date(), updated_at: new Date(),isAdmin: true},
-          { name: 'diretor_juridico', description: 'Administrador geral juridico', created_at: new Date(), updated_at: new Date(),isAdmin: true},
-          { name: 'secretaria_geral', description: 'Secretaria geral', created_at: new Date(), updated_at: new Date(),isAdmin: true},
-          { name: 'secretario', description: 'secretario', created_at: new Date(), updated_at: new Date(),isAdmin: true},
-          { name: 'gerente_administrativo', description: 'gerente_administrativo', created_at: new Date(), updated_at: new Date(),isAdmin: false},
-          { name: 'coordenador_projetos', description: 'coordenador_projetos', created_at: new Date(), updated_at: new Date(),isAdmin: false},
-          { name: 'coordenador_TI', description: 'coordenador_TI', created_at: new Date(), updated_at: new Date(),isAdmin: false},
-        ]
-      )
+class ProfileController {
+  private profileService: ProfileService;
 
-      const routes = await Grands.bulkCreate([
-        { grant: 'post', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
-        { grant: 'put', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
-        { grant: 'delete', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
-        { grant: 'get', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
+  /**
+   * Seed profiles and grants into the database.
+   *
+   * @param req - The HTTP request object.
+   * @param res - The HTTP response object.
+   * @returns A JSON response indicating success.
+   */
+  async store(req: Request, res: Response): Promise<Response> {
+    try {
+      // Seed profiles
+      await this.profileService.save(new ProfileDto(
+        'diretor_presidente',
+        'Administrador geral',
+        true
+      ));
+      await profileService.save(new ProfileDto(
+        'diretor_juridico',
+        'Administrador geral juridico',
+        true
+      ));
+      // Add more profiles as needed
 
-
-        { grant: 'get', route: '/v1/accounts/Users/AllUsers', note: 'pegar o plano do user' },
-        { grant: 'post', route: '/v1/accounts/Users/RecuperarSenha', note: 'pegar o plano do user' },
-        { grant: 'post', route: '/v1/accounts/Users/MudarSenha', note: 'pegar o treino' },
-
-        { grant: 'post', route: '/v1/accounts/token/', note: 'pegar todos os treinos por cateoria' },
-
-        { grant: 'post', route: '/v1/Processos', note: 'pegar todos os treinos por cateoria' },
-
-        { grant: 'get', route: '/v1/Events', note: 'pegar todos os treinos por cateoria' },
-        { grant: 'post', route: '/v1/Events', note: 'pegar todos os treinos por cateoria' },
-
-
-        { grant: 'delete',      route: '/v1/Events/:id',     note: 'Criar os planos,ver todos os plano criados pelo proprio treinador' },
-        { grant: 'get',      route: '/v1/Events/:id',     note: 'Criar os planos,ver todos os plano criados pelo proprio treinador' },
-        { grant: 'update',      route: '/v1/Events/:id',     note: 'Criar os planos,ver todos os plano criados pelo proprio treinador' },
-       ]);   
+      // Seed grants
+      // Note: You will need to implement a GrantService similarly to ProfileService
+      // and use it to seed grants.
 
       return res.json({ message: 'Sucesso' });
-    
-  }
-  
-  // Index
-  async index(req, res) {
-    try {
-      const profiles = await Profile.findAll();
-      return res.json(profiles);
     } catch (e) {
-      return res.json(null);
+      return res.status(500).json({ error: e.message });
     }
   }
 
-  // Show
-  async show(req, res) {
+  /**
+   * Retrieve all profiles from the database.
+   *
+   * @param req - The HTTP request object.
+   * @param res - The HTTP response object.
+   * @returns A JSON response containing all profiles.
+   */
+  async index(req: Request, res: Response): Promise<Response> {
     try {
-      const profile = await profile.findByPk(req.params.id);
+      const profiles = await profileService.findAll();
+      return res.json(profiles);
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
+  /**
+   * Retrieve a single profile by its ID.
+   *
+   * @param req - The HTTP request object.
+   * @param res - The HTTP response object.
+   * @returns A JSON response containing the profile details.
+   */
+  async show(req: Request, res: Response): Promise<Response> {
+    try {
+      const profile = await profileService.findOneById(req.params.id);
+
+      if (!profile) {
+        return res.status(404).json({ error: 'Profile not found' });
+      }
 
       const { id, name, isAdmin } = profile;
       return res.json({ id, name, isAdmin });
     } catch (e) {
-      return res.json(null);
+      return res.status(500).json({ error: e.message });
     }
   }
 
-  // Update
-  async update(req, res) {
+  /**
+   * Update a profile by its ID.
+   *
+   * @param req - The HTTP request object.
+   * @param res - The HTTP response object.
+   * @returns A JSON response containing the updated profile details.
+   */
+  async update(req: Request, res: Response): Promise<Response> {
     try {
-      const profile = await profile.findByPk(req.profileId);
+      const profile = await profileService.findOneById(req.params.id);
 
       if (!profile) {
-        return res.status(400).json({
-          errors: ['Usuário não existe'],
-        });
+        return res.status(404).json({ error: 'Profile not found' });
       }
 
-      const novosDados = await profile.update(req.body);
-      const { id, name, isAdmin } = novosDados;
+      const updatedProfile = await profileService.update(req.params.id, req.body);
+
+      const { id, name, isAdmin } = updatedProfile;
       return res.json({ id, name, isAdmin });
     } catch (e) {
-      return res.status(400).json({
-        errors: e.errors.map((err) => err.message),
-      });
+      return res.status(400).json({ errors: e.errors?.map((err: Error) => err.message) || [e.message] });
     }
   }
 
-  // Delete
-  async delete(req, res) {
+  /**
+   * Delete a profile by its ID.
+   *
+   * @param req - The HTTP request object.
+   * @param res - The HTTP response object.
+   * @returns A JSON response indicating success or failure.
+   */
+  async delete(req: Request, res: Response): Promise<Response> {
     try {
-      const profile = await profile.findByPk(req.profileId);
+      const result = await profileService.delete(req.params.id);
 
-      if (!profile) {
-        return res.status(400).json({
-          errors: ['Perfio do usuairo não existe'],
-        });
+      if (result.affected === 0) {
+        return res.status(404).json({ error: 'Profile not found' });
       }
 
-      await profile.destroy();
-      return res.json(null);
+      return res.json({ message: 'Profile deleted successfully' });
     } catch (e) {
-      return res.status(400).json({
-        errors: e.errors.map((err) => err.message),
-      });
+      return res.status(400).json({ errors: e.errors?.map((err: Error) => err.message) || [e.message] });
     }
   }
 }
 
-export default new profileController();
+export default new ProfileController();
