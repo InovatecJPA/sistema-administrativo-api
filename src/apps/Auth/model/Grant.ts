@@ -1,11 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-  OneToMany,
-} from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, OneToMany} from "typeorm";
 import ProfileGrant from "./ProfileGrant";
 
 /**
@@ -25,17 +18,17 @@ export default class Grant {
   public id: string;
 
   /**
-   * The name of the grant. It must be unique.
+   * The method of the grant. It must be unique.
    *
    * @type {string}
    * @memberof Grant
    */
   @Column({
     type: "varchar",
-    unique: true,
+    length: 6,
     nullable: false,
   })
-  public name: string;
+  public method: string;
 
   /**
    * Additional notes about the grant.
@@ -96,14 +89,14 @@ export default class Grant {
   profileGrants: ProfileGrant[];
 
   constructor(
-    name: string,
+    method: string,
     route: string,
     created_at: Date,
     updated_at: Date,
     note?: string,
     routeFilter?: string
   ) {
-    this.name = name;
+    this.method = method;
     this.route = route;
     this.createdAt = created_at;
     this.updatedAt = updated_at;
