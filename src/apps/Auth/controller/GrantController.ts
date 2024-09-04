@@ -15,7 +15,7 @@ export class GrantController {
   /**
    * Initializes a new instance of the `GrantController` class.
    *
-   * @param grantService - The service instance to handle `Grant` business logic.
+   * @param grantService - The service instance responsible for handling `Grant` business logic.
    */
   constructor(grantService: GrantService) {
     this.grantService = grantService;
@@ -24,17 +24,14 @@ export class GrantController {
   /**
    * Handles POST requests to create a new `Grant`.
    *
-   * @param req - The HTTP request object.
-   * @param res - The HTTP response object.
-   * @param next - The next middleware function in the stack.
+   * @param req - The HTTP request object, containing the new `Grant` data in its body.
+   * @param res - The HTTP response object used to send the newly created `Grant` entity in JSON format.
+   * @param next - The next middleware function in the stack, used for error handling.
    *
-   * @returns The created `Grant` entity or calls the next middleware with an error.
+   * @returns A `Response` object with status 201 and the newly created `Grant` entity in JSON format, 
+   * or calls the `next` middleware with an error if validation fails or an error occurs.
    */
-  async post(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> {
+  public post = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { name, note, routeFilter, route } = req.body;
       const grantDto = new GrantDto(name, note, routeFilter, route);
@@ -42,7 +39,7 @@ export class GrantController {
       if (!grantDto.isValid())
         throw new CustomValidationError('All fields of the new permission must be non-null or "".');
 
-      const newGrant: Grant = await grantService.save(grantDto);
+      const newGrant: Grant = await this.grantService.save(grantDto);
 
       return res.status(201).json(newGrant);
 
@@ -51,23 +48,20 @@ export class GrantController {
     }
   }
 
-  /**
-   * Handles GET requests to retrieve a `Grant` by its name.
-   *
-   * @param req - The HTTP request object.
-   * @param res - The HTTP response object.
-   * @param next - The next middleware function in the stack.
-   *
-   * @returns The `Grant` entity with the specified name or calls the next middleware with an error.
-   */
-  async get(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> {
+ /**
+  * Handles GET requests to retrieve a `Grant` entity by its name.
+  *
+  * @param req - The HTTP request object, which should contain the `name` parameter in its route parameters.
+  * @param res - The HTTP response object used to send the response back to the client.
+  * @param next - The next middleware function in the Express.js stack, used to handle errors.
+  *
+  * @returns A `Response` object with status 200 and the `Grant` entity in JSON format if found, 
+  * or calls the `next` middleware with an error if the `Grant` is not found or an error occurs.
+ */
+  public get = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { name } = req.params;
-      const grant: Grant | null = await grantService.findOne({ name });
+      const grant: Grant | null = await this.grantService.findOne({ name });
 
       if (!grant)
         throw new CustomValidationError(`Permission ${name} not found.`);
@@ -80,19 +74,16 @@ export class GrantController {
   }
 
   /**
-   * Handles GET requests to retrieve a `Grant` by its ID.
+   * Handles GET requests to retrieve a `Grant` entity by its ID.
    *
-   * @param req - The HTTP request object.
-   * @param res - The HTTP response object.
-   * @param next - The next middleware function in the stack.
+   * @param req - The HTTP request object, which should contain the `id` parameter in its route parameters.
+   * @param res - The HTTP response object used to send the `Grant` entity in JSON format if found.
+   * @param next - The next middleware function in the Express.js stack, used to handle errors.
    *
-   * @returns The `Grant` entity with the specified ID or calls the next middleware with an error.
+   * @returns A `Response` object with status 200 and the `Grant` entity in JSON format if found, 
+   * or calls the `next` middleware with an error if the `Grant` is not found or an error occurs.
    */
-  public getById = async(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> =>{
+  public getById = async ( req: Request, res: Response, next: NextFunction): Promise<Response | void> =>{
     try {
       const { id } = req.params;
       const grant: Grant | null = await this.grantService.findOneById(id);
@@ -111,16 +102,13 @@ export class GrantController {
    * Handles GET requests to retrieve all `Grant` entities.
    *
    * @param req - The HTTP request object.
-   * @param res - The HTTP response object.
-   * @param next - The next middleware function in the stack.
+   * @param res - The HTTP response object used to send a list of all `Grant` entities in JSON format.
+   * @param next - The next middleware function in the stack, used for error handling.
    *
-   * @returns A list of all `Grant` entities or calls the next middleware with an error.
+   * @returns A `Response` object with status 200 and a list of all `Grant` entities in JSON format, 
+   * or calls the `next` middleware with an error if no grants are found or an error occurs.
    */
-  public getAll = async(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> =>{
+  public getAll = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> =>{
     try {
       const grants: Grant[] | null = await this.grantService.findAll();
 
@@ -135,19 +123,16 @@ export class GrantController {
   }
 
   /**
-   * Handles PUT requests to update a `Grant`.
+   * Handles PUT requests to update an existing `Grant`.
    *
-   * @param req - The HTTP request object.
-   * @param res - The HTTP response object.
-   * @param next - The next middleware function in the stack.
+   * @param req - The HTTP request object, containing the updated `Grant` data in its body and the `id` in its route parameters.
+   * @param res - The HTTP response object used to send the updated `Grant` entity in JSON format.
+   * @param next - The next middleware function in the stack, used for error handling.
    *
-   * @returns The updated `Grant` entity or calls the next middleware with an error.
-   */
-  public put = async(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
+   * @returns A `Response` object with status 200 and the updated `Grant` entity in JSON format, 
+   * or calls the `next` middleware with an error if validation fails or an error occurs.
+  */
+  public put = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { id } = req.params;
       const { name, note, routeFilter, route } = req.body;
@@ -170,17 +155,14 @@ export class GrantController {
   /**
    * Handles DELETE requests to remove a `Grant` by its ID.
    *
-   * @param req - The HTTP request object.
-   * @param res - The HTTP response object.
-   * @param next - The next middleware function in the stack.
+   * @param req - The HTTP request object, which should contain the `id` parameter in its route parameters.
+   * @param res - The HTTP response object used to confirm the deletion.
+   * @param next - The next middleware function in the stack, used for error handling.
    *
-   * @returns Status 200 if the deletion was successful or calls the next middleware with an error.
+   * @returns A `Response` object with status 200 if the deletion was successful, 
+   * or calls the `next` middleware with an error if the `Grant` was not found or an error occurs.
    */
-  public delete = async(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
+  public delete = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { id } = req.params;
       const deleted: DeleteResult = await this.grantService.delete(id);
