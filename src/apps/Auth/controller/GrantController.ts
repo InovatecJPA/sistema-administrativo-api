@@ -51,7 +51,7 @@ export class GrantController {
  /**
   * Handles GET requests to retrieve a `Grant` entity by its name.
   *
-  * @param req - The HTTP request object, which should contain the `name` parameter in its route parameters.
+  * @param req - The HTTP request object, which should contain the `route` parameter in its route parameters.
   * @param res - The HTTP response object used to send the response back to the client.
   * @param next - The next middleware function in the Express.js stack, used to handle errors.
   *
@@ -60,11 +60,11 @@ export class GrantController {
  */
   public get = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const { name } = req.params;
-      const grant: Grant | null = await this.grantService.findOne({ name });
+      const { route } = req.params;
+      const grant: Grant | null = await this.grantService.findOne({ route });
 
       if (!grant)
-        throw new CustomValidationError(`Grant ${name} not found.`);
+        throw new CustomValidationError(`Grant ${route} not found.`);
 
       return res.status(200).json(grant);
 

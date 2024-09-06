@@ -42,8 +42,9 @@ export class GrantService implements ServiceInterface<Grant, GrantDto> {
    * @returns The matched `Grant` entity or null if not found.
    */
   async findOne(object: Partial<Grant>): Promise<Grant | null> {
+    const { route } = object;
     return await this.grantRepository.findOne({
-      where: { ...object },
+      where: { route },
     });
   }
 

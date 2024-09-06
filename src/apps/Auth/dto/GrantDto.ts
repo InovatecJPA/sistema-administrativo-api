@@ -3,10 +3,10 @@ import Grant from "../model/Grant";
 export default class GrantDto {
     private name: string;
     private note: string;
-    private routeFilter: string;
+    private routeFilter?: string;
     private route: string;
   
-    constructor(name: string, note: string, routeFilter: string, route: string) {
+      constructor(name: string, note: string, route: string, routeFilter?: string) {
       this.name = name;
       this.note = note;
       this.routeFilter = routeFilter;
