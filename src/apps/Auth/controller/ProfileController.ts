@@ -1,58 +1,114 @@
-import { Request, Response } from "express";
-import { ProfileService } from "../service/ProfileService";
+import { NotFoundError } from "../../../error/NotFoundError";
+import GrantDto from "../dto/GrantDto";
 import ProfileDto from "../dto/ProfileDto";
-import { CustomValidationError } from "../../../error/CustomValidationError";
+import { GrantService } from "../service/GrantService";
+import { ProfileService } from "../service/ProfileService";
 
-// Create an instance of ProfileService
+import { NextFunction, Request, Response } from "express";
 
-class ProfileController {
+export class ProfileController {
   private profileService: ProfileService;
+  private grantService: GrantService;
+
+  /**
+   * Create default profiles and save them to the database.
+   *
+   * @param req - The HTTP request object.
+   * @param res - The HTTP response object.
+   * @param next - The next middleware function.
+   * @returns A JSON response indicating success or passes errors to the next middleware.
+   */
+  async createProfiles(req: Request, res: Response, next: NextFunction): Promise<Response> {
+    const profiles = {
+      diretor_presidente: 'Administrador geral',
+      diretor_juridico: 'Administrador geral juridico',
+      secretaria_geral: 'Secretaria geral',
+      secretario: 'secretario',
+      gerente_administrativo: 'gerente_administrativo',
+      coordenador_projetos: 'coordenador_projetos',
+      coordenador_TI: 'coordenador_TI'
+    };
+
+    try {
+      for (const [key, value] of Object.entries(profiles)) {
+        await this.profileService.save(new ProfileDto(key, value));
+      }
+      return res.status(200).json({ message: 'All default profiles saved successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Create default grants and save them to the database.
+   *
+   * @param req - The HTTP request object.
+   * @param res - The HTTP response object.
+   * @param next - The next middleware function.
+   * @returns A JSON response indicating success or passes errors to the next middleware.
+   */
+  async createGrants(req: Request, res: Response, next: NextFunction): Promise<Response> {
+    const grants = [
+      { grant: 'post', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
+      { grant: 'put', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
+      { grant: 'delete', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
+      { grant: 'get', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
+      { grant: 'get', route: '/v1/accounts/Users/AllUsers', note: 'pegar o plano do user' },
+      { grant: 'post', route: '/v1/accounts/Users/RecuperarSenha', note: 'pegar o plano do user' },
+      { grant: 'post', route: '/v1/accounts/Users/MudarSenha', note: 'pegar o treino' },
+      { grant: 'post', route: '/v1/accounts/token/', note: 'pegar todos os treinos por cateoria' },
+      { grant: 'post', route: '/v1/Processos', note: 'pegar todos os treinos por cateoria' },
+      { grant: 'get', route: '/v1/Events', note: 'pegar todos os treinos por cateoria' },
+      { grant: 'post', route: '/v1/Events', note: 'pegar todos os treinos por cateoria' },
+      { grant: 'delete', route: '/v1/Events/:id', note: 'Criar os planos,ver todos os plano criados pelo proprio treinador' },
+      { grant: 'get', route: '/v1/Events/:id', note: 'Criar os planos,ver todos os plano criados pelo proprio treinador' },
+      { grant: 'update', route: '/v1/Events/:id', note: 'Criar os planos,ver todos os plano criados pelo proprio treinador' },
+    ];
+
+    try {
+      for (const grant of grants) {
+        await this.grantService.save(new GrantDto(grant.grant, grant.route, grant.note));
+      }
+      return res.status(200).json({ message: 'All default grants saved successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
 
   /**
    * Seed profiles and grants into the database.
    *
    * @param req - The HTTP request object.
    * @param res - The HTTP response object.
-   * @returns A JSON response indicating success.
+   * @param next - The next middleware function.
+   * @returns A JSON response indicating success or passes errors to the next middleware.
    */
-  async store(req: Request, res: Response): Promise<Response> {
+  public store = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      // Seed profiles
-      await this.profileService.save(new ProfileDto(
-        'diretor_presidente',
-        'Administrador geral',
-        true
-      ));
-      await profileService.save(new ProfileDto(
-        'diretor_juridico',
-        'Administrador geral juridico',
-        true
-      ));
-      // Add more profiles as needed
-
-      // Seed grants
-      // Note: You will need to implement a GrantService similarly to ProfileService
-      // and use it to seed grants.
-
-      return res.json({ message: 'Sucesso' });
-    } catch (e) {
-      return res.status(500).json({ error: e.message });
+      await Promise.all([
+        this.createProfiles(req, res, next),
+        this.createGrants(req, res, next)
+      ]);
+      res.status(200).json({ message: 'All profiles and grants seeded successfully' });
+    } catch (error) {
+      next(error);
     }
-  }
+  };
 
   /**
    * Retrieve all profiles from the database.
    *
    * @param req - The HTTP request object.
    * @param res - The HTTP response object.
-   * @returns A JSON response containing all profiles.
+   * @param next - The next middleware function.
+   * @returns A JSON response containing all profiles or passes errors to the next middleware.
    */
-  async index(req: Request, res: Response): Promise<Response> {
+  public getAll = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
-      const profiles = await profileService.findAll();
+      const profiles = await this.profileService.findAll();
       return res.json(profiles);
-    } catch (e) {
-      return res.status(500).json({ error: e.message });
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -61,20 +117,20 @@ class ProfileController {
    *
    * @param req - The HTTP request object.
    * @param res - The HTTP response object.
-   * @returns A JSON response containing the profile details.
+   * @param next - The next middleware function.
+   * @returns A JSON response containing the profile details or passes errors to the next middleware.
    */
-  async show(req: Request, res: Response): Promise<Response> {
+  public getById = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
-      const profile = await profileService.findOneById(req.params.id);
+      const profile = await this.profileService.findOneById(req.params.id);
 
       if (!profile) {
-        return res.status(404).json({ error: 'Profile not found' });
+        throw new NotFoundError(`Profile with ID ${req.params.id} not found.`);
       }
 
-      const { id, name, isAdmin } = profile;
-      return res.json({ id, name, isAdmin });
-    } catch (e) {
-      return res.status(500).json({ error: e.message });
+      return res.status(200).json(profile);
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -83,22 +139,25 @@ class ProfileController {
    *
    * @param req - The HTTP request object.
    * @param res - The HTTP response object.
-   * @returns A JSON response containing the updated profile details.
+   * @param next - The next middleware function.
+   * @returns A JSON response containing the updated profile details or passes errors to the next middleware.
    */
-  async update(req: Request, res: Response): Promise<Response> {
+  public update = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
-      const profile = await profileService.findOneById(req.params.id);
+      const profile = await this.profileService.findOneById(req.params.id);
 
       if (!profile) {
-        return res.status(404).json({ error: 'Profile not found' });
+        throw new NotFoundError(`Profile with ID ${req.params.id} not found.`);
       }
 
-      const updatedProfile = await profileService.update(req.params.id, req.body);
+      const updatedProfile = await this.profileService.update(
+        req.params.id,
+        req.body
+      );
 
-      const { id, name, isAdmin } = updatedProfile;
-      return res.json({ id, name, isAdmin });
-    } catch (e) {
-      return res.status(400).json({ errors: e.errors?.map((err: Error) => err.message) || [e.message] });
+      return res.json(updatedProfile);
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -107,19 +166,20 @@ class ProfileController {
    *
    * @param req - The HTTP request object.
    * @param res - The HTTP response object.
-   * @returns A JSON response indicating success or failure.
+   * @param next - The next middleware function.
+   * @returns A JSON response indicating success or failure or passes errors to the next middleware.
    */
-  async delete(req: Request, res: Response): Promise<Response> {
+  public delete = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
-      const result = await profileService.delete(req.params.id);
+      const result = await this.profileService.delete(req.params.id);
 
       if (result.affected === 0) {
-        return res.status(404).json({ error: 'Profile not found' });
+        throw new NotFoundError(`Profile with ID ${req.params.id} not found.`);
       }
 
-      return res.json({ message: 'Profile deleted successfully' });
-    } catch (e) {
-      return res.status(400).json({ errors: e.errors?.map((err: Error) => err.message) || [e.message] });
+      return res.json({ message: "Profile deleted successfully" });
+    } catch (error) {
+      next(error);
     }
   }
 }
