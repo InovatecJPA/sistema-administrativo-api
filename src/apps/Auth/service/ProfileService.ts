@@ -39,10 +39,9 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
    * @returns The `Profile` entity matching the criteria, or `null` if not found.
    */
   async findOne(object: Partial<Profile>): Promise<Profile | null> {
-    const { id, name } = object;
+    const { name } = object;
     return await this.profileRepository.findOne({
       where: {
-        id,
         name,
       },
     });
