@@ -37,7 +37,7 @@ export class GrantController {
       const grantDto = new GrantDto(name, note, routeFilter, route);
 
       if (!grantDto.isValid())
-        throw new CustomValidationError('All fields of the new grant must be non-null or "".');
+        throw new CustomValidationError('All fields of the new grant must be non-null or different of "" .');
 
       const newGrant: Grant = await this.grantService.save(grantDto);
 

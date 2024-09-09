@@ -1,7 +1,8 @@
-import { authMiddleware } from "../../../middlewares/auth";
 import { Router } from "express";
-import validateResponseMiddleware from "../../../middlewares/validateResponse";
+
+import { authMiddleware } from "../../../middlewares/auth";
 import { grantController } from "../controller/GrantController";
+import validateResponseMiddleware from "../../../middlewares/validateResponse";
 
 const router: Router = Router();
 router.use(validateResponseMiddleware);
