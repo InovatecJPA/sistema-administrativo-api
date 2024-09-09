@@ -1,8 +1,8 @@
-import multer, { FileFilterCallback, StorageEngine } from 'multer';
-import { extname, resolve } from 'path';
 import { Request } from 'express';
+import { extname, resolve } from 'path';
 
-// Utility function for generating a random number between 10,000 and 20,000
+import multer, { FileFilterCallback, StorageEngine } from 'multer';
+
 const randomNumber = (): number => Math.floor(Math.random() * 10000 + 10000);
 
 /**
@@ -11,6 +11,7 @@ const randomNumber = (): number => Math.floor(Math.random() * 10000 + 10000);
 export class MulterConfig {
   // Storage configuration for Multer
   private storage: StorageEngine;
+
   // Function to filter files based on MIME type
   private fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => void;
 
