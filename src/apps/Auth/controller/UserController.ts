@@ -1,18 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import * as jwt from "./../../../config/jwt";
-import moment from "moment";
 
 import User from "../model/User";
-import Profile from "../model/Profile";
 import { Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
-import CpfValidator from "../utils/CpfValidator";
 
-import { sendMailPromise } from "../../mail/mailer";
-import helper from "../../mail/helper/mailHelper";
 import { UserService, userService } from "../service/UserService";
-import * as UserDTO from "../dto/user.dto";
-import { NotFoundError } from "../../../error/NotFoundError";
 import { updateUserSchema, UpdateUserDTO } from "../schemas/userSchemas";
 
 class UserController {
