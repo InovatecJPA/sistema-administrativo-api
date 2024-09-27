@@ -1,4 +1,4 @@
-import { DeleteResult, FindOptionsWhere, Repository } from "typeorm";
+import { DeleteResult, FindOptionsWhere, LessThan, MoreThanOrEqual, Repository } from "typeorm";
 import ServiceInterface from "../../Auth/interface/ServiceInterface";
 import MessageDto from "../dto/MessageDto";
 import Message from "../model/Message";
@@ -34,6 +34,21 @@ export class MessageService implements ServiceInterface<Message, MessageDto> {
 
   async findAll(): Promise<Message[]> {
     return this.messageRepository.find();
+  }
+
+  async findAllByDate(sendedAtDay: string): Promise<Message[]> {
+    const startOfDay = new Date(sendedAtDay);
+        startOfDay.setHours(0, 0, 0, 0);
+        
+        const endOfDay = new Date(sendedAtDay);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        return this.messageRepository.find({
+            where: [
+                { sendedAt: MoreThanOrEqual(startOfDay) },
+                { sendedAt: LessThan(endOfDay)}
+            ]
+            });
   }
 
   async update(id: string, object: Partial<Message>): Promise<Message> {
