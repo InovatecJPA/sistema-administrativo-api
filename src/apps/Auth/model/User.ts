@@ -1,24 +1,30 @@
 "use strict";
 import bcryptjs from "bcryptjs";
-import Profile from "./Profile";
 import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
   BeforeInsert,
   BeforeUpdate,
-  ManyToOne,
-  JoinColumn,
+  Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
   OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
+
+import { Message } from "../../Messaging/model/Message";
+import Profile from "./Profile";
 import Token from "./Token";
+import UserGroup from "./UserGroup";
 
 /**
  * Represents a user in the system.
  *
- * @@Entity("users")
+ * The User entity is associated with messages, profiles, user groups, and tokens.
+ *
+ * @Entity("users")
  */
 @Entity("users")
 class User {
@@ -85,10 +91,40 @@ class User {
   @ManyToOne(() => Profile, (profile) => profile.users, {
     nullable: false,
     onDelete: "SET NULL",
-    //eager: true
   })
   @JoinColumn({ name: "profile_id" })
   profile: Profile;
+
+  /**
+   * The group associated with the user.
+   *
+   * @type {UserGroup}
+   * @memberof User
+   */
+  @ManyToOne(() => UserGroup, (group) => group.users, {
+    nullable: true,
+    onDelete: "SET NULL",
+  })
+  @JoinColumn({ name: "group_id" })
+  group: UserGroup;
+
+  /**
+   * The messages sent by the user.
+   *
+   * @type {Message[]}
+   * @memberof User
+   */
+  @OneToMany(() => Message, (message) => message.sender)
+  messagesSended: Message[];
+
+  /**
+   * The messages received by the user.
+   *
+   * @type {Message[]}
+   * @memberof User
+   */
+  @OneToMany(() => Message, (message) => message.receiver)
+  messagesReceived: Message[];
 
   /**
    * Indicates whether the user's account is active.
@@ -158,18 +194,40 @@ class User {
     }
   }
 
+  /**
+   * Compares a provided password with the user's hashed password.
+   *
+   * @param password - The plain-text password to compare.
+   * @returns A promise that resolves to a boolean indicating if the passwords match.
+   */
   public async comparePassword(password: string): Promise<boolean> {
     return bcryptjs.compare(password, this.passwordHash);
   }
 
+  /**
+   * Gets the first name of the user.
+   *
+   * @returns The first name as a string.
+   */
   public getFirstName(): string {
     return this.name.split(" ")[0];
   }
 
+  /**
+   * Gets the last name of the user.
+   *
+   * @returns The last name as a string.
+   */
   public getLastName(): string {
     return this.name.split(" ").slice(1).join(" ");
   }
 
+  /**
+   * The token associated with the user.
+   *
+   * @type {Token}
+   * @memberof User
+   */
   @OneToOne(() => Token, (token) => token.user)
   token: Token;
 }

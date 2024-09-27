@@ -1,45 +1,82 @@
-import {
-  userResistrationSchema,
-  forgortPasswordSchema,
-  userLoginSchema,
-  resetPasswordSchema,
-  changePasswordSchema,
-} from "../schemas/userSchemas";
-import e, { Router } from "express";
-import { authController } from "../controller/AuthController";
-import validateResponseMiddleware from "../../../middlewares/validateResponse";
-import { validateData } from "../middlewares/validationMiddleware";
+import { Router } from "express";
 import { authMiddleware } from "../../../middlewares/auth";
+import validateResponseMiddleware from "../../../middlewares/validateResponse";
+import { authController } from "../controller/AuthController";
+import { validateData } from "../middlewares/validationMiddleware";
+import {
+  changePasswordSchema,
+  forgortPasswordSchema,
+  resetPasswordSchema,
+  userLoginSchema,
+  userResistrationSchema,
+} from "../schemas/userSchemas";
 
+/**
+ * Router for handling authentication-related routes.
+ * Includes registration, login, password reset requests, and password change functionalities.
+ */
 const router: Router = Router();
+
+// Middleware to validate all response formats
 router.use(validateResponseMiddleware);
 
+/**
+ * @route POST /singUp
+ * @description Registers a new user in the system.
+ * Validates the incoming data against `userResistrationSchema`.
+ * Calls the `singUp` method in `authController` to handle user registration.
+ */
 router.post(
   "/singUp",
   validateData(userResistrationSchema),
   authController.singUp
-); // registro
+);
 
-router.post("/login", validateData(userLoginSchema), authController.login); // login
-// Logout gerenciado pelo front-end
+/**
+ * @route POST /login
+ * @description Authenticates a user based on email and password.
+ * Validates the incoming data against `userLoginSchema`.
+ * Calls the `login` method in `authController` to handle user login.
+ */
+router.post("/login", validateData(userLoginSchema), authController.login);
 
+/**
+ * @route POST /forgotPassword
+ * @description Initiates a password reset process by generating a reset token.
+ * Validates the incoming data against `forgortPasswordSchema`.
+ * Calls the `requestResetToken` method in `authController` to send a reset token to the user's email.
+ */
 router.post(
   "/forgotPassword",
   validateData(forgortPasswordSchema),
   authController.requestResetToken
-); // token para redefinir senha enviado para email
+);
 
+/**
+ * @route POST /resetPassword/:token
+ * @description Resets a user's password using a token sent to their email.
+ * Validates the incoming data against `resetPasswordSchema`.
+ * Calls the `resetPassword` method in `authController` to authorize and change the user's password.
+ * @param {string} token - Token for resetting the password, provided as a URL parameter.
+ */
 router.post(
   "/resetPassword/:token",
   validateData(resetPasswordSchema),
   authController.resetPassword
-); // recebe token e da autorização para redefinir senha
+);
 
+/**
+ * @route PATCH /changePassword
+ * @description Allows an authenticated user to change their password.
+ * Requires authentication via `authMiddleware`.
+ * Validates the incoming data against `changePasswordSchema`.
+ * Calls the `changePassword` method in `authController` to update the password.
+ */
 router.patch(
   "/changePassword",
   validateData(changePasswordSchema),
   authMiddleware,
   authController.changePassword
-); // redefinir senha
+);
 
 export default router;

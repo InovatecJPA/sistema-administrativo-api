@@ -3,14 +3,19 @@ import { NotFoundError } from "../../../error/NotFoundError";
 import GrantDto from "../dto/GrantDto";
 import ProfileDto from "../dto/ProfileDto";
 import Profile from "../model/Profile";
-import { GrantService } from "../service/GrantService";
-import { ProfileService } from "../service/ProfileService";
+import { grantService, GrantService } from "../service/GrantService";
+import { profileService, ProfileService } from "../service/ProfileService";
 
 import { NextFunction, Request, Response } from "express";
 
 export class ProfileController {
   private profileService: ProfileService;
   private grantService: GrantService;
+
+  constructor(profileService: ProfileService, grantService: GrantService) {
+    this.profileService = profileService;
+    this.grantService = grantService;
+  }
 
   /**
    * Create default profiles and save them to the database.
@@ -240,4 +245,4 @@ export class ProfileController {
   }
 }
 
-export default new ProfileController();
+export default new ProfileController(profileService, grantService);
