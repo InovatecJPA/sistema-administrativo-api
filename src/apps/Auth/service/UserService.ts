@@ -1,20 +1,31 @@
-import { Repository } from "typeorm";
-import jwtLib from "jsonwebtoken";
+import { FindOptionsWhere, Repository } from "typeorm";
 
-import User from "../model/User";
-import * as UserDTO from "../interface/userInterfaces";
-import CpfValidator from "../utils/CpfValidator";
-
-// Dependencia
-import { profileService, ProfileService } from "./ProfileService";
+import moment from "moment";
 import AppDataSource from "../../../database/dbConnection";
-import { storeProfile } from "../dto/ProfileDTO";
+import { AlreadyExistsError } from "../../../error/AlreadyExistsError";
+import { NotFoundError } from "../../../error/NotFoundError";
+import { UnauthorizedException } from "../../../error/UnauthorizedException";
+import ProfileDto from "../dto/ProfileDto";
 import Profile from "../model/Profile";
+import User from "../model/User";
+import { createUserDTO, UpdateUserDTO } from "../schemas/userSchemas";
+import { profileService, ProfileService } from "./ProfileService";
 
+type UserSearchCriteria = Omit<User, "hashPassword" | "someOtherMethod">;
+
+/**
+ * UserService handles operations related to User entity management, including
+ * finding users, creating new users, updating user information, and paginating user listings.
+ */
 export class UserService {
-  private userRepository: Repository<User>;
-  private profileService: ProfileService;
+  private readonly userRepository: Repository<User>; // Repository to handle User entity database operations
+  private readonly profileService: ProfileService; // Service to manage Profile operations
 
+  /**
+   * Constructor to initialize the UserService with the necessary repositories and services.
+   * @param userRepository - Repository for User entity to handle database operations.
+   * @param profileService - Instance of the ProfileService to handle profile-related operations.
+   */
   constructor(
     userRepository: Repository<User>,
     profileService: ProfileService
@@ -23,124 +34,229 @@ export class UserService {
     this.profileService = profileService;
   }
 
-  public async getUserById(userId: string): Promise<User | null> {
+  /**
+   * Retrieves all users from the database.
+   * @returns A promise that resolves to an array of all User entities.
+   */
+  public async findAll(): Promise<User[]> {
+    return await this.userRepository.find();
+  }
+
+  /**
+   * Finds a user based on specific criteria.
+   * The search criteria is a partial match to the User entity excluding sensitive fields like passwords.
+   *
+   * @param conditions - The criteria to search for a user.
+   * @returns A promise that resolves to a User entity or null if not found.
+   */
+  public async findOne(
+    conditions: Partial<UserSearchCriteria>
+  ): Promise<User | null> {
     const user = await this.userRepository.findOne({
-      where: { id: userId },
+      where: conditions as FindOptionsWhere<User>,
       relations: ["profile"],
     });
 
-    if (!user) {
-      return null;
+    return user ? user : null;
+  }
+
+  /**
+   * Creates a new user based on provided data, ensuring no duplicate email, CPF, or phone number exists.
+   * If the user does not provide a profile, a default profile is assigned.
+   *
+   * @param _user - Data for creating a new user (createUserDTO).
+   * @returns A promise that resolves to the newly created User entity.
+   * @throws AlreadyExistsError if the email, CPF, or phone number already exists.
+   */
+  public async createUser(_user: createUserDTO): Promise<User> {
+    if (
+      await this.userRepository.findOne({
+        where: [
+          { email: _user.email },
+          { cpf: _user.cpf },
+          { phone: _user.phone },
+        ],
+      })
+    ) {
+      throw new AlreadyExistsError("Usuário já cadastrado.");
     }
+
+    let profile: Profile = null;
+
+    if (_user.profileName) {
+      profile = await this.profileService.findOne({ name: _user.profileName });
+    } else {
+      profile = await this.profileService.findOne({ name: "default_user" });
+
+      if (!profile) {
+        const newDefaultProfile: ProfileDto = new ProfileDto(
+          "default_user",
+          "Permissão de usuário padrão do sistema"
+        );
+        profile = await this.profileService.save(newDefaultProfile);
+      }
+    }
+
+    const user = this.userRepository.create({
+      cpf: _user.cpf,
+      name: _user.name,
+      email: _user.email,
+      profile: profile,
+      phone: _user.phone,
+      isActive: true,
+    });
+
+    user.password = _user.password!;
+
+    return await this.userRepository.save(user);
+  }
+
+  /**
+   * Updates an existing user's information based on either user ID or User entity.
+   * The profile cannot be updated using this method; a separate method is used for that.
+   *
+   * @param userOrUserId - The ID of the user or the User entity to be updated.
+   * @param data - The data to update the user with.
+   * @returns A promise that resolves to the updated User entity.
+   * @throws NotFoundError if the user is not found.
+   * @throws UnauthorizedException if attempting to update the profile through this method.
+   */
+  public async updateUser(userId: string, data: UpdateUserDTO): Promise<User>;
+  public async updateUser(user: User): Promise<User>;
+
+  public async updateUser(
+    userOrUserId: string | User,
+    data?: UpdateUserDTO
+  ): Promise<User> {
+    if (typeof userOrUserId === "string") {
+      const user = await this.userRepository.findOneBy({ id: userOrUserId });
+
+      if (!user) {
+        throw new NotFoundError("Usuário não encontrado.");
+      }
+
+      if (data?.profile !== undefined) {
+        throw new UnauthorizedException("Atualização de perfil não permitida.");
+      }
+
+      // Merge data into user entity
+      Object.assign(user, data);
+
+      return await this.userRepository.save(user);
+    } else {
+      const user = userOrUserId;
+      await user.hashPassword();
+      return await this.userRepository.save(user);
+    }
+  }
+
+  /**
+   * Updates the profile of a specific user.
+   *
+   * @param userId - The ID of the user whose profile needs to be updated.
+   * @param profileId - The ID of the profile to associate with the user.
+   * @returns A promise that resolves to the updated User entity.
+   * @throws NotFoundError if the user or profile is not found.
+   */
+  public async updateUserProfile(
+    userId: string,
+    profileId: string
+  ): Promise<User> {
+    const user = await this.findOne({ id: userId });
+
+    if (!user) {
+      throw new NotFoundError("Usuário não encontrado");
+    }
+
+    const profile = await this.profileService.findOne({ id: profileId });
+
+    if (!profile) {
+      throw new NotFoundError("Perfil não encontrado");
+    }
+
+    user.profile = profile;
+
+    await this.userRepository.save(user);
 
     return user;
   }
 
-  public async store(
-    userDTO: UserDTO.createUserDTO
-  ): Promise<{ token: string; user: Object }> {
-    let validationErrors: string[] = [];
-    try {
-      //Verifica se nao teve nenum erro de validação
-      if (!CpfValidator.validate(userDTO.cpf)) {
-        validationErrors.push("CPF inválido");
-      }
-      if (!userDTO.name) {
-        validationErrors.push("Nome é obrigatório");
-      }
-      if (!userDTO.email) {
-        validationErrors.push("Email é obrigatório");
-      }
-      if (!userDTO.phone) {
-        validationErrors.push("Telefone é obrigatório");
-      }
-      if (!userDTO.password) {
-        validationErrors.push("Senha é obrigatória");
-      }
+  /**
+   * Retrieves users in a paginated format, limited to 10 users per page.
+   * Currently, filter options are not implemented.
+   *
+   * @param page - The page number to retrieve.
+   * @returns A promise that resolves to an object containing the list of users and pagination metadata.
+   */
+  public async findAllPaginated(page: number) {
+    const limit = 10;
+    const offset = (page - 1) * limit;
 
-      if (validationErrors.length > 0) {
-        throw new Error(validationErrors.join("; "));
-      }
-
-      // Verifica se user já existe
-      if (
-        await this.userRepository.findOne({
-          where: [
-            { email: userDTO.email },
-            { cpf: userDTO.cpf },
-            { phone: userDTO.phone },
-          ],
-        })
-      ) {
-        throw new Error("Usuário já cadastrado.");
-      }
-
-      // Processar perfil
-      let profile: Profile | null = null;
-
-      if (userDTO.profileName) {
-        profile = await this.profileService.getProfileByName(
-          userDTO.profileName
-        );
-
-        if (!profile) {
-          throw new Error("Perfil não encontrado");
-        }
-      } else {
-        profile = await this.profileService.getProfileByName("default_user");
-
-        if (!profile) {
-          const defaultProfile: storeProfile = {
-            name: "default_user",
-            description: "Perfil padrão",
-          };
-          // Usar perfil padrão se não for fornecido
-          profile = await this.profileService.createProfile(defaultProfile);
-        }
-      }
-
-      // Criar novo usuário
-      const user = this.userRepository.create({
-        cpf: userDTO.cpf,
-        name: userDTO.name,
-        email: userDTO.email,
-        profile: profile,
-        phone: userDTO.phone,
+    // Retrieve users with their count for pagination
+    const [users, countUser] = await this.userRepository.findAndCount({
+      select: {
+        id: true,
+        email: true,
+        name: true,
         isActive: true,
-      });
+        phone: true,
+        cpf: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      relations: {
+        profile: true,
+      },
+      order: {
+        id: "ASC",
+      },
+      skip: offset,
+      take: limit,
+    });
 
-      user.password = userDTO.password!;
-      //user.profile = profile;
+    const lastPage = Math.ceil(countUser / limit); // Calculate the last page number
 
-      console.log(user);
+    // Create pagination metadata
+    const pagination = {
+      path: "/users",
+      page: page,
+      prev_page_url: page - 1 >= 1 ? page - 1 : false,
+      next_page_url: page + 1 > lastPage ? false : page + 1,
+      total: countUser,
+    };
 
-      await this.userRepository.save(user);
+    return { listUser: users, pagination: pagination };
+  }
 
-      const token = jwtLib.sign(
-        {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          profile_id: user.profile.id,
-        },
-        process.env.TOKEN_SECRET as string,
-        {
-          expiresIn: process.env.TOKEN_EXPIRATION,
-        }
-      );
+  /**
+   * Shows detailed information for a specific user by ID.
+   *
+   * @param userId - The ID of the user to show details for.
+   * @returns A promise that resolves to an object containing the user's name, email, CPF, phone, and birth date.
+   * @throws NotFoundError if the user is not found.
+   */
+  public async show(userId: string): Promise<Object> {
+    const user = await this.findOne({ id: userId });
 
-      return {
-        token,
-        user: {
-          name: user.name,
-          email: user.email,
-        },
-      };
-    } catch (error: any) {
-      throw new Error(error.message || "Erro interno do servidor");
+    if (!user) {
+      throw new NotFoundError("Usuário não encontrado.");
     }
+
+    return {
+      name: user.getFirstName(),
+      last_name: user.getLastName(),
+      email: user.email,
+      cpf: user.cpf,
+      phone: user.phone,
+      birthDate: user.birthDate
+        ? moment(user.birthDate).format("DD/MM/YYYY")
+        : null,
+    };
   }
 }
 
+// Create the user repository to be used by UserService
 const userRepository: Repository<User> = AppDataSource.getRepository(User);
+
+// Export a singleton instance of UserService for application-wide use
 export const userService = new UserService(userRepository, profileService);

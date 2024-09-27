@@ -6,28 +6,32 @@ import helmet from "helmet";
 
 import validateResponse from "./middlewares/setCORS";
 import dbConnection from "./database/dbConnection";
-import errorsHandle from "./middlewares/errorsHandle";
+import { errorsHandler } from "./middlewares/errorsHandler";
 
-// import v1 from "./apps";
+import v1 from "./apps";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerDocument from "../swagger.json";
 
 // Temp. desenvolvimento das rotas
-import devRoutes from "./apps/index";
 
-const whiteList = ["http://localhost:3000"];
+const whiteList = ["http://localhost:3010", "http://localhost:3000"];
 
 const corsOptions: CorsOptions = {
   origin: function (
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) {
+    console.log("Request origin:", origin); // Adicione isto para ver qual origem está sendo recebida
     if (whiteList.indexOf(origin || "") !== -1 || !origin) {
+      //console.log("Allowed by CORS");
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
 
 class App {
@@ -46,20 +50,16 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(validateResponse);
-    this.app.use(errorsHandle);
   }
 
   routes(): void {
     // Dev-back routes
-    this.app.use("/dev", devRoutes);
+    //this.app.use("/dev", devRoutes);
 
     //this.app.use("/api-docs", swaggerUi.serve);
     //this.app.get("/api-docs", swaggerUi.setup(swaggerDocument));
 
-    //this.app.use("/v1", v1);
-    this.app.get("/", (req: Request, res: Response) => {
-      res.send("Hello World!");
-    });
+    this.app.use("/v1", v1);
     this.app.get("/testDB", async (req: Request, res: Response) => {
       try {
         // Verifica se a conexão já está inicializada
@@ -86,12 +86,7 @@ class App {
   }
 
   private errorHandling(): void {
-    this.app.use(
-      (err: Error, req: Request, res: Response, next: NextFunction) => {
-        console.error(err.stack);
-        res.status(500).send("Something broke!");
-      }
-    );
+    this.app.use(errorsHandler);
   }
 }
 

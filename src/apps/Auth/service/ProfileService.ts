@@ -1,55 +1,109 @@
-import { Repository } from "typeorm";
+import ProfileDto from "../dto/ProfileDto";
+import ServiceInterface from "../interface/ServiceInterface";
 import Profile from "../model/Profile";
-import AppDataSource from "../../../database/dbConnection";
-import {storeProfile} from "../dto/ProfileDTO";
 
-export class ProfileService {
+import { DeleteResult, FindOptionsWhere, Repository } from "typeorm";
+import AppDataSource from "../../../database/dbConnection";
+import { CustomValidationError } from "../../../error/CustomValidationError";
+
+/**
+ * Service class for managing `Profile` entities.
+ */
+export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
   private profileRepository: Repository<Profile>;
 
+  /**
+   * Initializes a new instance of the `ProfileService` class.
+   *
+   * @param profileRepository - The repository instance to handle `Profile` data operations.
+   */
   constructor(profileRepository: Repository<Profile>) {
     this.profileRepository = profileRepository;
   }
 
-  // buscar um perfil por ID
-  public async getProfileById(profileId: string): Promise<Profile| null> {
-    const profile = await this.profileRepository.findOne({
-      where: { id: profileId },
-    });
-
-    return profile ? profile : null;
-  }
-
-  // buscar perfil por nome
-  public async getProfileByName(name: string): Promise<Profile | null> {
-    const profile = await this.profileRepository.findOne({ where: { name } });
-
-    return profile ? profile : null;
-  }
-
-  // Método para criar um novo perfil
-  public async createProfile(_profile: storeProfile): Promise<Profile | null> {
-    try {
-      console.log(_profile);
-      const profile = this.profileRepository.create({
-        name: _profile.name,
-        description: _profile.description,
-      });
-
-      await this.profileRepository.save(profile);
-
-      return profile;
-    } catch (err) {
-      console.log(err);
-      return null;
+  /**
+   * Saves a new `Profile` or updates an existing one.
+   *
+   * @param profileDto - The DTO containing profile data to be saved or updated.
+   * @returns The saved or updated `Profile` entity.
+   */
+  async save(profileDto: ProfileDto): Promise<Profile> {
+    if (profileDto.isValid()) {
+      const newProfile: Profile = profileDto.toProfile();
+      return await this.profileRepository.save(newProfile);
+    } else {
+      throw new CustomValidationError(
+        'All fields of the new profile must be non-null or different of "" .'
+      );
     }
   }
 
-  // Método para atualizar um perfil existente
+  /**
+   * Finds a `Profile` by given criteria.
+   *
+   * @param object - Partial criteria to search for a `Profile`.
+   * @returns The `Profile` entity matching the criteria, or `null` if not found.
+   */
+  async findOne(conditions: Partial<Profile>): Promise<Profile | null> {
+    return await this.profileRepository.findOne({
+      where: conditions as FindOptionsWhere<Profile>,
+    });
+  }
 
-  // Método para deletar um perfil
+  /**
+   * Finds a `Profile` by its ID.
+   *
+   * @param id - The unique identifier of the `Profile`.
+   * @returns The `Profile` entity with the given ID, or `null` if not found.
+   */
+  async findOneById(id: string): Promise<Profile | null> {
+    return await this.profileRepository.findOne({
+      where: { id },
+    });
+  }
+
+  /**
+   * Retrieves all `Profile` entities.
+   *
+   * @returns An array of all `Profile` entities, or an empty array if none found.
+   */
+  async findAll(): Promise<Profile[]> {
+    return await this.profileRepository.find();
+  }
+
+  /**
+   * Updates an existing `Profile`.
+   *
+   * @param id - The unique identifier of the `Profile` to update.
+   * @param object - Partial data to update the `Profile` with.
+   * @returns The updated `Profile` entity.
+   */
+  async update(id: string, object: Partial<Profile>): Promise<Profile> {
+    return this.profileRepository.save({
+      ...object,
+      id,
+    });
+  }
+
+  /**
+   * Deletes a `Profile` by its ID.
+   *
+   * @param id - The unique identifier of the `Profile` to delete.
+   * @returns The result of the delete operation.
+   * @throws `CustomValidationError` if the `Profile` is not found.
+   */
+  async delete(id: string): Promise<DeleteResult> {
+    const profileToDelete = await this.profileRepository.findOneBy({ id });
+
+    if (!profileToDelete) {
+      throw new CustomValidationError(`Profile with ID ${id} not found`);
+    }
+
+    return await this.profileRepository.delete({ id });
+  }
 }
 
+// Initialize the repository and export the service instance
 const profileRepository: Repository<Profile> =
   AppDataSource.getRepository(Profile);
-
 export const profileService = new ProfileService(profileRepository);

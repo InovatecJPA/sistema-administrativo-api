@@ -2,11 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  OneToMany,
 } from "typeorm";
-import ProfileGrant from "./ProfileGrant";
+import Profile from "./Profile";
 
 /**
  * Represents a grant entity in the system.
@@ -25,17 +26,17 @@ export default class Grant {
   public id: string;
 
   /**
-   * The name of the grant. It must be unique.
+   * The method of the grant. It must be unique.
    *
    * @type {string}
    * @memberof Grant
    */
   @Column({
     type: "varchar",
-    unique: true,
+    length: 6,
     nullable: false,
   })
-  public name: string;
+  public method: string;
 
   /**
    * Additional notes about the grant.
@@ -85,13 +86,58 @@ export default class Grant {
   })
   public createdAt: Date;
 
+  /**
+   * The timestamp when the grant was last updated.
+   *
+   * @type {Date}
+   * @memberof Grant
+   */
   @UpdateDateColumn({
     type: "timestamp with time zone",
     nullable: false,
   })
-  updatedAt: Date;
+  public updatedAt: Date;
 
-  // Relação com ProfileGrant
-  @OneToMany(() => ProfileGrant, (profileGrant) => profileGrant.grant)
-  profileGrants: ProfileGrant[];
+  /**
+   * The profiles associated with this grant.
+   *
+   * Defines a many-to-many relationship with the `Profile`.
+   *
+   * @type {Profile[]}
+   * @memberof Grant
+   */
+  @ManyToMany(() => Profile, { eager: true }) // You can choose to set eager loading as needed
+  @JoinTable({
+    name: "grants_profiles",
+    joinColumn: {
+      name: "grant_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "profile_id",
+      referencedColumnName: "id",
+    },
+  })
+  public associatedProfiles: Profile[];
+
+  /**
+   * Creates an instance of the Grant class.
+   *
+   * @param method - The method of the grant.
+   * @param route - The route associated with the grant.
+   * @param note - Optional additional notes about the grant.
+   * @param routeFilter - Optional filter for routing associated with the grant.
+   * @memberof Grant
+   */
+  constructor(
+    method: string,
+    route: string,
+    note?: string,
+    routeFilter?: string
+  ) {
+    this.method = method;
+    this.route = route;
+    this.note = note || null;
+    this.routeFilter = routeFilter || null;
+  }
 }

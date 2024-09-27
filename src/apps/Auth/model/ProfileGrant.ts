@@ -35,11 +35,17 @@ export default class ProfileGrant {
   @Column({ type: "varchar", nullable: true })
   status: string;
 
-  @ManyToOne(() => Grant, (grant) => grant.profileGrants, { eager: true }) // Define a relação ManyToOne com Grant
+  // JOÃO ROBERTO MEXEU AQUI
+  // grant.profileGrants -> virou -> grant.associatedProfiles
+  // Não entendi se mudou algo no banco, mas assim funcionou
+  //  @ManyToOne(() => Grant, (grant) => grant.profileGrants, { eager: true }) // Define a relação ManyToOne com Grant
+  @ManyToOne(() => Grant, (grant) => grant.associatedProfiles, { eager: true }) // Define a relação ManyToOne com Grant
   @JoinColumn({ name: "grant_id" }) // Nome da coluna de chave estrangeira
   grant: Grant;
 
-  @ManyToOne(() => Profile, (profile) => profile.profileGrants) // Define a relação ManyToOne com Profile
+  // JOÃO ROBERTO MEXEU AQUI
+  //@ManyToOne(() => Profile, (profile) => profile.associatedGrants)
+  @ManyToOne(() => Profile, (profile) => profile.associatedGrants) // Define a relação ManyToOne com Profile
   @JoinColumn({ name: "profile_id" }) // Nome da coluna de chave estrangeira
   profile: Profile;
 

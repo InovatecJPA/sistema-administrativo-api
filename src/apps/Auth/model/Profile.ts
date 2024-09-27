@@ -1,13 +1,15 @@
+import Grant from "./Grant";
+import User from "./User";
+
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  OneToMany,
   CreateDateColumn,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import User from "./User";
-import ProfileGrant from "./ProfileGrant";
 
 /**
  * Represents a user profile entity in the system.
@@ -52,8 +54,15 @@ export default class Profile {
   @OneToMany(() => User, (user) => user.profile, { cascade: true })
   users: User[];
 
-  @OneToMany(() => ProfileGrant, (profileGrant) => profileGrant.profile) // Define a relação com ProfileGrant
-  profileGrants: ProfileGrant[];
+  /**
+   * The grants associated with this profile.
+   * Defines a many-to-many relationship with the `Grant`.
+   *
+   * @type {Grant[]}
+   * @memberof Profile
+   */
+  @ManyToMany(() => Grant, { eager: true })
+  associatedGrants: Grant[];
 
   /**
    * The timestamp when the profile was created.
@@ -78,4 +87,22 @@ export default class Profile {
     nullable: false,
   })
   updatedAt: Date;
+
+  /**
+   * Creates an instance of the Profile class.
+   *
+   * @param name - The name of the profile.
+   * @param description - A description of the profile.
+   */
+  constructor(
+    name: string,
+    description: string,
+    users?: User[],
+    associatedGrants?: Grant[]
+  ) {
+    this.name = name;
+    this.description = description;
+    this.users = users;
+    this.associatedGrants = associatedGrants;
+  }
 }

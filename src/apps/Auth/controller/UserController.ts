@@ -1,250 +1,140 @@
-import { Request, Response } from "express";
-import * as jwt from "./../../../config/jwt";
-import moment from "moment";
-
-import User from "../model/User";
+import { NextFunction, Request, Response } from "express";
 import { Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
-
+import User from "../model/User";
+import { UpdateUserDTO, updateUserSchema } from "../schemas/userSchemas";
 import { UserService, userService } from "../service/UserService";
-import * as UserDTO from "../interface/userInterfaces";
-import Email from "../../Messaging/model/Email";
 
+/**
+ * Controller class for handling HTTP requests related to User operations.
+ * Provides functionalities such as listing users with pagination, updating user details, updating user profile, showing user details, and deactivating users.
+ */
 class UserController {
-  private userService: UserService;
+  private readonly userService: UserService; // Service to handle user-related operations
 
+  /**
+   * Initializes the UserController with an instance of the UserService.
+   * @param userService - Instance of UserService to perform user-related operations.
+   */
   constructor(userService: UserService) {
     this.userService = userService;
   }
 
-  public store = async (req: Request, res: Response): Promise<Response> => {
+  /**
+   * Lists users in a paginated format.
+   * Responds with a paginated list of users or a not found message if no users are available for the given page.
+   *
+   * @param req - Express request object (query param `page` indicates the page number).
+   * @param res - Express response object.
+   * @param next - Express next middleware function.
+   * @returns A promise that resolves to a paginated response or a 404 status if no users are found.
+   */
+  public listPaginated = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response> => {
     try {
-      const userDTO: UserDTO.createUserDTO = req.body;
+      const page = req.query.page ? Number(req.query.page) : 1;
 
-      const result = await this.userService.store(userDTO);
+      const result = await this.userService.findAllPaginated(page);
+      if (!result.listUser.length && page === 1) {
+        return res.status(404).json({ error: "Nenhum usuário encontrado." });
+      } else if (!result.listUser.length) {
+        return res.status(404).json({ error: "Nenhum usuário nesta página." });
+      }
 
-      return res.status(200).json(result);
-    } catch (e: any) {
-      console.log(e);
-      return res.status(400).json({ errors: e.message.split("; ") });
+      return res.json(result);
+    } catch (error) {
+      next(error);
     }
   };
 
-  async recoveryPassword(req: Request, res: Response): Promise<Response> {
+  /**
+   * Updates user details based on provided data in the request body.
+   * Validates the input data using a schema and updates the user.
+   *
+   * @param req - Express request object containing `userInfo.id` and `body` with update data.
+   * @param res - Express response object.
+   * @param next - Express next middleware function.
+   */
+  public update = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
-       const { emailAddress, subject, message, template, link, imageUrl, user, userName, password } = req.body;
-      let errors: String[] = [];
+      const updateData: UpdateUserDTO = updateUserSchema.parse(req.body);
 
-      if (!emailAddress) {
-        errors.push("Um e-mail é obrigatório.");
-        return res.status(400).json({ errors });
-      }
+      await this.userService.updateUser(req.userInfo.id, updateData);
 
-      const email: Email = new Email(emailAddress, subject, message, template, link, imageUrl, user, userName, password);
-
-      try {
-        const userRepository: Repository<User> =
-          AppDataSource.getRepository(User);
-        const user: User | null = await userRepository.findOneBy({
-          email: email.emailAddress,
-        });
-
-        if (!user) {
-          return res.status(404).json({
-            errors: ["Email não registrado."],
-          });
-        }
-
-        let domain = email.substring(email.indexOf("@"));
-        let newPassword = "1234";
-
-        emailData.variables.user = user.getFirstName();
-        emailData.variables.userName = user.cpf;
-        emailData.variables.password = newPassword;
-
-        user.password = newPassword;
-
-        await user.hashPassword();
-        await userRepository.save(user, { data: user.password });
-
-        // sendMailPromise(
-        //   emailData.email,
-        //   emailData.subject,
-        //   emailData.message,
-        //   emailData.template,
-        //   emailData.variables
-        // );
-
-        return res.json({
-          message: "Sucesso! Verifique seu e-mail para obter a nova senha.",
-        });
-      } catch (error: any) {
-        console.log("Erro ao buscar usuário ou atualizar senha:", error);
-        return res.status(500).json({ error: "Erro interno do servidor" });
-      }
-    } catch (error: any) {
-      console.log("Erro ao processar a recuperação de senha:", error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+      res.status(200).json({ message: "Usuário atualizado com sucesso." });
+    } catch (error) {
+      next(error);
     }
-  }
+  };
 
-  async changePassword(req: Request, res: Response): Promise<Response> {
-    const { password, newPassword, newPasswordConfirm } = req.body;
+  /**
+   * Updates the profile of a user based on `profileId` provided in the request body.
+   *
+   * @param req - Express request object containing `userInfo.id` and `body.profileId`.
+   * @param res - Express response object.
+   * @param next - Express next middleware function.
+   */
+  public updateUserProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
-      console.log(req.userInfo);
-      const userRepository: Repository<User> =
-        AppDataSource.getRepository(User);
+      const userId = req.userInfo.id;
+      const profileId = req.body.profileId;
 
-      const user: User = await userRepository.findOne({
-        where: { id: req.userInfo.id },
-      });
+      await this.userService.updateUserProfile(userId, profileId);
 
-      if (!user) {
-        return res.status(404).json({
-          errors: ["Usuário não encontrado."],
-        });
-      }
-
-      if (!(await user.comparePassword(password))) {
-        return res.status(401).json({
-          errors: ["Senha atual incorreta."],
-        });
-      }
-
-      if (newPassword !== newPasswordConfirm) {
-        return res.status(401).json({
-          errors: ["As senhas não coincidem."],
-        });
-      }
-
-      user.password = newPassword;
-      await userRepository.save(user);
-
-      return res.status(200).json({
-        message: "Senha alterada com sucesso.",
-      });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+      res.status(200).json({ message: "Perfil atualizado com sucesso." });
+    } catch (error) {
+      next(error);
     }
-  }
+  };
 
-  async show(req: Request, res: Response): Promise<Response> {
+  /**
+   * Retrieves detailed information for a user based on the `userInfo.id` from the request.
+   *
+   * @param req - Express request object containing `userInfo.id`.
+   * @param res - Express response object.
+   * @param next - Express next middleware function.
+   * @returns A promise that resolves to an object containing user details or throws an error if the user is not found.
+   */
+  public show = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Object> => {
     try {
-      const userRepository: Repository<User> =
-        AppDataSource.getRepository(User);
+      const userId = req.userInfo.id;
 
-      const user: User | undefined = await userRepository.findOne({
-        where: { id: req.userInfo.id },
-      });
+      const showUserInstance = await this.userService.show(userId);
 
-      console.log(user);
-
-      if (!user) {
-        return res.status(404).json({
-          errors: ["Usuário não encontrado."],
-        });
-      }
-
-      return res.json({
-        user: {
-          name: user.getFirstName(),
-          last_name: user.getLastName(),
-          email: user.email,
-          cpf: user.cpf,
-          phone: user.phone,
-          birthDate: user.birthDate
-            ? moment(user.birthDate).format("DD/MM/YYYY")
-            : null,
-        },
-      });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+      return showUserInstance;
+    } catch (error) {
+      next(error);
     }
-  }
+  };
 
-  async indexAll(req: Request, res: Response): Promise<Response> {
-    try {
-      const userRepository: Repository<User> =
-        AppDataSource.getRepository(User);
-      const page =
-        req.query.page == undefined || req.query.page == null
-          ? 1
-          : Number(req.query.page);
-      const limit = 10;
-      let lastPage = 1;
-      const countUser = await userRepository.count();
-
-      if (countUser !== 0) {
-        lastPage = Math.ceil(countUser / limit);
-
-        const userObj = await userRepository
-          .createQueryBuilder("user")
-          .select([
-            "user.email",
-            "SUBSTRING(user.name, 1, POSITION(' ' IN user.name) - 1) AS firstName", // Usando SUBSTRING para PostgreSQL
-          ])
-          .orderBy("user.id", "ASC")
-          .offset(Number(page * limit - limit))
-          .limit(limit)
-          .getRawMany();
-
-        let pagination = {
-          path: "/users",
-          page: page,
-          prev_page_url: page - 1 >= 1 ? page - 1 : false,
-          next_page_url: page + 1 > lastPage ? false : page + 1,
-          total: countUser,
-        };
-
-        return res.json({ listUser: userObj, pagination: pagination });
-      } else {
-        return res.status(404).json({ error: "Nenhum usuário encontrado." });
-      }
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
-    }
-  }
-
-  async update(req: Request, res: Response): Promise<Response> {
-    try {
-      const userRepository: Repository<User> =
-        AppDataSource.getRepository(User);
-
-      const { name, email, cpf, phone, birthDate } = req.body;
-
-      const user = await userRepository.findOne({
-        where: { id: req.userInfo.id },
-      });
-
-      if (!user) {
-        return res.status(404).json({
-          errors: ["Usuário não encontrado."],
-        });
-      }
-
-      const updatedUser = userRepository.merge(user, {
-        name,
-        email,
-        cpf,
-        phone,
-        birthDate,
-      });
-
-      await userRepository.save(updatedUser);
-
-      return res.json({
-        message: "Usuário atualizado com sucesso.",
-      });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
-    }
-  }
-
-  async delete(req: Request, res: Response): Promise<Response> {
+  /**
+   * Deactivates a user by setting `isActive` to `false`.
+   *
+   * @param req - Express request object containing `userInfo.id`.
+   * @param res - Express response object.
+   * @param next - Express next middleware function.
+   * @returns A promise that resolves to a response indicating successful deactivation or a 404 status if the user is not found.
+   */
+  public delete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response> => {
     try {
       const userRepository: Repository<User> =
         AppDataSource.getRepository(User);
@@ -258,62 +148,16 @@ class UserController {
           errors: ["Usuário não encontrado."],
         });
       }
-
       await userRepository.update(user.id, { isActive: false });
 
       return res.json({
         message: "Usuário desativado com sucesso.",
       });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+    } catch (error) {
+      next(error);
     }
-  }
-
-  // Não vai ficar aqui...
-  async login(req: Request, res: Response): Promise<Response> {
-    try {
-      const userLogin: UserDTO.userLogin = req.body;
-
-      if (!userLogin || !userLogin.email || !userLogin.password) {
-        return res.status(400).json({
-          errors: ["E-mail e senha são obrigatórios."],
-        });
-      }
-
-      const userRepository: Repository<User> =
-        AppDataSource.getRepository(User);
-
-      const user = await userRepository.findOne({
-        where: {
-          email: userLogin.email,
-        },
-        relations: ["profile"],
-      });
-
-      //console.log(user);
-
-      if (!user || !(await user.comparePassword(userLogin.password))) {
-        return res.status(404).json({
-          errors: ["E-mail ou senha incorretos"],
-        });
-      }
-
-      const profile = user.profile.name;
-
-      const token = jwt.signToken({
-        id: user.id,
-        email: user.email,
-        isAdmin: profile === "admin" ? true : false,
-        profile_id: user.profile.id,
-      });
-
-      res.status(200).json({ auth: true, token: token });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
-    }
-  }
+  };
 }
 
+// Export a singleton instance of UserController with the userService injected
 export default new UserController(userService);
