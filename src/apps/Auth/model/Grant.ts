@@ -2,13 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  OneToMany,
-  ManyToMany,
-  JoinTable,
 } from "typeorm";
-import ProfileGrant from "./ProfileGrant";
 import Profile from "./Profile";
 
 /**
@@ -88,17 +86,27 @@ export default class Grant {
   })
   public createdAt: Date;
 
+  /**
+   * The timestamp when the grant was last updated.
+   *
+   * @type {Date}
+   * @memberof Grant
+   */
   @UpdateDateColumn({
     type: "timestamp with time zone",
     nullable: false,
   })
-  updatedAt: Date;
+  public updatedAt: Date;
 
-  // JOÃO ROBERTO MEXEU AQUI
-  // Estava com problema de importação cíclica!
-  // { eager: true} ao mesmo tempo nesse e no Profile
-  //   @ManyToMany(() => Profile, { eager: true })
-  @ManyToMany(() => Profile, {})
+  /**
+   * The profiles associated with this grant.
+   *
+   * Defines a many-to-many relationship with the `Profile`.
+   *
+   * @type {Profile[]}
+   * @memberof Grant
+   */
+  @ManyToMany(() => Profile, { eager: true }) // You can choose to set eager loading as needed
   @JoinTable({
     name: "grants_profiles",
     joinColumn: {
@@ -110,23 +118,26 @@ export default class Grant {
       referencedColumnName: "id",
     },
   })
-  associatedProfiles: ProfileGrant[];
+  public associatedProfiles: Profile[];
 
-  // JOÃO ROBERTO MEXEU AQUI
-  // NÃO LEMBRO O QUE FIZ AQUI!!! SÓ COMENTEI, ACHO
-  // constructor(
-  //   method: string,
-  //   route: string,
-  //   created_at: Date,
-  //   updated_at: Date,
-  //   note?: string,
-  //   routeFilter?: string
-  // ) {
-  //   this.method = method;
-  //   this.route = route;
-  //   this.createdAt = created_at;
-  //   this.updatedAt = updated_at;
-  //   this.note = note || null;
-  //   this.routeFilter = routeFilter || null;
-  // }
+  /**
+   * Creates an instance of the Grant class.
+   *
+   * @param method - The method of the grant.
+   * @param route - The route associated with the grant.
+   * @param note - Optional additional notes about the grant.
+   * @param routeFilter - Optional filter for routing associated with the grant.
+   * @memberof Grant
+   */
+  constructor(
+    method: string,
+    route: string,
+    note?: string,
+    routeFilter?: string
+  ) {
+    this.method = method;
+    this.route = route;
+    this.note = note || null;
+    this.routeFilter = routeFilter || null;
+  }
 }

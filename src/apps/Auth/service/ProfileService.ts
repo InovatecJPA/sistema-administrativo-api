@@ -1,13 +1,10 @@
-import Profile from "../model/Profile";
 import ProfileDto from "../dto/ProfileDto";
 import ServiceInterface from "../interface/ServiceInterface";
+import Profile from "../model/Profile";
 
-import { Repository, DeleteResult } from "typeorm";
-import { FindOptionsWhere } from "typeorm";
+import { DeleteResult, FindOptionsWhere, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
 import { CustomValidationError } from "../../../error/CustomValidationError";
-import User from "../model/User";
-import Grant from "../model/Grant";
 
 /**
  * Service class for managing `Profile` entities.
@@ -31,8 +28,14 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
    * @returns The saved or updated `Profile` entity.
    */
   async save(profileDto: ProfileDto): Promise<Profile> {
-    const newProfile: Profile = profileDto.toProfile();
-    return this.profileRepository.save(newProfile);
+    if (profileDto.isValid()) {
+      const newProfile: Profile = profileDto.toProfile();
+      return await this.profileRepository.save(newProfile);
+    } else {
+      throw new CustomValidationError(
+        'All fields of the new profile must be non-null or different of "" .'
+      );
+    }
   }
 
   /**
@@ -97,23 +100,6 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
     }
 
     return await this.profileRepository.delete({ id });
-  }
-
-  // João Roberto
-  /**
-   * Creates a new profile in the system.
-   *
-   * @param name - The name of the profile.
-   * @param description - A description of the profile.
-   * @returns The newly created profile.
-   */
-  public async createProfile(object: Partial<Profile>): Promise<Profile> {
-    const newProfile = this.profileRepository.create({
-      name: object.name,
-      description: object.description,
-    });
-
-    return await this.profileRepository.save(newProfile);
   }
 }
 

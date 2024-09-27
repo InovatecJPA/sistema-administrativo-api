@@ -1,14 +1,14 @@
-import User from "./User";
 import Grant from "./Grant";
+import User from "./User";
 
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  OneToMany,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
   ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 
 /**
@@ -88,30 +88,21 @@ export default class Profile {
   })
   updatedAt: Date;
 
-  // JOÃO ROBERTO MEXEU AQUI
-  // Problema na inicialização do Profile e do grant,
-  //não pode inicializar com o array vazio
-  // /**
-  //  * Creates an instance of the Profile class.
-  //  *
-  //  * @param name - The name of the profile.
-  //  * @param description - A description of the profile.
-  //  * @param users - Optional array of `User` entities associated with this profile.
-  //  * @param associatedGrants - Optional array of `Grant` entities associated with this profile.
-  //  */
-  // constructor(
-  //   name: string,
-  //   description: string,
-  //   users: User[] = [],
-  //   associatedGrants: Grant[] = [],
-  //   createdAt: Date = new Date(),
-  //   updatedAt: Date = new Date()
-  // ) {
-  //   this.name = name;
-  //   this.description = description;
-  //   this.users = users;
-  //   this.associatedGrants = associatedGrants;
-  //   this.createdAt = createdAt;
-  //   this.updatedAt = updatedAt;
-  // }
+  /**
+   * Creates an instance of the Profile class.
+   *
+   * @param name - The name of the profile.
+   * @param description - A description of the profile.
+   */
+  constructor(
+    name: string,
+    description: string,
+    users?: User[],
+    associatedGrants?: Grant[]
+  ) {
+    this.name = name;
+    this.description = description;
+    this.users = users;
+    this.associatedGrants = associatedGrants;
+  }
 }

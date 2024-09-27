@@ -1,19 +1,34 @@
 import { NextFunction, Request, Response } from "express";
-
-import User from "../model/User";
 import { Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
-
+import User from "../model/User";
+import { UpdateUserDTO, updateUserSchema } from "../schemas/userSchemas";
 import { UserService, userService } from "../service/UserService";
-import { updateUserSchema, UpdateUserDTO } from "../schemas/userSchemas";
 
+/**
+ * Controller class for handling HTTP requests related to User operations.
+ * Provides functionalities such as listing users with pagination, updating user details, updating user profile, showing user details, and deactivating users.
+ */
 class UserController {
-  private readonly userService: UserService;
+  private readonly userService: UserService; // Service to handle user-related operations
 
+  /**
+   * Initializes the UserController with an instance of the UserService.
+   * @param userService - Instance of UserService to perform user-related operations.
+   */
   constructor(userService: UserService) {
     this.userService = userService;
   }
 
+  /**
+   * Lists users in a paginated format.
+   * Responds with a paginated list of users or a not found message if no users are available for the given page.
+   *
+   * @param req - Express request object (query param `page` indicates the page number).
+   * @param res - Express response object.
+   * @param next - Express next middleware function.
+   * @returns A promise that resolves to a paginated response or a 404 status if no users are found.
+   */
   public listPaginated = async (
     req: Request,
     res: Response,
@@ -22,7 +37,6 @@ class UserController {
     try {
       const page = req.query.page ? Number(req.query.page) : 1;
 
-      // Chama o serviço para obter os usuários paginados
       const result = await this.userService.findAllPaginated(page);
       if (!result.listUser.length && page === 1) {
         return res.status(404).json({ error: "Nenhum usuário encontrado." });
@@ -36,6 +50,14 @@ class UserController {
     }
   };
 
+  /**
+   * Updates user details based on provided data in the request body.
+   * Validates the input data using a schema and updates the user.
+   *
+   * @param req - Express request object containing `userInfo.id` and `body` with update data.
+   * @param res - Express response object.
+   * @param next - Express next middleware function.
+   */
   public update = async (
     req: Request,
     res: Response,
@@ -44,7 +66,7 @@ class UserController {
     try {
       const updateData: UpdateUserDTO = updateUserSchema.parse(req.body);
 
-      this.userService.updateUser(req.userInfo.id, updateData);
+      await this.userService.updateUser(req.userInfo.id, updateData);
 
       res.status(200).json({ message: "Usuário atualizado com sucesso." });
     } catch (error) {
@@ -52,6 +74,13 @@ class UserController {
     }
   };
 
+  /**
+   * Updates the profile of a user based on `profileId` provided in the request body.
+   *
+   * @param req - Express request object containing `userInfo.id` and `body.profileId`.
+   * @param res - Express response object.
+   * @param next - Express next middleware function.
+   */
   public updateUserProfile = async (
     req: Request,
     res: Response,
@@ -69,6 +98,14 @@ class UserController {
     }
   };
 
+  /**
+   * Retrieves detailed information for a user based on the `userInfo.id` from the request.
+   *
+   * @param req - Express request object containing `userInfo.id`.
+   * @param res - Express response object.
+   * @param next - Express next middleware function.
+   * @returns A promise that resolves to an object containing user details or throws an error if the user is not found.
+   */
   public show = async (
     req: Request,
     res: Response,
@@ -85,8 +122,14 @@ class UserController {
     }
   };
 
-  // Não atualizado
-
+  /**
+   * Deactivates a user by setting `isActive` to `false`.
+   *
+   * @param req - Express request object containing `userInfo.id`.
+   * @param res - Express response object.
+   * @param next - Express next middleware function.
+   * @returns A promise that resolves to a response indicating successful deactivation or a 404 status if the user is not found.
+   */
   public delete = async (
     req: Request,
     res: Response,
@@ -105,7 +148,6 @@ class UserController {
           errors: ["Usuário não encontrado."],
         });
       }
-
       await userRepository.update(user.id, { isActive: false });
 
       return res.json({
@@ -117,4 +159,5 @@ class UserController {
   };
 }
 
+// Export a singleton instance of UserController with the userService injected
 export default new UserController(userService);
