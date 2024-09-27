@@ -23,7 +23,7 @@ class UserController {
       const page = req.query.page ? Number(req.query.page) : 1;
 
       // Chama o serviço para obter os usuários paginados
-      const result = await this.userService.getUsersPaginated(page);
+      const result = await this.userService.findAllPaginated(page);
       if (!result.listUser.length && page === 1) {
         return res.status(404).json({ error: "Nenhum usuário encontrado." });
       } else if (!result.listUser.length) {

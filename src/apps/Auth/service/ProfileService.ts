@@ -3,8 +3,11 @@ import ProfileDto from "../dto/ProfileDto";
 import ServiceInterface from "../interface/ServiceInterface";
 
 import { Repository, DeleteResult } from "typeorm";
+import { FindOptionsWhere } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
 import { CustomValidationError } from "../../../error/CustomValidationError";
+import User from "../model/User";
+import Grant from "../model/Grant";
 
 /**
  * Service class for managing `Profile` entities.
@@ -28,7 +31,7 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
    * @returns The saved or updated `Profile` entity.
    */
   async save(profileDto: ProfileDto): Promise<Profile> {
-    const newProfile: Profile = profileDto.toProfile(); 
+    const newProfile: Profile = profileDto.toProfile();
     return this.profileRepository.save(newProfile);
   }
 
@@ -38,12 +41,9 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
    * @param object - Partial criteria to search for a `Profile`.
    * @returns The `Profile` entity matching the criteria, or `null` if not found.
    */
-  async findOne(object: Partial<Profile>): Promise<Profile | null> {
-    const { name } = object;
+  async findOne(conditions: Partial<Profile>): Promise<Profile | null> {
     return await this.profileRepository.findOne({
-      where: {
-        name,
-      },
+      where: conditions as FindOptionsWhere<Profile>,
     });
   }
 
@@ -98,8 +98,26 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
 
     return await this.profileRepository.delete({ id });
   }
+
+  // João Roberto
+  /**
+   * Creates a new profile in the system.
+   *
+   * @param name - The name of the profile.
+   * @param description - A description of the profile.
+   * @returns The newly created profile.
+   */
+  public async createProfile(object: Partial<Profile>): Promise<Profile> {
+    const newProfile = this.profileRepository.create({
+      name: object.name,
+      description: object.description,
+    });
+
+    return await this.profileRepository.save(newProfile);
+  }
 }
 
 // Initialize the repository and export the service instance
-const profileRepository: Repository<Profile> = AppDataSource.getRepository(Profile);
+const profileRepository: Repository<Profile> =
+  AppDataSource.getRepository(Profile);
 export const profileService = new ProfileService(profileRepository);

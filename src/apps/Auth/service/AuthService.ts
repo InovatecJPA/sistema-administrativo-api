@@ -3,7 +3,7 @@ import * as UserDTO from "../dto/user.dto";
 import { UserService } from "./UserService";
 import { UnauthorizedException } from "../../../error/UnauthorizedException";
 import * as jwt from "../../../config/jwt";
-import helper from "../../mail/helper/mailHelper";
+// import helper from "../../mail/helper/mailHelper";
 import User from "../model/User";
 import { NotFoundError } from "../../../error/NotFoundError";
 import { randomBytes } from "crypto";
@@ -14,7 +14,7 @@ import {
   changePasswordDTO,
 } from "../schemas/userSchemas";
 
-import { sendMailPromise } from "../../mail/mailer";
+// import { sendMailPromise } from "../../mail/mailer";
 
 export class AuthService {
   private readonly userService: UserService;
@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   public login = async (logindto: userLoginDTO): Promise<{ token: string }> => {
-    const user = await this.userService.getUserByEmail(logindto.email);
+    const user = await this.userService.findOne({email: logindto.email});
 
     if (!user || !(await user.comparePassword(logindto.password))) {
       console.log("LOGIN ERROR - E-mail ou senha incorretos");
@@ -63,9 +63,9 @@ export class AuthService {
 
   public requestResetToken = async (email: string): Promise<string> => {
     // Vai ser ajustado por arthur
-    let emailData = helper.createDefaultEmailConfig(email);
+    // let emailData = helper.createDefaultEmailConfig(email);
 
-    let user: User | null = await this.userService.getUserByEmail(email);
+    let user: User | null = await this.userService.findOne({email: email});
 
     if (!user) {
       throw new NotFoundError("Usuário não registrado.");
@@ -78,10 +78,10 @@ export class AuthService {
 
     console.log(`Link de recuperação de senha: ${link}`);
 
-    emailData.subject = "Recuperação de senha";
-    emailData.variables.user = user.getFirstName();
-    emailData.variables.link = link;
-    emailData.variables.userName = user.getFirstName();
+    // emailData.subject = "Recuperação de senha";
+    // emailData.variables.user = user.getFirstName();
+    // emailData.variables.link = link;
+    // emailData.variables.userName = user.getFirstName();
 
     // await sendMailPromise(
     //   emailData.email,
@@ -123,7 +123,7 @@ export class AuthService {
     userInfo: UserDTO.userInfo,
     changePasswordDTO: changePasswordDTO
   ): Promise<boolean> => {
-    let user = await this.userService.getUserById(userInfo.id);
+    let user = await this.userService.findOne({id: userInfo.id});
 
     if (
       changePasswordDTO.newPassword !== changePasswordDTO.newPasswordConfirm ||

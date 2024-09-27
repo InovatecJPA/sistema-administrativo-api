@@ -52,7 +52,7 @@ export class TokenService {
       const payload = jwt.verifyToken(token) as { userId: string };
 
       // Busca o usuário pelo ID decodificado do token
-      const user = await this.userservice.getUserById(payload.userId);
+      const user = await this.userservice.findOne({ id: payload.userId });
 
       if (!user) {
         throw new NotFoundError("Usuário não encontrado.");
@@ -84,7 +84,7 @@ export class TokenService {
     try {
       const payload = jwt.verifyToken(token) as { id: string };
 
-      const user = await this.userservice.getUserById(payload.id);
+      const user = await this.userservice.findOne({ id: payload.id });
 
       if (!user) {
         throw new NotFoundError("Usuário não encontrado.");

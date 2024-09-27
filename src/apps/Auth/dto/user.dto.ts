@@ -1,3 +1,5 @@
+// É usado para tipar o objeto userInfo que é injetado no request do express
+
 export interface userInfo {
   name?: string;
   id: string;
@@ -7,7 +9,6 @@ export interface userInfo {
   path?: string;
   routeFilter?: string;
 }
-
 
 declare module "express-serve-static-core" {
   interface Request {

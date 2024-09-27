@@ -1,4 +1,13 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, OneToMany, ManyToMany, JoinTable} from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+} from "typeorm";
 import ProfileGrant from "./ProfileGrant";
 import Profile from "./Profile";
 
@@ -85,33 +94,39 @@ export default class Grant {
   })
   updatedAt: Date;
 
-  @ManyToMany(() => Profile, { eager: true })
+  // JOÃO ROBERTO MEXEU AQUI
+  // Estava com problema de importação cíclica!
+  // { eager: true} ao mesmo tempo nesse e no Profile
+  //   @ManyToMany(() => Profile, { eager: true })
+  @ManyToMany(() => Profile, {})
   @JoinTable({
-    name: 'grants_profiles',
+    name: "grants_profiles",
     joinColumn: {
-      name: 'grant_id',
-      referencedColumnName: 'id',
+      name: "grant_id",
+      referencedColumnName: "id",
     },
     inverseJoinColumn: {
-      name: 'profile_id',
-      referencedColumnName: 'id',
+      name: "profile_id",
+      referencedColumnName: "id",
     },
   })
   associatedProfiles: ProfileGrant[];
 
-  constructor(
-    method: string,
-    route: string,
-    created_at: Date,
-    updated_at: Date,
-    note?: string,
-    routeFilter?: string
-  ) {
-    this.method = method;
-    this.route = route;
-    this.createdAt = created_at;
-    this.updatedAt = updated_at;
-    this.note = note || null;
-    this.routeFilter = routeFilter || null;
-  }
+  // JOÃO ROBERTO MEXEU AQUI
+  // NÃO LEMBRO O QUE FIZ AQUI!!! SÓ COMENTEI, ACHO
+  // constructor(
+  //   method: string,
+  //   route: string,
+  //   created_at: Date,
+  //   updated_at: Date,
+  //   note?: string,
+  //   routeFilter?: string
+  // ) {
+  //   this.method = method;
+  //   this.route = route;
+  //   this.createdAt = created_at;
+  //   this.updatedAt = updated_at;
+  //   this.note = note || null;
+  //   this.routeFilter = routeFilter || null;
+  // }
 }

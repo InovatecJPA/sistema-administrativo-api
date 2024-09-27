@@ -1,26 +1,21 @@
 import { Repository } from "typeorm";
-import jwtLib from "jsonwebtoken";
+import { FindOptionsWhere } from "typeorm";
 
 import User from "../model/User";
-import * as UserDTO from "../dto/user.dto";
-import CpfValidator from "../utils/CpfValidator";
 
 // Dependencia
 import { profileService, ProfileService } from "./ProfileService";
 import AppDataSource from "../../../database/dbConnection";
 import Profile from "../model/Profile";
-import helper from "../../mail/helper/mailHelper";
-import Token from "../model/Token";
-import { sendMailPromise } from "../../mail/mailer";
+// import helper from "../../mail/helper/mailHelper";
+// import { sendMailPromise } from "../../mail/mailer";
 import { AlreadyExistsError } from "../../../error/AlreadyExistsError";
 import { NotFoundError } from "../../../error/NotFoundError";
-import {
-  updateUserSchema,
-  UpdateUserDTO,
-  createUserDTO,
-} from "../schemas/userSchemas";
+import { UpdateUserDTO, createUserDTO } from "../schemas/userSchemas";
 import { UnauthorizedException } from "../../../error/UnauthorizedException";
 import moment from "moment";
+
+type UserSearchCriteria = Omit<User, "hashPassword" | "someOtherMethod">;
 
 export class UserService {
   private readonly userRepository: Repository<User>;
@@ -34,31 +29,15 @@ export class UserService {
     this.profileService = profileService;
   }
 
-  async findAll(): Promise<User[]> {
+  public async findAll(): Promise<User[]> {
     return await this.userRepository.find();
   }
 
-  public async getUserById(userId: string): Promise<User | null> {
+  public async findOne(
+    conditions: Partial<UserSearchCriteria>
+  ): Promise<User | null> {
     const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ["profile"],
-    });
-
-    return user ? user : null;
-  }
-
-  public async getUserByEmail(email: string): Promise<User | null> {
-    const user = await this.userRepository.findOne({
-      where: { email },
-      relations: ["profile"],
-    });
-
-    return user ? user : null;
-  }
-
-  public async getByPhone(phone: string): Promise<User | null> {
-    const user = await this.userRepository.findOne({
-      where: { phone },
+      where: conditions as FindOptionsWhere<User>, // Elimina a incompatibilidade de tipos
       relations: ["profile"],
     });
 
@@ -81,10 +60,10 @@ export class UserService {
     let profile: Profile = null;
 
     if (_user.profileName) {
-      profile = await this.profileService.getProfileByName(_user.profileName);
+      profile = await this.profileService.findOne({ name: _user.profileName });
     } else {
       // Usar perfil padrão se não for fornecido
-      profile = await this.profileService.getProfileByName("default_user");
+      profile = await this.profileService.findOne({ name: "default_user" });
 
       if (!profile) {
         profile = await this.profileService.createProfile({
@@ -144,14 +123,14 @@ export class UserService {
     profileId: string
   ): Promise<User> {
     // Busca o usuário pelo ID
-    const user = await this.getUserById(userId);
+    const user = await this.findOne({ id: userId });
 
     if (!user) {
       throw new NotFoundError("Usuário não encontrado");
     }
 
     // Busca o perfil pelo ID
-    const profile = await this.profileService.getProfileById(profileId);
+    const profile = await this.profileService.findOne({ id: profileId });
 
     if (!profile) {
       throw new NotFoundError("Perfil não encontrado");
@@ -166,7 +145,7 @@ export class UserService {
 
   // paginação de usuários
   // Depois falta implementar opções de filtro
-  public async getUsersPaginated(page: number) {
+  public async findAllPaginated(page: number) {
     const limit = 10;
     const offset = (page - 1) * limit; // Calcula o deslocamento para a página atual
 
@@ -206,7 +185,7 @@ export class UserService {
   }
 
   public async show(userId: string): Promise<Object> {
-    const user = await this.getUserById(userId);
+    const user = await this.findOne({ id: userId });
 
     if (!user) {
       throw new NotFoundError("Usuário não encontrado.");

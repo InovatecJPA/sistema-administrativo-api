@@ -18,7 +18,7 @@ router.post(
   "/singUp",
   validateData(userResistrationSchema),
   authController.singUp
-); // registr
+); // registro
 
 router.post("/login", validateData(userLoginSchema), authController.login); // login
 // Logout gerenciado pelo front-end
