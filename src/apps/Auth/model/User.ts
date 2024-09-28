@@ -14,6 +14,7 @@ import {
   OneToOne,
 } from "typeorm";
 import Token from "./Token";
+import Sector from "../../sector/model/Sector";
 
 /**
  * Represents a user in the system.
@@ -89,6 +90,20 @@ class User {
   })
   @JoinColumn({ name: "profile_id" })
   profile: Profile;
+
+   /**
+   * The sectir associated with the user.
+   *
+   * @type {Sector}
+   * @memberof User
+   */
+
+  @ManyToOne(() => Sector, (sector) => sector.users, {
+    nullable: false,
+    onDelete: "SET NULL",
+  })
+  @JoinColumn({name: "sector_id"})
+  sector: Sector;
 
   /**
    * Indicates whether the user's account is active.
