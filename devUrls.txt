@@ -137,3 +137,46 @@
     HTTP Method: DELETE
     Endpoint: localhost:3010/v1/accounts/grant/delete/{grant.id}
     Body: Not necessary
+
+--- Message Management Endpoints ---
+  Base URL: http://localhost:3010/v1/messages/
+
+  Create New Message:
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/v1/messages/post
+    Body: {
+      "text": "Hello World",
+      "sender": "John Doe",
+      "receiver": "Jane Smith",
+      "receiverGroup": "General"
+    }
+
+    List Messages by Date:
+      HTTP Method: GET
+      Endpoint: http://localhost:3010/v1/messages/getByDate/{sendedAtDay}
+      Body: Not necessary
+
+    List Message by ID:
+      HTTP Method: GET
+      Endpoint: http://localhost:3010/v1/messages/getById/{id}
+      Body: Not necessary
+
+    List All Messages:
+      HTTP Method: GET
+      Endpoint: http://localhost:3010/v1/messages/getAll
+      Body: Not necessary
+
+    Update Message by ID:
+      HTTP Method: PUT
+      Endpoint: http://localhost:3010/v1/messages/put/{id}
+      Body: {
+        "text": "Updated message text",
+        "sender": "John Doe",
+        "receiver": "Jane Smith",
+        "receiverGroup": "General"
+      }
+
+    Delete Message by ID:
+      HTTP Method: DELETE
+      Endpoint: http://localhost:3010/v1/messages/delete/{id}
+      Body: Not necessary
