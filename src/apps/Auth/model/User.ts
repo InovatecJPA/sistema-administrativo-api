@@ -14,11 +14,11 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
+import Sector from "../../Api/model/Sector";
 import Message from "../../Messaging/model/Message";
 import Profile from "./Profile";
 import Token from "./Token";
 import UserGroup from "./UserGroup";
-import Sector from "../../Api/model/Sector";
 
 /**
  * Represents a user in the system.
@@ -109,17 +109,17 @@ class User {
   @JoinColumn({ name: "group_id" })
   group: UserGroup;
 
-   /**
+  /**
    * The sector associated with the user.
    *
    * @type {Sector}
    * @memberof User
    */
-   @ManyToOne(() => Sector, (sector) => sector.users, {
+  @ManyToOne(() => Sector, (sector) => sector.users, {
     nullable: false,
     onDelete: "SET NULL",
   })
-  @JoinColumn({name: "sector_id"})
+  @JoinColumn({ name: "sector_id" })
   sector: Sector;
 
   /**

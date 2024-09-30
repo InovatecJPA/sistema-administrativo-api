@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Message } from "../../Messaging/model/Message";
+import Message from "../../Messaging/model/Message";
 import User from "../model/User";
 
 /**
@@ -10,7 +10,7 @@ class UserGroup {
   @PrimaryGeneratedColumn("uuid")
   public id: string;
 
-  @Column("group_name")
+  @Column({ name: "group_name", type: "varchar", length: 255 })
   public groupName: string;
 
   @OneToMany(() => User, (user) => user.group)
@@ -25,7 +25,7 @@ class UserGroup {
    */
   constructor(groupName: string) {
     this.groupName = groupName;
-    this.users = [];
+    this.users;
   }
 
   /**

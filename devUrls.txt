@@ -3,7 +3,7 @@
 
   Create New User:
     HTTP Method: POST
-    Endpoint: http://localhost:3010/dev/accounts/users/
+    Endpoint: http://localhost:3010/v1/accounts/users/
     Body:
       {
         "password": "1234",
@@ -41,7 +41,7 @@
 
   List Users (Paginated):
     HTTP Method: GET
-    Endpoint: http://localhost:3010/dev/accounts/users/?page={PAGE_NUM}
+    Endpoint: http://localhost:3010/v1/accounts/users/?page={PAGE_NUM}
     Body: Not necessary
 
   User Sign up:
@@ -83,16 +83,16 @@
     }
  
 --- Token Operations ---
-  Base URL: http://localhost:3010/dev/accounts/tokens/
+  Base URL: http://localhost:3010/v1/accounts/tokens/
 
   Get Tokens:
     HTTP Method: GET
-    Endpoint: http://localhost:3010/dev/accounts/tokens/
+    Endpoint: http://localhost:3010/v1/accounts/tokens/
     Body: Not necessary
     
   Create Token:
     HTTP Method: POST
-    Endpoint: http://localhost:3010/dev/accounts/tokens/
+    Endpoint: http://localhost:3010/v1/accounts/tokens/
     Body: Not specified
 
 --- Grant Management Endpoints ---
@@ -180,3 +180,111 @@
       HTTP Method: DELETE
       Endpoint: http://localhost:3010/v1/messages/delete/{id}
       Body: Not necessary
+
+-- Sector Management Endpoints --
+  Base URL: http://localhost:3010/v1/sectors/
+
+  Create New Sector:
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/v1/sectors/post
+    Body: {
+      "name": "Marketing",
+      "description": "Handles marketing campaigns"
+    }
+  
+  List Sector by ID:
+    HTTP Method: GET
+    Endpoint: http://localhost:3010/v1/sectors/getById/{id}
+    Body: Not necessary
+    
+  List All Sectors:
+    HTTP Method: GET
+    Endpoint: http://localhost:3010/v1/sectors/getAll
+    Body: Not necessary
+
+  Update Sector by ID:
+    HTTP Method: PUT
+    Endpoint: http://localhost:3010/v1/sectors/put/{id}
+    Body: {
+      "name": "Marketing Updated",
+      "description": "Updated description of the marketing sector"
+    }
+
+  Delete Sector by ID
+    HTTP Method: DELETE
+    Endpoint: http://localhost:3010/v1/sectors/delete/{id}
+    Body: Not necessary
+
+-- Project Management Endpoints --
+  Base URL: http://localhost:3010/v1/projects/
+
+  Create New Project:
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/v1/projects/post
+    Body: {
+      "name": "New Project",
+      "description": "Description of the new project",
+      "sectors": ["Marketing", "IT"],
+      "coordinators": ["User1", "User2"]
+    }
+
+  List Project by ID:
+    HTTP Method: GET
+    Endpoint: http://localhost:3010/v1/projects/getById/{id}
+    Body: Not necessary
+
+  List All Projects:
+    HTTP Method: GET
+    Endpoint: http://localhost:3010/v1/projects/getAll
+    Body: Not necessary
+  
+  Update Project by ID:
+    HTTP Method: PUT
+    Endpoint: http://localhost:3010/v1/projects/put/{id}
+    Body: {
+      "name": "Updated Project Name",
+      "description": "Updated project description",
+      "sectors": ["Marketing Updated", "Development"],
+      "coordinators": ["User3"]
+    }
+
+  Delete Project by ID:
+    HTTP Method: DELETE
+    Endpoint: http://localhost:3010/v1/projects/delete/{id}
+    Body: Not necessary
+
+-- ProjectRequest Management Endpoints --
+  Base URL: http://localhost:3010/v1/project-requests/
+
+  Create New Project Request:
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/v1/project-requests/post
+    Body: {
+      "user": "User1",
+      "description": "Request for a new project",
+      "attachedFile": "path/to/file"
+    }
+
+  List Project Request by ID:
+    HTTP Method: GET
+    Endpoint: http://localhost:3010/v1/project-requests/getById/{id}
+    Body: Not necessary
+  
+  List All Project Requests:
+    HTTP Method: GET
+    Endpoint: http://localhost:3010/v1/project-requests/getAll
+    Body: Not necessary
+
+  Update Project Request by ID:
+    HTTP Method: PUT
+    Endpoint: http://localhost:3010/v1/project-requests/put/{id}
+    Body: {
+      "user": "User2",
+      "description": "Updated request description",
+      "attachedFile": "path/to/updated/file"
+    }
+
+  Delete Project Request by ID:
+    HTTP Method: DELETE
+    Endpoint: http://localhost:3010/v1/project-requests/delete/{id}
+    Body: Not necessary

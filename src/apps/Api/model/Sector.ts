@@ -1,45 +1,43 @@
 import {
-    Column,
-    Entity,
-    PrimaryGeneratedColumn,
-    OneToMany,
-    UpdateDateColumn,
-    CreateDateColumn,
-  } from "typeorm";
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import User from "../../Auth/model/User";
 
-
 @Entity("sectors")
-export  default class Sector {
-
-    /**
+export default class Sector {
+  /**
    * The unique identifier for the sector.
    *
    * @type {string}
    * @memberof Sector
    */
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
-   
-    /**
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
+
+  /**
    * The name of the sector.
    *
    * @type {string}
    * @memberof Sector
    */
-    @Column({ type: "varchar", nullable: false})
-    name: string;
+  @Column({ type: "varchar", nullable: false })
+  name: string;
 
-    /**
+  /**
    * The users associated with this sector.
    *
    * @type {User[]}
    * @memberof Sector
    */
-    @OneToMany(() =>User, (user)=> user.sector, {cascade: true})
-    users: User[];
+  @OneToMany(() => User, (user) => user.sector, { cascade: true })
+  users: User[];
 
-    /**
+  /**
    * The timestamp when the sector was created.
    *
    * @type {Date}
@@ -63,4 +61,18 @@ export  default class Sector {
   })
   updatedAt: Date;
 
+  /**
+   * Constructor for creating an instance of `Sector`.
+   *
+   * @param {string} name - The name of the sector.
+   * @param {User[]} [users] - Optional array of users associated with the sector.
+   */
+  constructor(name: string, users: User[]) {
+    this.name = name;
+    if (!users) {
+      this.users;
+    } else {
+      this.users = users;
+    }
+  }
 }

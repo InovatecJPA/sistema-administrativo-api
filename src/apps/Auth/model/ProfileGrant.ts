@@ -1,11 +1,11 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import Grant from "./Grant";
 import Profile from "./Profile";
@@ -39,7 +39,7 @@ export default class ProfileGrant {
   // grant.profileGrants -> virou -> grant.associatedProfiles
   // Não entendi se mudou algo no banco, mas assim funcionou
   //  @ManyToOne(() => Grant, (grant) => grant.profileGrants, { eager: true }) // Define a relação ManyToOne com Grant
-  @ManyToOne(() => Grant, (grant) => grant.associatedProfiles, { eager: true }) // Define a relação ManyToOne com Grant
+  @ManyToOne(() => Grant, (grant) => grant.associatedProfiles) // Define a relação ManyToOne com Grant
   @JoinColumn({ name: "grant_id" }) // Nome da coluna de chave estrangeira
   grant: Grant;
 
