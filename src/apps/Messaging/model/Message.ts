@@ -16,7 +16,7 @@ import UserGroup from "../../Auth/model/UserGroup";
  * or to an entire user group.
  */
 @Entity("messages")
-class Message {
+export default class Message {
   /**
    * The unique identifier for the message.
    *
@@ -97,5 +97,3 @@ class Message {
     this.sendedAt = sendedAt;
   }
 }
-
-export default Message;
