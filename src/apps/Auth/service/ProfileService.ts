@@ -5,6 +5,7 @@ import Profile from "../model/Profile";
 import { DeleteResult, FindOptionsWhere, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
 import { CustomValidationError } from "../../../error/CustomValidationError";
+import { InvalidObjectError } from "../../../error/InvalidObjectError";
 
 /**
  * Service class for managing `Profile` entities.
@@ -32,7 +33,7 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
       const newProfile: Profile = profileDto.toProfile();
       return await this.profileRepository.save(newProfile);
     } else {
-      throw new CustomValidationError(
+      throw new InvalidObjectError(
         'All fields of the new profile must be non-null or different of "" .'
       );
     }
@@ -79,7 +80,7 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
    * @returns The updated `Profile` entity.
    */
   async update(id: string, object: Partial<Profile>): Promise<Profile> {
-    return this.profileRepository.save({
+    return await this.profileRepository.save({
       ...object,
       id,
     });
@@ -106,4 +107,4 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
 // Initialize the repository and export the service instance
 const profileRepository: Repository<Profile> =
   AppDataSource.getRepository(Profile);
-export const profileService = new ProfileService(profileRepository);
+export const profileService: ProfileService = new ProfileService(profileRepository);
