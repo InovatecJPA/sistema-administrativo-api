@@ -5,15 +5,15 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import Sector from "../../Api/model/Sector";
 import User from "../../Auth/model/User";
-import UserGroup from "../../Auth/model/UserGroup";
 
 /**
  * Represents a message in the system.
  *
- * The Message entity is associated with both users and user groups,
+ * The Message entity is associated with both users and user sectors,
  * allowing for messages to be sent from one user to another
- * or to an entire user group.
+ * or to an entire user sector.
  */
 @Entity("messages")
 export default class Message {
@@ -56,14 +56,14 @@ export default class Message {
   receiver: User;
 
   /**
-   * The user group that receives the message.
+   * The user sector that receives the message.
    *
-   * @type {UserGroup}
+   * @type {Sector}
    * @memberof Message
    */
-  @ManyToOne(() => UserGroup, (group) => group.messages, { nullable: false })
-  @JoinColumn({ name: "receiver_group_id" })
-  receiverGroup: UserGroup;
+  @ManyToOne(() => Sector, (sector) => sector.messages, { nullable: false })
+  @JoinColumn({ name: "receiver_sector_id" })
+  receiverGroup: Sector;
 
   /**
    * The timestamp indicating when the message was sent.
@@ -80,14 +80,14 @@ export default class Message {
    * @param {string} text - The text content of the message.
    * @param {User} sender - The user who sends the message.
    * @param {User} receiver - The user who receives the message.
-   * @param {UserGroup} receiverGroup - The user group that receives the message.
+   * @param {Sector} receiverGroup - The user sector that receives the message.
    * @param {Date} sendedAt - The timestamp when the message was sent.
    */
   constructor(
     text: string,
     sender: User,
     receiver: User,
-    receiverGroup: UserGroup,
+    receiverGroup: Sector,
     sendedAt: Date
   ) {
     this.text = text;

@@ -18,7 +18,6 @@ import Sector from "../../Api/model/Sector";
 import Message from "../../Messaging/model/Message";
 import Profile from "./Profile";
 import Token from "./Token";
-import UserGroup from "./UserGroup";
 
 /**
  * Represents a user in the system.
@@ -95,19 +94,6 @@ class User {
   })
   @JoinColumn({ name: "profile_id" })
   profile: Profile;
-
-  /**
-   * The group associated with the user.
-   *
-   * @type {UserGroup}
-   * @memberof User
-   */
-  @ManyToOne(() => UserGroup, (group) => group.users, {
-    nullable: true,
-    onDelete: "SET NULL",
-  })
-  @JoinColumn({ name: "group_id" })
-  group: UserGroup;
 
   /**
    * The sector associated with the user.

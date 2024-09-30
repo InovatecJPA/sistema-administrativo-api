@@ -1,5 +1,5 @@
+import Sector from "../../Api/model/Sector";
 import User from "../../Auth/model/User";
-import UserGroup from "../../Auth/model/UserGroup";
 import Message from "../model/Message";
 
 /**
@@ -42,12 +42,12 @@ export default class MessageDto {
   private receiver?: User;
 
   /**
-   * The user group that receives the message.
+   * The user sector that receives the message.
    *
-   * @type {UserGroup}
+   * @type {Sector}
    * @private
    */
-  private receiverGroup?: UserGroup;
+  private receiverSector?: Sector;
 
   /**
    * Creates an instance of the MessageDto class.
@@ -55,19 +55,19 @@ export default class MessageDto {
    * @param {string} text - The text content of the message.
    * @param {User} sender - The user who sends the message.
    * @param {User} receiver - The user who receives the message.
-   * @param {UserGroup} receiverGroup - The user group that receives the message.
+   * @param {Sector} receiverSector - The user sector that receives the message.
    * @param {Date} sendedAt - The timestamp when the message was sent.
    */
   constructor(
     text: string,
     sender: User,
     receiver: User,
-    receiverGroup: UserGroup
+    receiverSector: Sector
   ) {
     this.text = text;
     this.sender = sender;
     this.receiver = receiver;
-    this.receiverGroup = receiverGroup;
+    this.receiverSector = receiverSector;
   }
 
   /**
@@ -143,21 +143,21 @@ export default class MessageDto {
   }
 
   /**
-   * Gets the receiver group of the message.
+   * Gets the receiver sector of the message.
    *
-   * @returns {UserGroup} The user group that receives the message.
+   * @returns {Sector} The user sector that receives the message.
    */
-  public getReceiverGroup(): UserGroup {
-    return this.receiverGroup;
+  public getReceiverSector(): Sector {
+    return this.receiverSector;
   }
 
   /**
-   * Sets the receiver group of the message.
+   * Sets the receiver sector of the message.
    *
-   * @param {UserGroup} receiverGroup - The user group to set as the receiver group.
+   * @param {Sector} receiverSector - The user sector to set as the receiver sector.
    */
-  public setReceiverGroup(receiverGroup: UserGroup): void {
-    this.receiverGroup = receiverGroup;
+  public setReceiverSector(receiverSector: Sector): void {
+    this.receiverSector = receiverSector;
   }
 
   /**
@@ -171,7 +171,7 @@ export default class MessageDto {
       this.text !== null &&
       this.text.trim() !== "" &&
       this.sender !== null &&
-      (this.receiver !== null || this.receiverGroup !== null)
+      (this.receiver !== null || this.receiverSector !== null)
     );
   }
 
@@ -186,7 +186,7 @@ export default class MessageDto {
       this.text,
       this.sender,
       this.receiver ?? null,
-      this.receiverGroup ?? null,
+      this.receiverSector ?? null,
       new Date()
     );
     return message;

@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import User from "../../Auth/model/User";
+import Message from "../../Messaging/model/Message";
 
 @Entity("sectors")
 export default class Sector {
@@ -36,6 +37,9 @@ export default class Sector {
    */
   @OneToMany(() => User, (user) => user.sector, { cascade: true })
   users: User[];
+
+  @OneToMany(() => Message, (message) => message.receiverGroup)
+  messages: Message[];
 
   /**
    * The timestamp when the sector was created.
