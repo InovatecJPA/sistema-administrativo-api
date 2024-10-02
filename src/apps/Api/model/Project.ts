@@ -65,7 +65,7 @@ export default class Project {
    * @type {ProjectRequest}
    */
   @OneToOne(() => ProjectRequest)
-  projectRequested: ProjectRequest;
+  projectRequest: ProjectRequest;
 
   /**
    * The timestamp when the project was created.
@@ -95,18 +95,18 @@ export default class Project {
    * Constructor to create a Project instance with all fields.
    *
    * @param {string} name - The name of the project.
-   * @param {ProjectRequest} projectRequested - The associated project request.
+   * @param {ProjectRequest} projectRequest - The associated project request.
    * @param {Date} createdAt - The timestamp when the project was created.
    * @param {Date} updatedAt - The timestamp when the project was last updated.
    */
   constructor(
     name: string,
-    projectRequested: ProjectRequest,
+    projectRequest: ProjectRequest,
     createdAt: Date,
     updatedAt: Date
   ) {
     this.name = name;
-    this.projectRequested = projectRequested;
+    this.projectRequest = projectRequest;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
