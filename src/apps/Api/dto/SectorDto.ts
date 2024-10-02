@@ -6,16 +6,22 @@ import Sector from "../model/Sector";
  */
 export default class SectorDto {
   /**
-   * @private
+   * @public
    * Private ID of the sector.
    */
-  private _id?: string;
+  public id?: string;
 
   /**
-   * @private
+   * @public
    * Private name of the sector.
    */
-  private _name: string;
+  public name: string;
+
+  /**
+   * @public
+   * Private description of the sector.
+   */
+  public description: string;
 
   /**
    * Constructor for creating an instance of `SectorDto`.
@@ -23,9 +29,10 @@ export default class SectorDto {
    * @param {string} name - The name of the sector.
    * @param {string} [id] - Optional ID of the sector.
    */
-  constructor(name: string, id?: string) {
-    this._name = name;
-    this._id = id;
+  constructor(name: string, description: string, id?: string) {
+    this.name = name;
+    this.description = description;
+    this.id = id;
   }
 
   /**
@@ -35,43 +42,7 @@ export default class SectorDto {
    * @returns {Sector} The corresponding `Sector` entity.
    */
   public toSector(): Sector {
-    return new Sector(this._name, []);
-  }
-
-  /**
-   * Getter for the ID of the sector.
-   *
-   * @returns {string | undefined} The ID of the sector, or undefined if not set.
-   */
-  public get id(): string | undefined {
-    return this._id;
-  }
-
-  /**
-   * Setter for the ID of the sector.
-   *
-   * @param {string | undefined} value The new ID of the sector.
-   */
-  public set id(value: string | undefined) {
-    this._id = value;
-  }
-
-  /**
-   * Getter for the name of the sector.
-   *
-   * @returns {string} The name of the sector.
-   */
-  public get name(): string {
-    return this._name;
-  }
-
-  /**
-   * Setter for the name of the sector.
-   *
-   * @param {string} value The new name of the sector.
-   */
-  public set name(value: string) {
-    this._name = value;
+    return new Sector(this.name, this.description);
   }
 
   /**
@@ -80,6 +51,6 @@ export default class SectorDto {
    * @returns {boolean} True if the instance is valid, false otherwise.
    */
   public isValid(): boolean {
-    return !!this._name;
+    return !!this.name && !!this.description;
   }
 }

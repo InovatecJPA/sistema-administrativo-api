@@ -21,15 +21,15 @@ export class SectorController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { name } = req.body;
-      const sectorDto: SectorDto = new SectorDto(name);
+      const { name, description } = req.body;
+      const sectorDto: SectorDto = new SectorDto(name, description);
 
-      // Validate sector DTO
       if (!sectorDto.isValid()) {
-        throw new CustomValidationError("The name of the sector is required.");
+        throw new CustomValidationError(
+          "The name of the sector and the description are required."
+        );
       }
 
-      // Save new sector using service
       const savedSector: Sector = await this.sectorService.save(
         sectorDto.toSector()
       );
@@ -83,19 +83,18 @@ export class SectorController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { id } = req.params;
-      const { name } = req.body;
-      const sectorDto: SectorDto = new SectorDto(name);
+      const { name, description } = req.body;
+      const sectorDto: SectorDto = new SectorDto(name, description);
 
-      // Validate sector DTO
       if (!sectorDto.isValid()) {
-        throw new CustomValidationError("The name of the sector is required.");
+        throw new CustomValidationError(
+          "The name of the sector and the description are required."
+        );
       }
 
-      // Find and update sector
       const updatedSector: Sector = await this.sectorService.update(
-        id,
-        sectorDto
+        req.params.id,
+        req.body
       );
 
       return res.status(200).json(updatedSector);

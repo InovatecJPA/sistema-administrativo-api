@@ -91,7 +91,7 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
   public async update(id: string, object: Partial<Sector>): Promise<Sector> {
     return await this.sectorRepository.save({
       ...object,
-      id,
+      id: id,
     });
   }
 

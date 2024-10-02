@@ -1,7 +1,16 @@
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import User from "../../Auth/model/User";
-import Sector from "./Sector";
 import ProjectRequest from "./ProjectRequest";
+import Sector from "./Sector";
 
 /**
  * Represents a project entity in the database.
@@ -10,7 +19,6 @@ import ProjectRequest from "./ProjectRequest";
  */
 @Entity("projects")
 export default class Project {
-
   /**
    * Unique identifier for each project. Automatically generated as a UUID.
    *
@@ -87,26 +95,19 @@ export default class Project {
    * Constructor to create a Project instance with all fields.
    *
    * @param {string} name - The name of the project.
-   * @param {User[]} coordinators - The list of users who coordinate the project.
-   * @param {Sector[]} sectors - The sectors the project is related to.
    * @param {ProjectRequest} projectRequested - The associated project request.
    * @param {Date} createdAt - The timestamp when the project was created.
    * @param {Date} updatedAt - The timestamp when the project was last updated.
    */
   constructor(
     name: string,
-    coordinators: User[],
-    sectors: Sector[],
     projectRequested: ProjectRequest,
     createdAt: Date,
     updatedAt: Date
   ) {
     this.name = name;
-    this.coordinators = coordinators;
-    this.sectors = sectors;
     this.projectRequested = projectRequested;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
-
 }

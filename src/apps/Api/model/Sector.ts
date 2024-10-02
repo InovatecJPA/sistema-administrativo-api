@@ -30,6 +30,15 @@ export default class Sector {
   name: string;
 
   /**
+   * A brief description of the sector.
+   *
+   * @type {string}
+   * @memberof Sector
+   */
+  @Column({ type: "varchar", nullable: false })
+  description: string;
+
+  /**
    * The users associated with this sector.
    *
    * @type {User[]}
@@ -69,14 +78,10 @@ export default class Sector {
    * Constructor for creating an instance of `Sector`.
    *
    * @param {string} name - The name of the sector.
-   * @param {User[]} [users] - Optional array of users associated with the sector.
+   * @param {string} description - The description of the sector.
    */
-  constructor(name: string, users: User[]) {
+  constructor(name: string, description: string) {
     this.name = name;
-    if (!users) {
-      this.users;
-    } else {
-      this.users = users;
-    }
+    this.description = description;
   }
 }

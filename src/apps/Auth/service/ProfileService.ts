@@ -82,7 +82,7 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
   async update(id: string, object: Partial<Profile>): Promise<Profile> {
     return await this.profileRepository.save({
       ...object,
-      id,
+      id: id,
     });
   }
 
@@ -107,4 +107,6 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
 // Initialize the repository and export the service instance
 const profileRepository: Repository<Profile> =
   AppDataSource.getRepository(Profile);
-export const profileService: ProfileService = new ProfileService(profileRepository);
+export const profileService: ProfileService = new ProfileService(
+  profileRepository
+);
