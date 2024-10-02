@@ -90,6 +90,7 @@ class User {
    */
   @ManyToOne(() => Profile, (profile) => profile.users, {
     nullable: false,
+    // nullable: true,
     onDelete: "SET NULL",
   })
   @JoinColumn({ name: "profile_id" })
@@ -102,7 +103,8 @@ class User {
    * @memberof User
    */
   @ManyToOne(() => Sector, (sector) => sector.users, {
-    nullable: false,
+    // nullable: false,
+    nullable: true,
     onDelete: "SET NULL",
   })
   @JoinColumn({ name: "sector_id" })

@@ -61,7 +61,7 @@ export default class Profile {
    * @type {Grant[]}
    * @memberof Profile
    */
-  @ManyToMany(() => Grant, { eager: true })
+  @ManyToMany(() => Grant, { eager: false })
   associatedGrants: Grant[];
 
   /**
