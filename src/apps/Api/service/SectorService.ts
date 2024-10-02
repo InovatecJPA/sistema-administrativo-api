@@ -7,6 +7,7 @@ import User from "../../Auth/model/User";
 import { userService, UserService } from "../../Auth/service/UserService";
 import SectorDto from "../dto/SectorDto";
 import Sector from "../model/Sector";
+import { HttpStatusCode } from "axios";
 
 /**
  * Service class for handling Sector operations.
@@ -148,27 +149,22 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
     return await this.sectorRepository.delete({ id });
   }
 
-  async addUserToSector(sectorId: string, userData: Partial<User>) {
-    // Step 1: Fetch the sector by its ID
-    const sector = await this.sectorRepository.findOne({
+  async addUser(sectorId: string, userId: string): Promise<Sector> {
+    const sector: Sector = await this.sectorRepository.findOne({
       where: { id: sectorId },
       relations: ["users"],
     });
 
     if (!sector) {
-      throw new Error(`Sector with ID ${sectorId} not found.`);
+      throw new NotFoundError(`Sector with ID ${sectorId} not found.`);
     }
 
-    // Step 2: Create a new user with the provided data
-    const newUser = await userService.createUser(userData);
+    const user: User = await userService.findOne({ id: userId });
 
-    // Step 3: Associate the user with the sector
-    sector.users = [...(sector.users || []), newUser]; // Add the new user to the existing array
+    sector.users = [...(sector.users || []), user];
 
-    // Step 4: Save the sector (with cascade, this also saves the user)
-    await sectorRepository.save(sector);
+    return await sectorRepository.save(sector);
 
-    console.log(`User ${newUser.name} has been added to sector ${sector.name}`);
   }
 }
 
