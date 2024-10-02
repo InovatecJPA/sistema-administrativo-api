@@ -34,7 +34,7 @@ export class MessageController {
         }
 
         // Convert DTO to Message model and return the created message
-        const newMessage: Message = messageDto.toMessage();
+        const newMessage = await this.messageService.save(messageDto);
         return res.status(201).json(newMessage);
 
       } catch (error: any) {
