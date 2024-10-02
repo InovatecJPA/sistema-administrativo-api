@@ -253,6 +253,36 @@
     Endpoint: http://localhost:3010/v1/projects/delete/{id}
     Body: Not necessary
 
+    Set Project Request for a Project
+      HTTP Method: PUT
+      Endpoint: http://localhost:3010/v1/projects/{projectId}/projectRequests/{projectRequestId}
+      Body: Not necessary
+      Description: Updates the project request for a specific project by assigning the projectRequestId to it.
+
+  Add a Sector to a Project
+    HTTP Method: POST
+    Endpoint: http://localhost:3010/v1/projects/{projectId}/sectors/{sectorId}
+    Body: Not necessary
+    Description: Adds a sector to the specified project using the sectorId.
+
+  Remove a Sector from a Project
+    HTTP Method: DELETE
+    Endpoint: http://localhost:3010/v1/projects/{projectId}/sectors/{sectorId}
+    Body: Not necessary
+    Description: Removes the specified sector from the project.
+
+    Add a Coordinator to a Project
+      HTTP Method: POST
+      Endpoint: http://localhost:3010/v1/projects/{projectId}/coordinators/{coordinatorId}
+      Body: Not necessary
+      Description: Adds the coordinator with the specified coordinatorId to the project.
+    
+    Remove a Coordinator from a Project
+      HTTP Method: DELETE
+      Endpoint: http://localhost:3010/v1/projects/{projectId}/coordinators/{coordinatorId}
+      Body: Not necessary
+      Description: Removes the specified coordinator from the project.
+
 -- ProjectRequest Management Endpoints --
   Base URL: http://localhost:3010/v1/project-requests/
 
