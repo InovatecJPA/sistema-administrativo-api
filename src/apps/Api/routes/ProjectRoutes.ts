@@ -58,4 +58,74 @@ projectRouter.delete(
   projectController.deleteById
 );
 
+/**
+ * PUT /projects/:projectId/projectRequests/:projectRequestId
+ * Route to update the project request for a specific project by the project request ID.
+ * Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller projectController.putProjectRequest - Handles the logic of setting the project request for a project.
+ */
+projectRouter.put(
+  "/projects/:projectId/projectRequests/:projectRequestId",
+  authMiddleware,
+  projectController.putProjectRequest
+);
+
+/**
+ * POST /projects/:projectId/coordinators/:coordinatorId
+ * Route to add a coordinator to a specific project by the coordinator's ID.
+ * Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller projectController.addCoordinator - Handles the logic of adding a coordinator.
+ */
+projectRouter.post(
+  "/projects/:projectId/coordinators/:coordinatorId",
+  authMiddleware,
+  projectController.postCoordinator
+);
+
+/**
+ * DELETE /projects/:projectId/coordinators/:coordinatorId
+ * Route to remove a coordinator from a specific project by the coordinator's ID.
+ * Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller projectController.removeCoordinator - Handles the logic of removing a coordinator.
+ */
+projectRouter.delete(
+  "/projects/:projectId/coordinators/:coordinatorId",
+  authMiddleware,
+  projectController.deleteCoordinator
+);
+
+/**
+ * POST /projects/:projectId/sectors/:sectorId
+ * Route to add a sector to a specific project by the sector's ID.
+ * Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller projectController.addSector - Handles the logic of adding a sector to a project.
+ */
+projectRouter.post(
+  "/projects/:projectId/sectors/:sectorId",
+  authMiddleware,
+  projectController.postSector
+);
+
+/**
+ * DELETE /projects/:projectId/sectors/:sectorId
+ * Route to remove a sector from a specific project by the sector's ID.
+ * Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller projectController.removeSector - Handles the logic of removing a sector from a project.
+ */
+projectRouter.delete(
+  "/projects/:projectId/sectors/:sectorId",
+  authMiddleware,
+  projectController.deleteSector
+);
+
 export default projectRouter;
