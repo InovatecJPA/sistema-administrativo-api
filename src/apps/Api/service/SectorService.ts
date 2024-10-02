@@ -3,6 +3,8 @@ import AppDataSource from "../../../database/dbConnection";
 import { AlreadyExistsError } from "../../../error/AlreadyExistsError";
 import { NotFoundError } from "../../../error/NotFoundError";
 import ServiceInterface from "../../Auth/interface/ServiceInterface";
+import User from "../../Auth/model/User";
+import { userService, UserService } from "../../Auth/service/UserService";
 import SectorDto from "../dto/SectorDto";
 import Sector from "../model/Sector";
 
@@ -17,12 +19,18 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
   private readonly sectorRepository: Repository<Sector>;
 
   /**
+   * Repository for managing user entities.
+   */
+  private userService: UserService;
+
+  /**
    * Creates an instance of `SectorService`.
    *
    * @param {Repository<Sector>} sectorRepository - Repository for `Sector` entities.
    */
   constructor(sectorRepository: Repository<Sector>) {
     this.sectorRepository = sectorRepository;
+    this.userService = userService;
   }
 
   /**
@@ -138,6 +146,29 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
     }
 
     return await this.sectorRepository.delete({ id });
+  }
+
+  async addUserToSector(sectorId: string, userData: Partial<User>) {
+    // Step 1: Fetch the sector by its ID
+    const sector = await this.sectorRepository.findOne({
+      where: { id: sectorId },
+      relations: ["users"],
+    });
+
+    if (!sector) {
+      throw new Error(`Sector with ID ${sectorId} not found.`);
+    }
+
+    // Step 2: Create a new user with the provided data
+    const newUser = await userService.createUser(userData);
+
+    // Step 3: Associate the user with the sector
+    sector.users = [...(sector.users || []), newUser]; // Add the new user to the existing array
+
+    // Step 4: Save the sector (with cascade, this also saves the user)
+    await sectorRepository.save(sector);
+
+    console.log(`User ${newUser.name} has been added to sector ${sector.name}`);
   }
 }
 
