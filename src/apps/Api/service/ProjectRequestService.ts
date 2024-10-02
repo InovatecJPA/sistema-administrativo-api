@@ -6,6 +6,8 @@ import ServiceInterface from "../../Auth/interface/ServiceInterface";
 import Profile from "../../Auth/model/Profile";
 import ProjectRequestDto from "../dto/ProjectRequestDto";
 import ProjectRequest from "../model/ProjectRequest";
+import { userService } from "../../Auth/service/UserService";
+import User from "../../Auth/model/User";
 
 /**
  * Service class for handling `ProjectRequest` operations.
@@ -44,6 +46,15 @@ export class ProjectRequestService
     }
 
     const newProject: ProjectRequest = objectDto.toProjectRequest();
+
+    const user: User = await userService.findOne({ id: objectDto.getUser().id });
+
+    if (!user) {
+      throw new InvalidObjectError("The user making the Project Request must be valid.");
+    }
+
+    newProject.user = user;
+    
     return await this.projectRequestRepository.save(newProject);
   }
 

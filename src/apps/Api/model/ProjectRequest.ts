@@ -68,6 +68,7 @@ export default class ProjectRequest {
   })
   updatedAt: Date;
 
+
     /**
    * Constructor with all arguments for ProjectRequest.
    *
@@ -78,13 +79,11 @@ export default class ProjectRequest {
    * @param {Date} createdAt - The creation timestamp of the project request.
    * @param {Date} updatedAt - The update timestamp of the project request.
    */
-    constructor(id: string, description: string, attachedFile: string, user: User, createdAt: Date, updatedAt: Date) {
+    constructor(id: string, description: string, attachedFile: string, createdAt: Date, updatedAt: Date) {
       this.id = id;
       this.description = description;
       this.attachedFile = attachedFile;
-      this.user = user;
       this.createdAt = createdAt;
       this.updatedAt = updatedAt;
     }
-
 }
