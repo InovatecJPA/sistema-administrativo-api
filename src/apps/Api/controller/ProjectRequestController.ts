@@ -26,7 +26,7 @@ export class ProjectRequestController {
     try {
       const { user, description, attachedFile } = req.body;
       const projectRequestDto: ProjectRequestDto = new ProjectRequestDto(
-        user,
+        // user,
         description,
         attachedFile
       );
@@ -98,7 +98,7 @@ export class ProjectRequestController {
       const { id } = req.params;
       const { user, description, attachedFile } = req.body;
       const projectRequestDto: ProjectRequestDto = new ProjectRequestDto(
-        user,
+        // user,
         description,
         attachedFile
       );
