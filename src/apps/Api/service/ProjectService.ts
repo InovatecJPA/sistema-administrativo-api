@@ -37,6 +37,7 @@ export class ProjectService implements ServiceInterface<Project, ProjectDto> {
     }
 
     const newProject: Project = objectDto.toProject();
+    
     return await this.projectRepository.save(newProject);
   }
 

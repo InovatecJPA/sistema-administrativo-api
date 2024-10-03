@@ -43,11 +43,7 @@ export class SectorController {
   /**
    * Handles GET request to find a sector by its ID.
    */
-  public getById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
+  public getById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { id } = req.params;
       const sector: Sector = await this.sectorService.findOneById(id);
@@ -77,11 +73,7 @@ export class SectorController {
   /**
    * Handles PUT request to update a sector by its ID.
    */
-  public put = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
+  public put = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { name, description } = req.body;
       const sectorDto: SectorDto = new SectorDto(name, description);
@@ -106,11 +98,7 @@ export class SectorController {
   /**
    * Handles DELETE request to remove a sector by its ID.
    */
-  public deleteById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
+  public deleteById = async (req: Request, res: Response, next: NextFunction ): Promise<Response | void> => {
     try {
       const result = await this.sectorService.delete(req.params.id);
 
@@ -123,6 +111,21 @@ export class SectorController {
       next(error);
     }
   };
+
+  public postUser = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+      const result = await this.sectorService.addUser(req.params.id);
+
+      if (result.affected === 0) {
+        throw new NotFoundError(`Sector with ID ${req.params.id} not found.`);
+      }
+
+      return res.json({ message: "Sector deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
 }
 
 // Initialize the controller with the service

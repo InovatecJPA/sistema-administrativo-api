@@ -4,8 +4,8 @@ import Profile from "../model/Profile";
 
 import { DeleteResult, FindOptionsWhere, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
-import { CustomValidationError } from "../../../error/CustomValidationError";
 import { InvalidObjectError } from "../../../error/InvalidObjectError";
+import { NotFoundError } from "../../../error/NotFoundError";
 
 /**
  * Service class for managing `Profile` entities.
@@ -80,6 +80,12 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
    * @returns The updated `Profile` entity.
    */
   async update(id: string, object: Partial<Profile>): Promise<Profile> {
+    const profileToUpdate = await this.profileRepository.findOneBy({ id });
+
+    if (!profileToUpdate) {
+      throw new NotFoundError(`Profile with ID ${id} not found`);
+    }
+
     return await this.profileRepository.save({
       ...object,
       id: id,
@@ -97,7 +103,7 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
     const profileToDelete = await this.profileRepository.findOneBy({ id });
 
     if (!profileToDelete) {
-      throw new CustomValidationError(`Profile with ID ${id} not found`);
+      throw new NotFoundError(`Profile with ID ${id} not found`);
     }
 
     return await this.profileRepository.delete({ id });

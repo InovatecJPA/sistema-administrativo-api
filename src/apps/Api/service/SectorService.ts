@@ -1,13 +1,14 @@
 import { DeleteResult, FindOptionsWhere, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
-import { AlreadyExistsError } from "../../../error/AlreadyExistsError";
 import { NotFoundError } from "../../../error/NotFoundError";
 import ServiceInterface from "../../Auth/interface/ServiceInterface";
 import User from "../../Auth/model/User";
 import { userService, UserService } from "../../Auth/service/UserService";
 import SectorDto from "../dto/SectorDto";
 import Sector from "../model/Sector";
-import { HttpStatusCode } from "axios";
+import { InvalidObjectError } from "../../../error/InvalidObjectError";
+import { messageService } from "../../Messaging/service/MessageService";
+import Message from "../../Messaging/model/Message";
 
 /**
  * Service class for handling Sector operations.
@@ -38,23 +39,20 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
    * Saves a new sector to the database.
    * Throws an error if a sector with the same name already exists.
    *
-   * @param {Sector} _sector - The sector entity to save.
+   * @param {Partial<SectorDto>} objectDto - The sector entity to save.
    * @returns {Promise<Sector>} A promise that resolves with the saved `Sector` entity.
-   * @throws {AlreadyExistsError} If a sector with the same name already exists.
+   * @throws {InvalidObjectError} If the provided DTO is invalid.
    */
-  public async save(_sector: Sector): Promise<Sector> {
-    if (
-      await this.sectorRepository.findOne({
-        where: [{ name: _sector.name }],
-      })
-    ) {
-      throw new AlreadyExistsError("Setor já cadastrado.");
+  public async save(objectDto: Partial<SectorDto>): Promise<Sector> {
+    if (!objectDto.isValid()) {
+      throw new InvalidObjectError(
+        'All fields of the new sector must be non-null or different of "" .'
+      );
     }
 
-    const sector = this.sectorRepository.create({
-      name: _sector.name,
-    });
-    return await this.sectorRepository.save(sector);
+    const newSector: Sector = objectDto.toSector();
+
+    return await this.sectorRepository.save(newSector);
   }
 
   async findOne(object: Partial<Sector>): Promise<Sector> {
@@ -164,8 +162,59 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
     sector.users = [...(sector.users || []), user];
 
     return await sectorRepository.save(sector);
-
   }
+
+  async removeUser(sectorId: string, userId: string): Promise<Sector> {
+    const sector: Sector = sectorRepository.findOne({
+      where: { id: sectorId }, 
+      relations: ["users"],
+    });
+
+    if(!sector) {
+      throw new NotFoundError(`Sector with ID ${sectorId} not found.`)
+    }
+
+    sector.users = sector.users.filter((user) => user.id !== userId);
+
+    return sectorRepository.save(sector);
+  }
+
+  async addMessage(sectorId: string, messageId: string): Promise<Sector> {
+    const sector: Sector = sectorRepository.findOne({
+      where: { id: sectorId }, 
+      relations: ["messages"],
+    });
+
+    if(!sector) {
+      throw new NotFoundError(`Sector with ID ${sectorId} not found.`)
+    }
+
+    const message: Message = await messageService.findOneById(sectorId);
+
+    if(!message) {
+      throw new NotFoundError(`Message with ID ${messageId} not found.`)
+    }
+
+    sector.messages = [...(sector.messages || []), message];
+
+    return sectorRepository.save(sector);
+  }
+
+  async removeMessage(sectorId: string, messageId: string): Promise<Sector> {
+    const sector: Sector = sectorRepository.findOne({
+      where: { id: sectorId }, 
+      relations: ["messages"],
+    });
+
+    if(!sector) {
+      throw new NotFoundError(`Sector with ID ${sectorId} not found.`)
+    }
+
+    sector.messages = sector.messages.filter((message) => message.id !== messageId);
+
+    return sectorRepository.save(sector);
+  }
+
 }
 
 // Create an instance of `SectorService` using the sector repository
