@@ -34,7 +34,7 @@ export default class ProjectRequestDto {
     return this.user;
   }
 
-  public setUser(user: USer): void {
+  public setUser(user: User): void {
     this.user = user;
   }
 
