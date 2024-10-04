@@ -58,6 +58,7 @@ class UserController {
    * @param res - Express response object.
    * @param next - Express next middleware function.
    */
+  // Importante reautenticar o usuário após a atualização
   public update = async (
     req: Request,
     res: Response,
@@ -114,7 +115,7 @@ class UserController {
     try {
       const userId = req.userInfo.id;
 
-      const showUserInstance = await this.userService.show(userId);
+      const showUserInstance: User = await this.userService.show(userId);
 
       return showUserInstance;
     } catch (error) {
@@ -136,27 +137,27 @@ class UserController {
     next: NextFunction
   ): Promise<Response> => {
     try {
-      const userRepository: Repository<User> =
-        AppDataSource.getRepository(User);
+      const userId = req.userInfo.id;
 
-      const user: User | null = await userRepository.findOne({
-        where: { id: req.userInfo.id },
-      });
+      await this.userService.delete(userId);
 
-      if (!user) {
-        return res.status(404).json({
-          errors: ["Usuário não encontrado."],
-        });
-      }
-      await userRepository.update(user.id, { isActive: false });
-
-      return res.json({
-        message: "Usuário desativado com sucesso.",
-      });
+      return res
+        .status(200)
+        .json({ message: "Usuário desativado com sucesso." });
     } catch (error) {
       next(error);
     }
   };
+
+  public async findAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const users = await this.userService.findAll();
+
+      return res.status(200).json(users);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 // Export a singleton instance of UserController with the userService injected

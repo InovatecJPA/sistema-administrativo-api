@@ -1,9 +1,9 @@
 --- User Management Endpoints ---
-  Base URL - http://localhost:3010/v1/accounts/users/
+  Base URL - http://localhost:3010/v1/accounts/user/
 
   Create New User:
     HTTP Method: POST
-    Endpoint: http://localhost:3010/v1/accounts/users/
+    Endpoint: http://localhost:3010/v1/accounts/user/
     Body:
       {
         "password": "1234",
@@ -41,7 +41,7 @@
 
   List Users (Paginated):
     HTTP Method: GET
-    Endpoint: http://localhost:3010/v1/accounts/users/?page={PAGE_NUM}
+    Endpoint: http://localhost:3010/v1/accounts/user/?page={PAGE_NUM}
     Body: Not necessary
 
   User Sign up:

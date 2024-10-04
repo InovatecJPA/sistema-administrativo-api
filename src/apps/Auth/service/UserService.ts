@@ -235,23 +235,26 @@ export class UserService {
    * @returns A promise that resolves to an object containing the user's name, email, CPF, phone, and birth date.
    * @throws NotFoundError if the user is not found.
    */
-  public async show(userId: string): Promise<Object> {
+  public async show(userId: string): Promise<User> {
     const user = await this.findOne({ id: userId });
 
     if (!user) {
       throw new NotFoundError("Usuário não encontrado.");
     }
 
-    return {
-      name: user.getFirstName(),
-      last_name: user.getLastName(),
-      email: user.email,
-      cpf: user.cpf,
-      phone: user.phone,
-      birthDate: user.birthDate
-        ? moment(user.birthDate).format("DD/MM/YYYY")
-        : null,
-    };
+    return user
+  }
+
+  public async delete(userId: string): Promise<void> {
+    const user: User | null = await userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundError("Usuário não encontrado.");
+    }
+
+    await userRepository.update(user.id, { isActive: false });
   }
 }
 

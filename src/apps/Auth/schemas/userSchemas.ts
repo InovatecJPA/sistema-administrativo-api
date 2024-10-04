@@ -4,10 +4,10 @@ import CpfValidator from "../utils/CpfValidator";
 export const userResistrationSchema = z.object({
   cpf: z
     .string()
-    .min(11)
-    .transform((cpf) => cpf.replace(/\D/g, ""))
+    .transform((cpf) => cpf.replace(/\D/g, "")) // Remove caracteres não numéricos
+    .refine((cpf) => cpf.length === 11, { message: "CPF deve conter 11 dígitos." })
     .refine(CpfValidator.validate, {
-      message: "invalid",
+      message: "CPF inválido.",
     }),
   name: z.string(),
   email: z.string().email(),
