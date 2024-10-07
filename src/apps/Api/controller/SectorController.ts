@@ -1,3 +1,4 @@
+import { HttpStatusCode } from "axios";
 import { NextFunction, Request, Response } from "express";
 import { CustomValidationError } from "../../../error/CustomValidationError";
 import { NotFoundError } from "../../../error/NotFoundError";
@@ -43,7 +44,11 @@ export class SectorController {
   /**
    * Handles GET request to find a sector by its ID.
    */
-  public getById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  public getById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
     try {
       const { id } = req.params;
       const sector: Sector = await this.sectorService.findOneById(id);
@@ -73,7 +78,11 @@ export class SectorController {
   /**
    * Handles PUT request to update a sector by its ID.
    */
-  public put = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  public put = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
     try {
       const { name, description } = req.body;
       const sectorDto: SectorDto = new SectorDto(name, description);
@@ -98,7 +107,11 @@ export class SectorController {
   /**
    * Handles DELETE request to remove a sector by its ID.
    */
-  public deleteById = async (req: Request, res: Response, next: NextFunction ): Promise<Response | void> => {
+  public deleteById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
     try {
       const result = await this.sectorService.delete(req.params.id);
 
@@ -106,26 +119,74 @@ export class SectorController {
         throw new NotFoundError(`Sector with ID ${req.params.id} not found.`);
       }
 
-      return res.json({ message: "Sector deleted successfully" });
+      return res.status(200).json({ message: "Sector deleted successfully" });
     } catch (error) {
       next(error);
     }
   };
 
-  public postUser = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  public postUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    const { sectorId, userId } = req.params;
+
     try {
-      const result = await this.sectorService.addUser(req.params.id);
-
-      if (result.affected === 0) {
-        throw new NotFoundError(`Sector with ID ${req.params.id} not found.`);
-      }
-
-      return res.json({ message: "Sector deleted successfully" });
+      const sector = await this.sectorService.addUser(sectorId, userId);
+      return res.status(HttpStatusCode.Ok).json(sector);
     } catch (error) {
       next(error);
     }
   };
 
+  public deleteUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { sectorId, userId } = req.params;
+
+    try {
+      const sector = await this.sectorService.removeUser(sectorId, userId);
+      return res.status(HttpStatusCode.Ok).json(sector);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public postMessage = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { sectorId, messageId } = req.params;
+
+    try {
+      const sector = await this.sectorService.addMessage(sectorId, messageId);
+      return res.status(HttpStatusCode.Ok).json(sector);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public deleteMessage = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { sectorId, messageId } = req.params;
+
+    try {
+      const sector = await this.sectorService.removeMessage(
+        sectorId,
+        messageId
+      );
+      return res.status(HttpStatusCode.Ok).json(sector);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 // Initialize the controller with the service

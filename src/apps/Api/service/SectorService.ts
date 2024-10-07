@@ -1,14 +1,14 @@
 import { DeleteResult, FindOptionsWhere, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
+import { InvalidObjectError } from "../../../error/InvalidObjectError";
 import { NotFoundError } from "../../../error/NotFoundError";
 import ServiceInterface from "../../Auth/interface/ServiceInterface";
 import User from "../../Auth/model/User";
 import { userService, UserService } from "../../Auth/service/UserService";
+import Message from "../../Messaging/model/Message";
+import { messageService } from "../../Messaging/service/MessageService";
 import SectorDto from "../dto/SectorDto";
 import Sector from "../model/Sector";
-import { InvalidObjectError } from "../../../error/InvalidObjectError";
-import { messageService } from "../../Messaging/service/MessageService";
-import Message from "../../Messaging/model/Message";
 
 /**
  * Service class for handling Sector operations.
@@ -165,13 +165,13 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
   }
 
   async removeUser(sectorId: string, userId: string): Promise<Sector> {
-    const sector: Sector = sectorRepository.findOne({
-      where: { id: sectorId }, 
+    const sector: Sector = await sectorRepository.findOne({
+      where: { id: sectorId },
       relations: ["users"],
     });
 
-    if(!sector) {
-      throw new NotFoundError(`Sector with ID ${sectorId} not found.`)
+    if (!sector) {
+      throw new NotFoundError(`Sector with ID ${sectorId} not found.`);
     }
 
     sector.users = sector.users.filter((user) => user.id !== userId);
@@ -180,19 +180,19 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
   }
 
   async addMessage(sectorId: string, messageId: string): Promise<Sector> {
-    const sector: Sector = sectorRepository.findOne({
-      where: { id: sectorId }, 
+    const sector: Sector = await sectorRepository.findOne({
+      where: { id: sectorId },
       relations: ["messages"],
     });
 
-    if(!sector) {
-      throw new NotFoundError(`Sector with ID ${sectorId} not found.`)
+    if (!sector) {
+      throw new NotFoundError(`Sector with ID ${sectorId} not found.`);
     }
 
     const message: Message = await messageService.findOneById(sectorId);
 
-    if(!message) {
-      throw new NotFoundError(`Message with ID ${messageId} not found.`)
+    if (!message) {
+      throw new NotFoundError(`Message with ID ${messageId} not found.`);
     }
 
     sector.messages = [...(sector.messages || []), message];
@@ -201,20 +201,21 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
   }
 
   async removeMessage(sectorId: string, messageId: string): Promise<Sector> {
-    const sector: Sector = sectorRepository.findOne({
-      where: { id: sectorId }, 
+    const sector: Sector = await sectorRepository.findOne({
+      where: { id: sectorId },
       relations: ["messages"],
     });
 
-    if(!sector) {
-      throw new NotFoundError(`Sector with ID ${sectorId} not found.`)
+    if (!sector) {
+      throw new NotFoundError(`Sector with ID ${sectorId} not found.`);
     }
 
-    sector.messages = sector.messages.filter((message) => message.id !== messageId);
+    sector.messages = sector.messages.filter(
+      (message) => message.id !== messageId
+    );
 
     return sectorRepository.save(sector);
   }
-
 }
 
 // Create an instance of `SectorService` using the sector repository
