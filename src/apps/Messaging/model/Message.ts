@@ -7,6 +7,7 @@ import {
 } from "typeorm";
 import Sector from "../../Api/model/Sector";
 import User from "../../Auth/model/User";
+import Chat from "./Chat";
 
 /**
  * Represents a message in the system.
@@ -64,6 +65,16 @@ export default class Message {
   @ManyToOne(() => Sector, (sector) => sector.messages, { nullable: false })
   @JoinColumn({ name: "receiver_sector_id" })
   receiverGroup: Sector;
+
+  /**
+   * The chat that the message belongs to.
+   * @type {Chat}
+   * @memberof Message
+   */
+  @ManyToOne(() => Chat, (chat) => chat.messages, { nullable: false })
+  @JoinColumn({ name: "chat_id" })
+  chat: Chat;
+
 
   /**
    * The timestamp indicating when the message was sent.
