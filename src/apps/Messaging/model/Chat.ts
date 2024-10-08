@@ -22,6 +22,16 @@ export default class Chat {
     id: string;
 
     /**
+     * The name of the chat.
+     *
+     * @type {string}
+     * @memberof Chat
+     */
+
+    @Column({ type: "varchar", nullable: false })
+    name: string;
+
+    /**
      * The users that are part of the chat.
      * Many users can participate in many chats.
      *
