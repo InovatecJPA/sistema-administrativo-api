@@ -18,6 +18,7 @@ import Sector from "../../Api/model/Sector";
 import Message from "../../Messaging/model/Message";
 import Profile from "./Profile";
 import Token from "./Token";
+import Chat from "../../Messaging/model/Chat";
 
 /**
  * Represents a user in the system.
@@ -127,6 +128,17 @@ class User {
    */
   @OneToMany(() => Message, (message) => message.receiver)
   messagesReceived: Message[];
+
+  /**
+   * The chats associated with the user.
+   *
+   * @type {Chat[]}
+   * @memberof User
+   */
+  @OneToMany(() => Chat, (chat) => chat.users) // Deve ser a propriedade correta de Chat
+  chats: Chat[];
+
+
 
   /**
    * Indicates whether the user's account is active.
