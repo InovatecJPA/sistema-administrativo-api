@@ -7,8 +7,9 @@ import validateResponseMiddleware from "../../../middlewares/validateResponse";
 const router: Router = Router();
 router.use(validateResponseMiddleware);
 
-router.post("/", authMiddleware, UserController.show); // Detalhes do usuário logado
+router.get("/", authMiddleware, UserController.show); // Detalhes do usuário logado
 router.get("/list", authMiddleware, UserController.listPaginated); // lista todos os usuários
+router.get("/listAll", authMiddleware, UserController.listAll); // lista todos os usuários
 router.patch("/:id/update", authMiddleware, UserController.update);
 router.put("/:id/update/profile", authMiddleware, UserController.updateUserProfile);
 

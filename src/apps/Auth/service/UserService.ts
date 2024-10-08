@@ -8,7 +8,13 @@ import { UnauthorizedException } from "../../../error/UnauthorizedException";
 import ProfileDto from "../dto/ProfileDto";
 import Profile from "../model/Profile";
 import User from "../model/User";
-import { createUserDTO, UpdateUserDTO } from "../schemas/userSchemas";
+import {
+  createUserDTO,
+  Pagination,
+  ShowUserDTO,
+  UpdateUserDTO,
+  UserPaginatedResponse,
+} from "../schemas/userSchemas";
 import { profileService, ProfileService } from "./ProfileService";
 
 type UserSearchCriteria = Omit<User, "hashPassword" | "someOtherMethod">;
@@ -38,8 +44,102 @@ export class UserService {
    * Retrieves all users from the database.
    * @returns A promise that resolves to an array of all User entities.
    */
-  public async findAll(): Promise<User[]> {
-    return await this.userRepository.find();
+  public async findAll(): Promise<ShowUserDTO[]> {
+    const users: User[] = await this.userRepository.find({
+      relations: ["profile", "sector"],
+    });
+
+    const usersToShow: ShowUserDTO[] = users.map((user: User) => {
+      return {
+        id: user.id,
+        cpf: user.cpf,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        isActive: user.isActive,
+        profile: {
+          id: user.profile.id,
+          name: user.profile.name,
+          description: user.profile.description,
+        },
+        sector: user.sector
+          ? {
+              id: user.sector.id,
+              name: user.sector.name,
+              description: user.sector.description,
+            }
+          : null,
+      };
+    });
+
+    return usersToShow;
+  }
+
+  /**
+   * Retrieves users in a paginated format, limited to 10 users per page.
+   * Currently, filter options are not implemented.
+   *
+   * @param page - The page number to retrieve.
+   * @returns A promise that resolves to an object containing the list of users and pagination metadata.
+   */
+  public async findAllPaginated(page: number): Promise<UserPaginatedResponse> {
+    const limit = 10;
+    const offset = (page - 1) * limit;
+
+    const [users, countUser] = await this.userRepository.findAndCount({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        isActive: true,
+        phone: true,
+        cpf: true,
+      },
+      relations: {
+        profile: true,
+        sector: true,
+      },
+      order: {
+        id: "ASC",
+      },
+      skip: offset,
+      take: limit,
+    });
+
+    const lastPage = Math.ceil(countUser / limit);
+    const pagination: Pagination = {
+      path: "/users",
+      page: page,
+      prev_page_url: page - 1 >= 1 ? page - 1 : false,
+      next_page_url: page + 1 > lastPage ? false : page + 1,
+      total: countUser,
+    };
+
+    const listUser: ShowUserDTO[] = users.map((user) =>
+      ShowUserDTO.parse({
+        id: user.id,
+        cpf: user.cpf,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        isActive: user.isActive,
+        profile: {
+          id: user.profile.id,
+          name: user.profile.name,
+          description: user.profile.description,
+        },
+        sector: user.sector
+          ? {
+              id: user.sector.id,
+              name: user.sector.name,
+              description: user.sector.description,
+            }
+          : null,
+      })
+    );
+
+    // Retorna os usuários paginados e os metadados de paginação
+    return { listUser, pagination };
   }
 
   /**
@@ -54,7 +154,7 @@ export class UserService {
   ): Promise<User | null> {
     const user = await this.userRepository.findOne({
       where: conditions as FindOptionsWhere<User>,
-      relations: ["profile"],
+      relations: ["profile", "sector"],
     });
 
     return user ? user : null;
@@ -182,67 +282,40 @@ export class UserService {
   }
 
   /**
-   * Retrieves users in a paginated format, limited to 10 users per page.
-   * Currently, filter options are not implemented.
-   *
-   * @param page - The page number to retrieve.
-   * @returns A promise that resolves to an object containing the list of users and pagination metadata.
-   */
-  public async findAllPaginated(page: number) {
-    const limit = 10;
-    const offset = (page - 1) * limit;
-
-    // Retrieve users with their count for pagination
-    const [users, countUser] = await this.userRepository.findAndCount({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        isActive: true,
-        phone: true,
-        cpf: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      relations: {
-        profile: true,
-      },
-      order: {
-        id: "ASC",
-      },
-      skip: offset,
-      take: limit,
-    });
-
-    const lastPage = Math.ceil(countUser / limit); // Calculate the last page number
-
-    // Create pagination metadata
-    const pagination = {
-      path: "/users",
-      page: page,
-      prev_page_url: page - 1 >= 1 ? page - 1 : false,
-      next_page_url: page + 1 > lastPage ? false : page + 1,
-      total: countUser,
-    };
-
-    return { listUser: users, pagination: pagination };
-  }
-
-  /**
    * Shows detailed information for a specific user by ID.
    *
    * @param userId - The ID of the user to show details for.
    * @returns A promise that resolves to an object containing the user's name, email, CPF, phone, and birth date.
    * @throws NotFoundError if the user is not found.
    */
-  public async show(userId: string): Promise<User> {
-    const user = await this.findOne({ id: userId });
+  public async show(userId: string): Promise<ShowUserDTO> {
+    const user: User = await this.findOne({ id: userId });
 
     if (!user) {
       throw new NotFoundError("Usuário não encontrado.");
     }
+    console.log(user);
 
-    return user
+    return {
+      id: user.id,
+      cpf: user.cpf,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      isActive: user.isActive,
+      profile: {
+        id: user.profile.id,
+        name: user.profile.name,
+        description: user.profile.description,
+      },
+      sector: user.sector
+        ? {
+            id: user.sector.id,
+            name: user.sector.name,
+            description: user.sector.description,
+          }
+        : null,
+    };
   }
 
   public async delete(userId: string): Promise<void> {

@@ -2,7 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
 import User from "../model/User";
-import { UpdateUserDTO, updateUserSchema } from "../schemas/userSchemas";
+import {
+  ShowUserDTO,
+  UpdateUserDTO,
+  updateUserSchema,
+} from "../schemas/userSchemas";
 import { UserService, userService } from "../service/UserService";
 
 /**
@@ -111,13 +115,13 @@ class UserController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Object> => {
+  ): Promise<Response> => {
     try {
       const userId = req.userInfo.id;
 
-      const showUserInstance: User = await this.userService.show(userId);
+      const showUserInstance: ShowUserDTO = await this.userService.show(userId);
 
-      return showUserInstance;
+      return res.status(200).json(showUserInstance);
     } catch (error) {
       next(error);
     }
@@ -149,15 +153,16 @@ class UserController {
     }
   };
 
-  public async findAll(req: Request, res: Response, next: NextFunction) {
+  public listAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const users = await this.userService.findAll();
+      const users: ShowUserDTO[] = await this.userService.findAll();
+      // console.log(users);
 
       return res.status(200).json(users);
     } catch (error) {
       next(error);
     }
-  }
+  };
 }
 
 // Export a singleton instance of UserController with the userService injected
