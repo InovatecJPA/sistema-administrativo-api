@@ -325,25 +325,16 @@
     HTTP Method: POST
     Endpoint: http://localhost:3010/v1/chats/post
     Body:
-    {
-      "name": "chat 1",
-      "users": [
+   {
+    "name": "chat3",
+    "users": [
         {
-          "id": "user-uuid-1"
+            "id": "330050ef-bf2e-4dfa-ac2f-11f2e62f8a9b"
         },
         {
-          "id": "user-uuid-2"
+            "id": "2c4e5536-862b-4c82-b5d6-cb123d3a0049"
         }
-      ],
-      "messages": [
-        {
-          "text": "Hello, how are you?",
-          "sender": {
-            "id": "user-uuid-1"
-          },
-          "sendedAt": "2024-10-08T14:00:00Z"
-        }
-      ]
+    ],
   }
 
 
@@ -358,34 +349,18 @@
     HTTP Method: GET
     Endpoint: http://localhost:3010/v1/chats/getAll
 
-  Update Chat:
-    HTTP Method: PUT
-    Endpoint: http://localhost:3010/v1/chats/put/{chatId}
-    Path Parameters:
-    chatId: Unique identifier of the chat to be updated.
-    Body:
-      {
+  Get By Name:
+  HTTP Method: GET
+    Endpoint: http://localhost:3010/v1/chats/getByName/{name}
 
-      "name": "chat 2",
-      "users": [
-        {
-          "id": "user-uuid-1"
-        },
-        {
-          "id": "user-uuid-3"
-        }
-      ],
-      "messages": [
-        {
-          "text": "This is an updated message.",
-          "sender": {
-            "id": "user-uuid-1"
-          },
-          "sendedAt": "2024-10-08T15:00:00Z"
-        }
-      ]
-    }
-  Example URL: http://localhost:3010/v1/chats/put/123e4567-e89b-12d3-a456-426614174000
+
+  Add User to chat:
+  HTTP Method PUT
+  Endpoint:  http://localhost:3010/v1/chats/addUser/{chatId}
+  Body:
+  {
+    "userIds": ["user1-id", "user2-id", "user3-id"]
+  }
 
 
   Delete Chat:
