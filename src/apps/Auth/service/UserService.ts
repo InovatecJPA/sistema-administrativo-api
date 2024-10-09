@@ -10,6 +10,7 @@ import Profile from "../model/Profile";
 import User from "../model/User";
 import { createUserDTO, UpdateUserDTO } from "../schemas/userSchemas";
 import { profileService, ProfileService } from "./ProfileService";
+import { grantService } from "./GrantService";
 
 type UserSearchCriteria = Omit<User, "hashPassword" | "someOtherMethod">;
 
@@ -175,6 +176,46 @@ export class UserService {
     }
 
     user.profile = profile;
+
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
+  public async addGrantToUser(userId: string, grantId: string): Promise<User> {
+    const user = await this.findOne({ id: userId });
+
+    if (!user) {
+      throw new NotFoundError(`User with ID ${ userId } not found.`);
+    }
+
+    const grant = await grantService.findOne({ id: grantId });
+
+    if (!grant) {
+      throw new NotFoundError(`Grant with ID ${ grantId } not found.`);
+    }
+
+    user.grants.push(grant);
+
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
+  public async removeGrantFromUser(userId: string, grantId: string): Promise<User> {
+    const user = await this.findOne({ id: userId });
+
+    if (!user) {
+      throw new NotFoundError(`User with ID ${ userId } not found.`);
+    }
+
+    const grant = await grantService.findOne({ id: grantId });
+
+    if (!grant) {
+      throw new NotFoundError(`Grant with ID ${ grantId } not found.`);
+    }
+
+    user.grants = user.grants.filter((g) => g.id !== grant.id);
 
     await this.userRepository.save(user);
 
