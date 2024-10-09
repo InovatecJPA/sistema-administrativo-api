@@ -1,6 +1,5 @@
 import { FindOptionsWhere, Repository } from "typeorm";
 
-import moment from "moment";
 import AppDataSource from "../../../database/dbConnection";
 import { AlreadyExistsError } from "../../../error/AlreadyExistsError";
 import { NotFoundError } from "../../../error/NotFoundError";
