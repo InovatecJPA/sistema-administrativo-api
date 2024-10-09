@@ -55,6 +55,22 @@ export class ChatService {
     return this.chatRepository.save(chat);
   }
 
+  async removeUsers(chatId: string, userIds: string[]): Promise<Chat> {
+    const chat = await this.chatRepository.findOne({ where: { id: chatId }, relations: ["users"] });
+  
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+  
+    
+    chat.users = chat.users.filter(user => !userIds.includes(user.id));
+  
+    
+    return this.chatRepository.save(chat);
+  }
+  
+
+
   async delete(id: string): Promise<DeleteResult> {
     const chatToDelete = await this.chatRepository.findOneBy({ id });
     if (!chatToDelete) {
