@@ -16,7 +16,7 @@ chatRouter.use(validateResponseMiddleware);
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.createChat - Handles the logic of creating a chat.
  */
-chatRouter.post("/post",  chatController.createChat);
+chatRouter.post("/post", authMiddleware, chatController.createChat);
 
 /**
  * GET /chats/getById/:id
@@ -25,7 +25,7 @@ chatRouter.post("/post",  chatController.createChat);
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.getChatById - Handles the logic of retrieving a chat by its ID.
  */
-chatRouter.get("/getById/:id", chatController.getChatById);
+chatRouter.get("/getById/:id", authMiddleware,  chatController.getChatById);
 
 /**
  * GET /chats/getAll
@@ -34,17 +34,7 @@ chatRouter.get("/getById/:id", chatController.getChatById);
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.getAllChats - Handles the logic of retrieving all chats.
  */
-chatRouter.get("/getAll",  chatController.getAllChats);
-
-/**
- * PUT /chats/put/:id
- * Route to update a specific chat by its unique ID. Protected by authentication middleware.
- *
- * @middleware authMiddleware - Validates if the user is authenticated.
- * @controller chatController.updateChat - Handles the logic of updating a chat.
- */
-chatRouter.put("/addUser/:id",  chatController.addUsersToChat); //id = chatID
-
+chatRouter.get("/getAll", authMiddleware,  chatController.getAllChats);
 
 /**
  * GET /chats/getByName/:name
@@ -53,7 +43,35 @@ chatRouter.put("/addUser/:id",  chatController.addUsersToChat); //id = chatID
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.getByName - Handles the logic of retrieving a chat by its name.
  */
-chatRouter.get("/getByName/:name",  chatController.getByName);
+chatRouter.get("/getByName/:name", authMiddleware,  chatController.getByName);
+
+/**
+ * PUT /chats/addUser/:id
+ * Route to update a specific chat by its unique ID. Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller chatController.addUsersToChat - Handles the logic of updating a chat.
+ */
+chatRouter.put("/addUser/:id", authMiddleware,  chatController.addUsersToChat); //id = chatID
+
+/**
+ * PUT /chats/updateName/:id
+ * Route to update a specific chat by its unique ID. Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller chatController.updateChatName - Handles the logic of updating a chat.
+ */
+chatRouter.put("/updateName/:id", authMiddleware,  chatController.updateChatName); //id = chatID
+
+
+/**
+ * PUT /chats/removeUser/:id
+ * Route to update a specific chat by its unique ID. Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller chatController.removeUsersFromChat - Handles the logic of updating a chat.
+ */
+chatRouter.put("/removeUser/:id", authMiddleware,   chatController.removeUsersFromChat); //id = chatID
 
 
 /**
@@ -63,6 +81,6 @@ chatRouter.get("/getByName/:name",  chatController.getByName);
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.deleteChat - Handles the logic of deleting a chat.
  */
-chatRouter.delete("/delete/:id",  chatController.deleteChat);
+chatRouter.delete("/delete/:id", authMiddleware,  chatController.deleteChat);
 
 export default chatRouter;
