@@ -2,17 +2,18 @@ import { DeleteResult, FindOptionsWhere, Repository } from "typeorm";
 import Chat from "../model/Chat";
 import { InvalidObjectError } from "../../../error/InvalidObjectError";
 import AppDataSource from "../../../database/dbConnection";
+import User from "../../Auth/model/User";
 
 export class ChatService {
-
   private chatRepository: Repository<Chat>;
+  private userRepository: Repository<User>;
 
-  constructor(chatRepository: Repository<Chat>) {
+  constructor(chatRepository: Repository<Chat>, userRepository: Repository<User>) {
     this.chatRepository = chatRepository;
+    this.userRepository = userRepository;
   }
 
   async save(chat: Partial<Chat>): Promise<Chat> {
-    
     if (chat.users && chat.users.length > 0) {
       return this.chatRepository.save(chat);
     } else {
@@ -22,8 +23,8 @@ export class ChatService {
 
   async findOneById(id: string): Promise<Chat> {
     return this.chatRepository.findOne({
-        where: {id},
-        relations: ["users", "messages"],
+      where: { id },
+      relations: ["users", "messages"],
     });
   }
 
@@ -37,14 +38,21 @@ export class ChatService {
     return this.chatRepository.findOne({
       where: { name },
       relations: ["users", "messages"],
-  });
+    });
   }
 
-  async update(id: string, chat: Partial<Chat>): Promise<Chat> {
-    return this.chatRepository.save({
-      ...chat,
-      id,
-    });
+  async addUsers(chatId: string, userIds: string[]): Promise<Chat> {
+    const chat = await this.chatRepository.findOne({ where: { id: chatId }, relations: ["users"] });
+    
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+
+    const users = await this.userRepository.findByIds(userIds);
+
+    chat.users = [...chat.users, ...users];
+
+    return this.chatRepository.save(chat);
   }
 
   async delete(id: string): Promise<DeleteResult> {
@@ -56,6 +64,6 @@ export class ChatService {
   }
 }
 
-
 const chatRepository: Repository<Chat> = AppDataSource.getRepository(Chat);
-export const chatService = new ChatService(chatRepository);
+const userRepository: Repository<User> = AppDataSource.getRepository(User);
+export const chatService = new ChatService(chatRepository, userRepository);

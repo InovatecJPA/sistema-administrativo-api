@@ -87,17 +87,34 @@ class ChatController {
     }
   }
   
-
-  async updateChat(req: Request, res: Response): Promise<Response> {
+  async addUsersToChat(req: Request, res: Response): Promise<Response> {
     try {
-      const { id } = req.params;
-      const chatData = req.body;
-      const updatedChat = await chatService.update(id, chatData);
-      return res.status(200).json(updatedChat);
+      const { id } = req.params; // ID do chat
+      const { userIds }: { userIds: string[] } = req.body; // Lista de IDs dos usuários
+  
+      const updatedChat = await chatService.addUsers(id, userIds);
+  
+      if (updatedChat) {
+        const users = updatedChat.users.map(user => ({
+          id: user.id,
+          name: user.name
+        }));
+  
+        return res.status(200).json({
+          chatId: updatedChat.id,
+          users
+        });
+      }
+  
+      return res.status(404).json({ message: 'Chat not found' });
     } catch (error) {
-      return res.status(400).json({ message: error.message });
+      return res.status(500).json({ message: 'Internal server error', error: error.message });
     }
   }
+  
+  
+  
+  
 
   
   async deleteChat(req: Request, res: Response): Promise<Response> {
