@@ -38,6 +38,19 @@ class ChatController {
     }
   }
 
+  async getByName(req: Request, res: Response): Promise<Response> {
+    try {
+      const { name } = req.params;
+      const chat = await chatService.findByName(name);
+      if (!chat) {
+        return res.status(404).json({ message: "Chat not found" });
+      }
+      return res.status(200).json(chat);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
   async updateChat(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
