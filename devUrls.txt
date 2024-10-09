@@ -362,6 +362,15 @@
     "userIds": ["user1-id", "user2-id", "user3-id"]
   }
 
+  Remove User from chat:
+  HTTP Method PUT
+  Endpoint:  http://localhost:3010/v1/chats/removeUser/{chatId}
+  Body:
+  {
+    "userIds": ["user1-id", "user2-id", "user3-id"]
+  }
+
+
 
   Delete Chat:
     HTTP Method: DELETE
