@@ -138,6 +138,25 @@ class ChatController {
   }
   
   
+  async updateChatName(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params; // ID do chat
+      const { name }: { name: string } = req.body; // Novo nome
+  
+      const updatedChat = await chatService.updateChatName(id, name);
+  
+      if (updatedChat) {
+        return res.status(200).json({
+          chatId: updatedChat.id,
+          name: updatedChat.name,
+        });
+      }
+  
+      return res.status(404).json({ message: 'Chat not found' });
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+  }
   
 
   

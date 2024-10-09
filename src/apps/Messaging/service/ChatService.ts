@@ -69,6 +69,20 @@ export class ChatService {
     return this.chatRepository.save(chat);
   }
   
+  async updateChatName(chatId: string, newName: string): Promise<Chat> {
+    const chat = await this.chatRepository.findOne({ where: { id: chatId } });
+  
+    if (!chat) {
+      throw new Error('Chat not found');
+    }
+  
+    chat.name = newName; 
+  
+    return this.chatRepository.save(chat); 
+  }
+  
+
+  
 
 
   async delete(id: string): Promise<DeleteResult> {
