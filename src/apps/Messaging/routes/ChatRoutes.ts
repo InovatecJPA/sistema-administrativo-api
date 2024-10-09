@@ -16,7 +16,7 @@ chatRouter.use(validateResponseMiddleware);
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.createChat - Handles the logic of creating a chat.
  */
-chatRouter.post("/post", authMiddleware, chatController.createChat);
+chatRouter.post("/post",  chatController.createChat);
 
 /**
  * GET /chats/getById/:id
@@ -25,7 +25,7 @@ chatRouter.post("/post", authMiddleware, chatController.createChat);
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.getChatById - Handles the logic of retrieving a chat by its ID.
  */
-chatRouter.get("/getById/:id", authMiddleware, chatController.getChatById);
+chatRouter.get("/getById/:id", chatController.getChatById);
 
 /**
  * GET /chats/getAll
@@ -34,7 +34,7 @@ chatRouter.get("/getById/:id", authMiddleware, chatController.getChatById);
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.getAllChats - Handles the logic of retrieving all chats.
  */
-chatRouter.get("/getAll", authMiddleware, chatController.getAllChats);
+chatRouter.get("/getAll",  chatController.getAllChats);
 
 /**
  * PUT /chats/put/:id
@@ -43,7 +43,7 @@ chatRouter.get("/getAll", authMiddleware, chatController.getAllChats);
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.updateChat - Handles the logic of updating a chat.
  */
-chatRouter.put("/put/:id", authMiddleware, chatController.updateChat);
+chatRouter.put("/addUser/:id",  chatController.addUsersToChat); //id = chatID
 
 
 /**
@@ -53,7 +53,7 @@ chatRouter.put("/put/:id", authMiddleware, chatController.updateChat);
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.getByName - Handles the logic of retrieving a chat by its name.
  */
-chatRouter.get("/getByName/:name", authMiddleware, chatController.getByName);
+chatRouter.get("/getByName/:name",  chatController.getByName);
 
 
 /**
@@ -63,6 +63,6 @@ chatRouter.get("/getByName/:name", authMiddleware, chatController.getByName);
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller chatController.deleteChat - Handles the logic of deleting a chat.
  */
-chatRouter.delete("/delete/:id", authMiddleware, chatController.deleteChat);
+chatRouter.delete("/delete/:id",  chatController.deleteChat);
 
 export default chatRouter;
