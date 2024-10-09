@@ -45,6 +45,17 @@ chatRouter.get("/getAll", authMiddleware, chatController.getAllChats);
  */
 chatRouter.put("/put/:id", authMiddleware, chatController.updateChat);
 
+
+/**
+ * GET /chats/getByName/:name
+ * Route to retrieve a specific chat by its name. Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller chatController.getByName - Handles the logic of retrieving a chat by its name.
+ */
+chatRouter.get("/getByName/:name", authMiddleware, chatController.getByName);
+
+
 /**
  * DELETE /chats/delete/:id
  * Route to delete a specific chat by its unique ID. Protected by authentication middleware.

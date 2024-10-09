@@ -30,6 +30,10 @@ export class ChatService {
     });
   }
 
+  async findByName(name: string): Promise<Chat> {
+    return this.chatRepository.findOneBy({ name });
+  }
+
   async update(id: string, chat: Partial<Chat>): Promise<Chat> {
     return this.chatRepository.save({
       ...chat,

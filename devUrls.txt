@@ -326,6 +326,7 @@
     Endpoint: http://localhost:3010/v1/chats/post
     Body:
     {
+      "name": "chat 1",
       "users": [
         {
           "id": "user-uuid-1"
@@ -364,6 +365,8 @@
     chatId: Unique identifier of the chat to be updated.
     Body:
       {
+
+      "name": "chat 2",
       "users": [
         {
           "id": "user-uuid-1"
