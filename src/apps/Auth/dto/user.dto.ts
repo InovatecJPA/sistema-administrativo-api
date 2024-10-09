@@ -1,3 +1,5 @@
+import Grant from "../model/Grant";
+
 /**
  * Interface representing the information of a user in the system.
  */
@@ -44,6 +46,8 @@ export interface userInfo {
    * @type {string | undefined}
    */
   routeFilter?: string;
+
+  grants?: Grant[];
 }
 
 /**

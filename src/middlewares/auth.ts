@@ -1,7 +1,11 @@
-import * as jwt from "../config/jwt";
-import ProfileGrant from "../apps/Auth/model/ProfileGrant";
-import * as UserDTO from "../apps/Auth/dto/user.dto";
 import { NextFunction, Request, Response } from "express";
+import * as UserDTO from "../apps/Auth/dto/user.dto";
+import Grant from "../apps/Auth/model/Grant";
+import Profile from "../apps/Auth/model/Profile";
+import ProfileGrant from "../apps/Auth/model/ProfileGrant";
+import { grantService } from "../apps/Auth/service/GrantService";
+import { profileService } from "../apps/Auth/service/ProfileService";
+import * as jwt from "../config/jwt";
 import AppDataSource from "../database/dbConnection";
 
 /**
@@ -84,6 +88,34 @@ const filterRoute = (
   );
 
   userInfo.routeFilter = filterableRoutes[index];
+};
+
+// currentPath, user, userProfile, userGrants, profiles, grants,
+const checkoutUserGrants = (userInfo: UserDTO.userInfo) => {
+  const currentPath: string = userInfo.path;
+  const userProfileId: string = userInfo.profile_id;
+  const userGrants: Grant[] = userInfo.grants;
+  const profiles: Profile[] = [];
+  profileService.findAll().then((profiles: Profile[]) => {
+    profiles.push();
+  });
+
+  const grants: Grant[] = [];
+  grantService.findAll().then((grants: Grant[]) => {
+    grants.push();
+  });
+
+  const userProfile: Profile = profiles.find(
+    (profile) => profile.id === userProfileId
+  );
+
+  const profileGrants: Grant[] = grants.filter((grant) =>
+    grant.associatedProfiles.some((profile) => profile === userProfile)
+  );
+
+  profileGrants.forEach((element) => {
+    console.log(element);
+  });
 };
 
 /**
