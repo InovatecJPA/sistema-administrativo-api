@@ -103,6 +103,32 @@ class UserController {
     }
   };
 
+  public addGrantToUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = req.userInfo.id;
+      const grantId = req.body.grantId;
+
+      await this.userService.addGrantToUser(userId, grantId);
+
+      res.status(200).json({ message: "Grant added with success." });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public removeGrantFromUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = req.userInfo.id;
+      const grantId = req.body.grantId;
+
+      await this.userService.removeGrantFromUser(userId, grantId);
+
+      res.status(200).json({ message: "Grant removed with success." });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   /**
    * Retrieves detailed information for a user based on the `userInfo.id` from the request.
    *

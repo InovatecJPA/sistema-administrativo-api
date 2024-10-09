@@ -7,6 +7,8 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -19,6 +21,7 @@ import Message from "../../Messaging/model/Message";
 import Profile from "./Profile";
 import Token from "./Token";
 import Chat from "../../Messaging/model/Chat";
+import Grant from "./Grant";
 
 /**
  * Represents a user in the system.
@@ -110,6 +113,26 @@ class User {
   })
   @JoinColumn({ name: "sector_id" })
   sector: Sector;
+
+  /**
+   * The grants allowed for a user.
+   *
+   * @type {Grant[]}
+   * @memberof User
+   */
+  @ManyToMany(() => Grant, { eager: true })
+  @JoinTable({
+    name: "user_grants",
+    joinColumn: {
+      name: "user_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "grant_id",
+      referencedColumnName: "id",
+    },
+  })
+  grants: Grant[];
 
   /**
    * The messages sent by the user.
