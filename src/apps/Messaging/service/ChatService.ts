@@ -21,7 +21,10 @@ export class ChatService {
   }
 
   async findOneById(id: string): Promise<Chat> {
-    return this.chatRepository.findOneBy({ id });
+    return this.chatRepository.findOne({
+        where: {id},
+        relations: ["users", "messages"],
+    });
   }
 
   async findAll(): Promise<Chat[]> {
@@ -31,7 +34,10 @@ export class ChatService {
   }
 
   async findByName(name: string): Promise<Chat> {
-    return this.chatRepository.findOneBy({ name });
+    return this.chatRepository.findOne({
+      where: { name },
+      relations: ["users", "messages"],
+  });
   }
 
   async update(id: string, chat: Partial<Chat>): Promise<Chat> {
