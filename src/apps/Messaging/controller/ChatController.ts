@@ -86,7 +86,7 @@ class ChatController {
       return res.status(500).json({ message: error.message });
     }
   }
-  
+
   async addUsersToChat(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params; // ID do chat
@@ -111,7 +111,31 @@ class ChatController {
       return res.status(500).json({ message: 'Internal server error', error: error.message });
     }
   }
+
+  async removeUsersFromChat(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params; // ID do chat
+      const { userIds }: { userIds: string[] } = req.body; // IDs dos usuários a serem removidos
   
+      const updatedChat = await chatService.removeUsers(id, userIds);
+  
+      if (updatedChat) {
+        const users = updatedChat.users.map(user => ({
+          id: user.id,
+          name: user.name
+        }));
+  
+        return res.status(200).json({
+          chatId: updatedChat.id,
+          users
+        });
+      }
+  
+      return res.status(404).json({ message: 'Chat not found' });
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+  }
   
   
   
