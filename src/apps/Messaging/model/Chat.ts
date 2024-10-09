@@ -53,6 +53,7 @@ export default class Chat {
      * @type {Message[]}
      * @memberof Chat
      */
-    @OneToMany(() => Message, (message) => message.chat)
+    @OneToMany(() => Message, (message) => message.chat, { eager: true })
     messages: Message[];
+
 }
