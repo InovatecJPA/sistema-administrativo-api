@@ -370,6 +370,13 @@
     "userIds": ["user1-id", "user2-id", "user3-id"]
   }
 
+  Update Name for chat:
+  HTTP Method PUT
+  Endpoint:  http://localhost:3010/v1/chats/updateName/{chatId}
+  Body:
+  {
+    "name": "New Chat Name"
+  }
 
 
   Delete Chat:
