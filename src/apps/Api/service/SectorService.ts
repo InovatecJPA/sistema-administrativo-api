@@ -44,16 +44,17 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
    * @throws {InvalidObjectError} If the provided DTO is invalid.
    */
   public async save(objectDto: Partial<SectorDto>): Promise<Sector> {
-    if (!objectDto.isValid()) {
+    if (!objectDto.name || !objectDto.description) {
       throw new InvalidObjectError(
-        'All fields of the new sector must be non-null or different of "" .'
+        'All fields of the new sector must be non-null or different from "" .'
       );
     }
 
-    const newSector: Sector = objectDto.toSector();
+    const newSector: Sector = new Sector(objectDto.name, objectDto.description);
 
     return await this.sectorRepository.save(newSector);
-  }
+}
+
 
   async findOne(object: Partial<Sector>): Promise<Sector> {
     const projectRecovered: Sector = await this.sectorRepository.findOne({
