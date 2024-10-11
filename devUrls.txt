@@ -38,6 +38,16 @@
         "email": "test@gmail.com",
         "phone": "(83)99907-7889"
       }
+      or
+      {
+        "password": "123456",
+        "cpf": "06093240479",
+        "name": "joao",
+        "email": "naosei0901@gmail.com",
+        "phone": "asdasdasda",
+        "profileName":"admin"
+      }
+
 
   List Users (Paginated):
     HTTP Method: GET

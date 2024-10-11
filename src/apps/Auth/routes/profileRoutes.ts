@@ -1,18 +1,18 @@
 import { Router } from 'express';
 
 import { authMiddleware } from '../../../middlewares/auth';
-import profileController from '../controller/ProfileController';
 import validateResponseMiddleware from '../../../middlewares/validateResponse';
+import profileController from '../controller/ProfileController';
 
-const router: Router = Router();
-router.use(validateResponseMiddleware);
+const profileRouter: Router = Router();
+profileRouter.use(validateResponseMiddleware);
 
-router.get("/store", authMiddleware, profileController.store);
-router.post("/post", authMiddleware, profileController.post);
-router.get("/getByName/:name", authMiddleware, profileController.get);
-router.get("/getById/:id", authMiddleware, profileController.getById);
-router.get("/getAll", authMiddleware, profileController.getAll);
-router.put("/put/:id", authMiddleware, profileController.put);
-router.delete("/delete/:id", authMiddleware, profileController.deleteById);
+profileRouter.get("/store", profileController.store);
+profileRouter.post("/post", authMiddleware, profileController.post);
+profileRouter.get("/getByName/:name", authMiddleware, profileController.get);
+profileRouter.get("/getById/:id", authMiddleware, profileController.getById);
+profileRouter.get("/getAll", authMiddleware, profileController.getAll);
+profileRouter.put("/put/:id", authMiddleware, profileController.put);
+profileRouter.delete("/delete/:id", authMiddleware, profileController.deleteById);
 
-export default router;
+export default profileRouter;

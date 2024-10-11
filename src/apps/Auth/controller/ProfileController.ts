@@ -33,7 +33,8 @@ export class ProfileController {
       secretario: 'secretario',
       gerente_administrativo: 'gerente_administrativo',
       coordenador_projetos: 'coordenador_projetos',
-      coordenador_TI: 'coordenador_TI'
+      coordenador_TI: 'coordenador_TI',
+      admin: 'Administrador do sistema',
     };
 
     try {

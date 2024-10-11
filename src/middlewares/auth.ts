@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import * as UserDTO from "../apps/Auth/dto/user.dto";
 import Grant from "../apps/Auth/model/Grant";
 import { grantService } from '../apps/Auth/service/GrantService';
+import { profileService } from "../apps/Auth/service/ProfileService";
 import * as jwt from "../config/jwt";
 
 /**
@@ -139,11 +140,16 @@ export const authMiddleware = async (
   );
 
   // Retrieve profile grants from the database
-  const grantsWithId: Grant[] = await grantService.findAllByAssociatedProfile(userInfo.profileId);
+  const grantsWithId: Grant[] = await grantService.findAllByAssociatedProfile(userInfo.profile_id);
+  console.log(userInfo)
   console.log("grantsWithId: ", grantsWithId);
 
+  // If the user has the Admin profile
+  userInfo.profile = await profileService.findOneById(userInfo.profile_id);
+  userInfo.isAdmin = userInfo.profile.name === "admin" ? true : false;
+
   // Check if the user has permission to access the route
-  if (!userInfo.isAdmin || !checkRoutePermission(req.userInfo, grantsWithId)) {
+  if (!userInfo.isAdmin && !checkRoutePermission(req.userInfo, grantsWithId)) {
     return res.status(403).json({ error: "Access denied" });
   } else {
     try {
