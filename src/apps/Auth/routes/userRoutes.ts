@@ -12,8 +12,6 @@ router.get("/list", authMiddleware, UserController.listPaginated); // lista todo
 router.get("/listAll", authMiddleware, UserController.listAll); // lista todos os usuários
 router.patch("/:id/update", authMiddleware, UserController.update);
 router.put("/:id/update/profile", authMiddleware, UserController.updateUserProfile);
-router.put("/:id/update/grant", authMiddleware, UserController.addGrantToUser);
-router.delete("/:id/remove/grant", authMiddleware, UserController.removeGrantFromUser);
 
 //não atualizados
 router.delete("/:id", UserController.delete);
