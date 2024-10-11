@@ -21,7 +21,7 @@ export default class SectorDto {
    * @public
    * Private description of the sector.
    */
-  public description: string;
+  public description?: string;
 
   /**
    * Constructor for creating an instance of `SectorDto`.
@@ -29,9 +29,9 @@ export default class SectorDto {
    * @param {string} name - The name of the sector.
    * @param {string} [id] - Optional ID of the sector.
    */
-  constructor(name: string, description: string, id?: string) {
+  constructor(name: string, description?: string, id?: string) {
     this.name = name;
-    this.description = description;
+    this.description = "Default description.";
     this.id = id;
   }
 
