@@ -1,7 +1,7 @@
-import Grant from "../model/Grant";
+import { CustomValidationError } from "../../../error/CustomValidationError";
 import GrantDto from "../dto/GrantDto";
 import ServiceInterface from "../interface/ServiceInterface";
-import { CustomValidationError } from "../../../error/CustomValidationError";
+import Grant from "../model/Grant";
 
 import { DeleteResult, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
@@ -69,6 +69,15 @@ export class GrantService implements ServiceInterface<Grant, GrantDto> {
   async findAll(): Promise<Grant[] | null> {
     return await this.grantRepository.find();
   }
+
+  async findAllByAssociatedProfile(profileId: string): Promise<Grant[] | null> {
+    const grants = await this.grantRepository
+      .createQueryBuilder('grant')
+      .innerJoin('grant.associatedProfiles', 'profile')
+      .where('profile.id = :profileId', { profileId })
+      .getMany();
+
+    return grants;}
 
   /**
    * Updates an existing `Grant` entity.

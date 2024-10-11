@@ -1,23 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import * as UserDTO from "../apps/Auth/dto/user.dto";
 import Grant from "../apps/Auth/model/Grant";
-import Profile from "../apps/Auth/model/Profile";
-import ProfileGrant from "../apps/Auth/model/ProfileGrant";
-import { grantService } from "../apps/Auth/service/GrantService";
-import { profileService } from "../apps/Auth/service/ProfileService";
+import { grantService } from '../apps/Auth/service/GrantService';
 import * as jwt from "../config/jwt";
-import AppDataSource from "../database/dbConnection";
 
 /**
- * Checks if the user has permission to access a specific route based on their profile grants.
+ * Checks if the user has permission to access a specific route based on their profile and grants.
  * @param userInfo - The user information including the requested path.
- * @param profileGrants - The list of profile grants associated with the user's profile.
+ * @param Grant[] - The list of grants associated with the user's profile.
  * @returns `true` if the user has permission to access the route, otherwise `false`.
  */
-const checkRoutePermission = (
-  userInfo: UserDTO.userInfo,
-  profileGrants: ProfileGrant[]
-) => {
+const checkRoutePermission = (userInfo: UserDTO.userInfo, grantsWithId: Grant[]) => {
+
   console.log(userInfo.path);
   // Verifica se o caminho atual é permitido por padrão
   const defaultAllowedPaths = [
@@ -46,8 +40,8 @@ const checkRoutePermission = (
   const uuid = uuidMatches ? uuidMatches[0] : null;
 
   // Generate a list of routes with UUIDs replaced if applicable
-  const grants = profileGrants.map((profileGrant) => {
-    const { route } = profileGrant.grant;
+  const grants = grantsWithId.map((grant) => {
+    const { route } = grant;
     return route.includes(":id") && uuid ? route.replace(":id", uuid) : route;
   });
 
@@ -60,63 +54,37 @@ const checkRoutePermission = (
  * @param userInfo - The user information including the requested path.
  * @param profileGrants - The list of profile grants associated with the user's profile.
  */
-const filterRoute = (
-  userInfo: UserDTO.userInfo,
-  profileGrants: ProfileGrant[]
-): void => {
-  // Regex pattern for UUIDs in routes
-  const uuidRegex =
-    /(\{)?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(\})?/;
-  const matches = userInfo.path.match(uuidRegex);
-  const uuid = matches ? matches[0] : null;
+// const filterRoute = (
+//   userInfo: UserDTO.userInfo,
+//   profileGrants: ProfileGrant[]
+// ): void => {
+//   // Regex pattern for UUIDs in routes
+//   const uuidRegex =
+//     /(\{)?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(\})?/;
+//   const matches = userInfo.path.match(uuidRegex);
+//   const uuid = matches ? matches[0] : null;
 
-  // Map grants to routes, replacing UUID if applicable
-  const grants = profileGrants.map((profileGrant) => {
-    const { route } = profileGrant.grant;
-    return route.includes(":id") && uuid ? route.replace(":id", uuid) : route;
-  });
+//   // Map grants to routes, replacing UUID if applicable
+//   const grants = profileGrants.map((profileGrant) => {
+//     const { route } = profileGrant.grant;
+//     return route.includes(":id") && uuid ? route.replace(":id", uuid) : route;
+//   });
 
-  // Find the index of the user's path in the list of permitted routes
-  const index = grants.indexOf(userInfo.path);
+//   // Find the index of the user's path in the list of permitted routes
+//   const index = grants.indexOf(userInfo.path);
 
-  // If the route is not found, no filtering is done
-  if (index === -1) return;
+//   // If the route is not found, no filtering is done
+//   if (index === -1) return;
 
-  // Map and set the route filter based on the index
-  const filterableRoutes = profileGrants.map(
-    (profileGrant) => profileGrant.grant.routeFilter
-  );
+//   // Map and set the route filter based on the index
+//   const filterableRoutes = profileGrants.map(
+//     (profileGrant) => profileGrant.grant.routeFilter
+//   );
 
-  userInfo.routeFilter = filterableRoutes[index];
-};
+//   userInfo.routeFilter = filterableRoutes[index];
+// };
 
 // currentPath, user, userProfile, userGrants, profiles, grants,
-const checkoutUserGrants = (userInfo: UserDTO.userInfo) => {
-  const currentPath: string = userInfo.path;
-  const userProfileId: string = userInfo.profile_id;
-  const userGrants: Grant[] = userInfo.grants;
-  const profiles: Profile[] = [];
-  profileService.findAll().then((profiles: Profile[]) => {
-    profiles.push();
-  });
-
-  const grants: Grant[] = [];
-  grantService.findAll().then((grants: Grant[]) => {
-    grants.push();
-  });
-
-  const userProfile: Profile = profiles.find(
-    (profile) => profile.id === userProfileId
-  );
-
-  const profileGrants: Grant[] = grants.filter((grant) =>
-    grant.associatedProfiles.some((profile) => profile === userProfile)
-  );
-
-  profileGrants.forEach((element) => {
-    console.log(element);
-  });
-};
 
 /**
  * Middleware function to handle authentication and authorization.
@@ -171,26 +139,16 @@ export const authMiddleware = async (
   );
 
   // Retrieve profile grants from the database
-  const profileGrantRepository = AppDataSource.getRepository(ProfileGrant);
-
-  const profileGrants = await profileGrantRepository.find({
-    where: { profile: { id: userInfo.profileId } }, // Filter grants by the user's profile ID
-    relations: ["grant"], // Include the related Grant entity
-    select: {
-      grant: {
-        route: true,
-        routeFilter: true,
-      },
-    },
-  });
+  const grantsWithId: Grant[] = await grantService.findAllByAssociatedProfile(userInfo.profileId);
+  console.log("grantsWithId: ", grantsWithId);
 
   // Check if the user has permission to access the route
-  if (!userInfo.isAdmin && !checkRoutePermission(req.userInfo, profileGrants)) {
+  if (!userInfo.isAdmin || !checkRoutePermission(req.userInfo, grantsWithId)) {
     return res.status(403).json({ error: "Access denied" });
   } else {
     try {
       // Filter and set the route filter if applicable
-      filterRoute(req.userInfo, profileGrants);
+      // filterRoute(req.userInfo, profileGrants);
       return next(); // Proceed to the next middleware or route handler
     } catch (error) {
       console.error(error);
