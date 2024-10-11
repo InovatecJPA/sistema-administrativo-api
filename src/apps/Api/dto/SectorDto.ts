@@ -31,7 +31,7 @@ export default class SectorDto {
    */
   constructor(name: string, description?: string, id?: string) {
     this.name = name;
-    this.description = "Default description.";
+    this.description = description || "Description was not provided";
     this.id = id;
   }
 

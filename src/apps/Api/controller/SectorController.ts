@@ -23,18 +23,17 @@ export class SectorController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { name, userList } = req.body;
-      const sectorDto: SectorDto = new SectorDto(name);
+      const { name, description, userList } = req.body;
+      const sectorDto: SectorDto = new SectorDto(name, description);
 
       if (!sectorDto.isValid()) {
         throw new CustomValidationError(
-          "The name of the sector and the description are required."
+          "The name of the sector is required."
         );
       }
-
-      const savedSector: Sector = await this.sectorService.save(
-        sectorDto.toSector()
-      );
+      
+      const savedSector: Sector = await this.sectorService.save(sectorDto.toSector());
+      console.log(savedSector);
 
       if (!userList || userList.length === 0) {
         return res.status(201).json(savedSector);     
