@@ -2,6 +2,7 @@ import { HttpStatusCode } from "axios";
 import { NextFunction, Request, Response } from "express";
 import { CustomValidationError } from "../../../error/CustomValidationError";
 import { NotFoundError } from "../../../error/NotFoundError";
+import { userService } from "../../Auth/service/UserService";
 import SectorDto from "../dto/SectorDto";
 import Sector from "../model/Sector";
 import { sectorService, SectorService } from "../service/SectorService";
@@ -22,8 +23,8 @@ export class SectorController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { name, description } = req.body;
-      const sectorDto: SectorDto = new SectorDto(name, description);
+      const { name, userList } = req.body;
+      const sectorDto: SectorDto = new SectorDto(name);
 
       if (!sectorDto.isValid()) {
         throw new CustomValidationError(
@@ -34,6 +35,17 @@ export class SectorController {
       const savedSector: Sector = await this.sectorService.save(
         sectorDto.toSector()
       );
+
+      if (!userList || userList.length === 0) {
+        return res.status(201).json(savedSector);     
+      }
+
+      userList.array.forEach(user => {
+        if(!userService.findOne(user.id)) {
+          throw new NotFoundError(`User with ID ${ user.id } not found`);
+        }
+        this.sectorService.addUser(savedSector.id, user);
+      });
 
       return res.status(201).json(savedSector);
     } catch (error: any) {
