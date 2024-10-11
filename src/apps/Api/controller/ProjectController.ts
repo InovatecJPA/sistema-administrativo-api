@@ -1,9 +1,9 @@
+import { HttpStatusCode } from "axios";
 import { NextFunction, Request, Response } from "express";
 import { NotFoundError } from "../../../error/NotFoundError";
 import ProjectDto from "../dto/ProjectDto";
 import Project from "../model/Project";
 import { projectService, ProjectService } from "../service/ProjectService";
-import { HttpStatusCode } from "axios";
 
 export class ProjectController {
   private projectService: ProjectService;
@@ -35,7 +35,7 @@ export class ProjectController {
   };
 
   /**
-   * PUT /projects/:id
+   * PUT /projects/:projectId
    * Updates an existing project by its ID.
    *
    * @param req - The HTTP request object, containing project ID in the params and updated data in the body.
@@ -49,10 +49,10 @@ export class ProjectController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { id } = req.params;
+      const { projectId } = req.params;
 
       const updatedProject: Project = await this.projectService.update(
-        id,
+        projectId,
         req.body
       );
       return res.status(HttpStatusCode.Ok).json(updatedProject);
@@ -62,7 +62,7 @@ export class ProjectController {
   };
 
   /**
-   * DELETE /projects/:id
+   * DELETE /projects/:projectId
    * Deletes a project by its ID.
    *
    * @param req - The HTTP request object, containing the project ID in the params.
@@ -76,11 +76,11 @@ export class ProjectController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const result = await this.projectService.delete(req.params.id);
+      const result = await this.projectService.delete(req.params.projectId);
 
       // If no project was deleted, throw a NotFoundError
       if (result.affected === 0) {
-        throw new NotFoundError(`Project with ID ${req.params.id} not found.`);
+        throw new NotFoundError(`Project with ID ${req.params.projectId} not found.`);
       }
 
       return res.json({ message: "Project deleted successfully" });
@@ -90,7 +90,7 @@ export class ProjectController {
   };
 
   /**
-   * GET /projects/:id
+   * GET /projects/:projectId
    * Retrieves a specific project by its unique ID.
    *
    * @param req - The HTTP request object, containing the project ID in the params.
@@ -105,12 +105,12 @@ export class ProjectController {
   ): Promise<Response | void> => {
     try {
       const project: Project = await this.projectService.findOneById(
-        req.params.id
+        req.params.projectId
       );
 
       // If no project is found, throw a NotFoundError
       if (!project) {
-        throw new NotFoundError(`Project with ID ${req.params.id} not found.`);
+        throw new NotFoundError(`Project with ID ${req.params.projectId} not found.`);
       }
 
       return res.status(HttpStatusCode.Ok).json(project);
@@ -169,106 +169,178 @@ export class ProjectController {
   };
 
   /**
- * PUT /projects/:projectId/projectRequests/:projectRequestId
- * Updates the project request for a specific project by its request ID.
- *
- * @param req - The HTTP request object, containing the project ID and request ID in the params.
- * @param res - The HTTP response object.
- * @param next - Function to pass errors to the middleware.
- * @returns A response with the updated project or an error.
- */
-async putProjectRequest(req: Request, res: Response, next: NextFunction): Promise<Response> {
-  const { projectId, projectRequestId } = req.params;
+   * PUT /projects/:projectId/projectRequests/:projectRequestId
+   * Updates the project request for a specific project by its request ID.
+   *
+   * @param req - The HTTP request object, containing the project ID and request ID in the params.
+   * @param res - The HTTP response object.
+   * @param next - Function to pass errors to the middleware.
+   * @returns A response with the updated project or an error.
+   */
+  async putProjectRequest(req: Request, res: Response, next: NextFunction): Promise<Response> {
+    const { projectId, projectRequestId } = req.params;
 
-  try {
-    const updatedProject = await projectService.setProjectRequest(projectId, projectRequestId);
-    return res.status(HttpStatusCode.Ok).json(updatedProject);
-  } catch (error) {
-    next(error);
+    try {
+      const updatedProject = await projectService.setProjectRequest(projectId, projectRequestId);
+      return res.status(HttpStatusCode.Ok).json(updatedProject);
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-/**
- * POST /projects/:projectId/coordinators/:coordinatorId
- * Adds a coordinator to a specific project by their user ID.
- *
- * @param req - The HTTP request object, containing the project ID and coordinator ID in the params.
- * @param res - The HTTP response object.
- * @param next - Function to pass errors to the middleware.
- * @returns A response with the updated project or an error.
- */
-async postCoordinator(req: Request, res: Response, next: NextFunction): Promise<Response> {
-  const { projectId, coordinatorId } = req.params;
+  /**
+   * POST /projects/:projectId/coordinators/:coordinatorId
+   * Adds a coordinator to a specific project by their user ID.
+   *
+   * @param req - The HTTP request object, containing the project ID and coordinator ID in the params.
+   * @param res - The HTTP response object.
+   * @param next - Function to pass errors to the middleware.
+   * @returns A response with the updated project or an error.
+   */
+  async postCoordinator(req: Request, res: Response, next: NextFunction): Promise<Response> {
+    const { projectId, coordinatorId } = req.params;
 
-  try {
-    const updatedProject = await projectService.addCoordinator(projectId, coordinatorId);
-    return res.status(HttpStatusCode.Ok).json(updatedProject);
-  } catch (error) {
-    next(error);
+    try {
+      const updatedProject = await projectService.addCoordinator(projectId, coordinatorId);
+      return res.status(HttpStatusCode.Ok).json(updatedProject);
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-/**
- * DELETE /projects/:projectId/coordinators/:coordinatorId
- * Removes a coordinator from a specific project by their user ID.
- *
- * @param req - The HTTP request object, containing the project ID and coordinator ID in the params.
- * @param res - The HTTP response object.
- * @param next - Function to pass errors to the middleware.
- * @returns A response with the updated project or an error.
- */
-async deleteCoordinator(req: Request, res: Response, next: NextFunction): Promise<Response> {
-  const { projectId, coordinatorId } = req.params;
+  /**
+   * DELETE /projects/:projectId/coordinators/:coordinatorId
+   * Removes a coordinator from a specific project by their user ID.
+   *
+   * @param req - The HTTP request object, containing the project ID and coordinator ID in the params.
+   * @param res - The HTTP response object.
+   * @param next - Function to pass errors to the middleware.
+   * @returns A response with the updated project or an error.
+   */
+  async deleteCoordinator(req: Request, res: Response, next: NextFunction): Promise<Response> {
+    const { projectId, coordinatorId } = req.params;
 
-  try {
-    const updatedProject = await projectService.removeCoordinator(projectId, coordinatorId);
-    return res.status(HttpStatusCode.Ok).json(updatedProject);
-  } catch (error) {
-    next(error);
+    try {
+      const updatedProject = await projectService.removeCoordinator(projectId, coordinatorId);
+      return res.status(HttpStatusCode.Ok).json(updatedProject);
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-/**
- * POST /projects/:projectId/sectors/:sectorId
- * Adds a sector to a specific project by its sector ID.
- *
- * @param req - The HTTP request object, containing the project ID and sector ID in the params.
- * @param res - The HTTP response object.
- * @param next - Function to pass errors to the middleware.
- * @returns A response with the updated project or an error.
- */
-async postSector(req: Request, res: Response, next: NextFunction): Promise<Response> {
-  const { projectId, sectorId } = req.params;
+  public getAllByCoordinatorId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const projects = await this.projectService.getAllByCoordinatorId(req.params.coordinatorId);
+      return res.json(projects);
+    } catch (error: any) {
+      next(error);
+    }
+  };
 
-  try {
-    const updatedProject = await projectService.addSector(projectId, sectorId);
-    return res.status(HttpStatusCode.Ok).json(updatedProject);
-  } catch (error) {
-    next(error);
+  /**
+   * POST /projects/:projectId/members/:memberId
+   * Adds a member to the project.
+   *
+   * @param req - The HTTP request object, containing the project ID and member ID in the params.
+   * @param res - The HTTP response object.
+   * @param next - Function to pass errors to the middleware.
+   * @returns A response with the updated project or an error.
+   */
+  public postMember = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { projectId, memberId } = req.params;
+      const updatedProject: Project = await this.projectService.addMember(projectId, memberId);
+      return res.status(HttpStatusCode.Ok).json(updatedProject);
+    } catch (error: any) {
+      next(error);
+    }
+  };
+
+  /**
+   * DELETE /projects/:projectId/members/:memberId
+   * Removes a member from the project.
+   *
+   * @param req - The HTTP request object, containing the project ID and member ID in the params.
+   * @param res - The HTTP response object.
+   * @param next - Function to pass errors to the middleware.
+   * @returns A response with the updated project or an error.
+   */
+  public deleteMember = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { projectId, memberId } = req.params;
+      const updatedProject: Project = await this.projectService.removeMember(projectId, memberId);
+      return res.status(HttpStatusCode.Ok).json(updatedProject);
+    } catch (error: any) {
+      next(error);
+    }
+  };
+
+  public getAllByMemberId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { memberId } = req.params;
+      const projects: Project[] = await this.projectService.getAllByMemberId(memberId);
+      return res.status(HttpStatusCode.Ok).json(projects);
+    } catch (error: any) {
+      next(error);
+    }
+  };
+
+  /**
+   * POST /projects/:projectId/sectors/:sectorId
+   * Adds a sector to a specific project by its sector ID.
+   *
+   * @param req - The HTTP request object, containing the project ID and sector ID in the params.
+   * @param res - The HTTP response object.
+   * @param next - Function to pass errors to the middleware.
+   * @returns A response with the updated project or an error.
+   */
+  async postSector(req: Request, res: Response, next: NextFunction): Promise<Response> {
+    const { projectId, sectorId } = req.params;
+
+    try {
+      const updatedProject = await projectService.addSector(projectId, sectorId);
+      return res.status(HttpStatusCode.Ok).json(updatedProject);
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-/**
- * DELETE /projects/:projectId/sectors/:sectorId
- * Removes a sector from a specific project by its sector ID.
- *
- * @param req - The HTTP request object, containing the project ID and sector ID in the params.
- * @param res - The HTTP response object.
- * @param next - Function to pass errors to the middleware.
- * @returns A response with the updated project or an error.
- */
-async deleteSector(req: Request, res: Response, next: NextFunction): Promise<Response> {
-  const { projectId, sectorId } = req.params;
+  /**
+   * DELETE /projects/:projectId/sectors/:sectorId
+   * Removes a sector from a specific project by its sector ID.
+   *
+   * @param req - The HTTP request object, containing the project ID and sector ID in the params.
+   * @param res - The HTTP response object.
+   * @param next - Function to pass errors to the middleware.
+   * @returns A response with the updated project or an error.
+   */
+  async deleteSector(req: Request, res: Response, next: NextFunction): Promise<Response> {
+    const { projectId, sectorId } = req.params;
 
-  try {
-    const updatedProject = await projectService.removeSector(projectId, sectorId);
-    return res.status(HttpStatusCode.Ok).json(updatedProject);
-  } catch (error) {
-    next(error);
+    try {
+      const updatedProject = await projectService.removeSector(projectId, sectorId);
+      return res.status(HttpStatusCode.Ok).json(updatedProject);
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
 }
-
 // Initialize the controller with the service
 export default new ProjectController(projectService);

@@ -10,7 +10,7 @@ const projectRouter: Router = Router();
 projectRouter.use(validateResponseMiddleware);
 
 /**
- * POST /messages/post
+ * POST /projects/post
  * Route to create a new message. Protected by authentication middleware.
  *
  * @middleware authMiddleware - Validates if the user is authenticated.
@@ -19,41 +19,41 @@ projectRouter.use(validateResponseMiddleware);
 projectRouter.post("/post", authMiddleware, projectController.post);
 
 /**
- * GET /messages/getById/:id
+ * GET /projects/getById/:projectId
  * Route to retrieve a specific message by its unique ID. Protected by authentication middleware.
  *
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller projectController.getById - Handles the logic of retrieving a message by its ID.
  */
-projectRouter.get("/getById/:id", authMiddleware, projectController.getById);
+projectRouter.get("/getById/:projectId", authMiddleware, projectController.getById);
 
 /**
- * GET /messages/getAll
- * Route to retrieve all messages. Protected by authentication middleware.
+ * GET /projects/getAll
+ * Route to retrieve all projects. Protected by authentication middleware.
  *
  * @middleware authMiddleware - Validates if the user is authenticated.
- * @controller projectController.getAll - Handles the logic of retrieving all messages.
+ * @controller projectController.getAll - Handles the logic of retrieving all projects.
  */
 projectRouter.get("/getAll", authMiddleware, projectController.getAll);
 
 /**
- * PUT /messages/put/:id
+ * PUT /projects/put/:projectId
  * Route to update a specific message by its unique ID. Protected by authentication middleware.
  *
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller projectController.put - Handles the logic of updating a message.
  */
-projectRouter.put("/put/:id", authMiddleware, projectController.put);
+projectRouter.put("/put/:projectId", authMiddleware, projectController.put);
 
 /**
- * DELETE /messages/delete/:id
+ * DELETE /projects/delete/:projectId
  * Route to delete a specific message by its unique ID. Protected by authentication middleware.
  *
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller projectController.deleteById - Handles the logic of deleting a message.
  */
 projectRouter.delete(
-  "/delete/:id",
+  "/delete/:projectId",
   authMiddleware,
   projectController.deleteById
 );
@@ -67,7 +67,7 @@ projectRouter.delete(
  * @controller projectController.putProjectRequest - Handles the logic of setting the project request for a project.
  */
 projectRouter.put(
-  "/projects/:projectId/projectRequests/:projectRequestId",
+  "/projects/:projectId/projectRequest/:projectRequestId",
   authMiddleware,
   projectController.putProjectRequest
 );
@@ -99,6 +99,44 @@ projectRouter.delete(
   authMiddleware,
   projectController.deleteCoordinator
 );
+
+projectRouter.get("/projects/coordinator/:coordinatorId",
+  authMiddleware,
+  projectController.getAllByCoordinatorId
+)
+
+/**
+ * POST /projects/:projectId/members/:memberId
+ * Route to add a member to a specific project by the user's ID.
+ * Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller projectController.addTeamMember - Handles the logic of adding a member to a project.
+ */
+projectRouter.post(
+  "/projects/:projectId/members/:memberId",
+  authMiddleware,
+  projectController.postMember
+);
+
+/**
+ * DELETE /projects/:projectId/members/:memberId
+ * Route to remove a member from a specific project by the user's ID.
+ * Protected by authentication middleware.
+ *
+ * @middleware authMiddleware - Validates if the user is authenticated.
+ * @controller projectController.deleteMember - Handles the logic of removing a member from a project.
+ */
+projectRouter.delete(
+  "/projects/:projectId/members/:memberId",
+  authMiddleware,
+  projectController.deleteMember
+);
+
+projectRouter.get("/projects/member/:memberId",
+  authMiddleware,
+  projectController.getAllByCoordinatorId
+)
 
 /**
  * POST /projects/:projectId/sectors/:sectorId

@@ -48,6 +48,17 @@ export default class Project {
   coordinators: User[];
 
   /**
+   * List of users who are the members for the project.
+   * This field establishes a many-to-many relationship with the User entity.
+   * A project can have multiple members.
+   *
+   * @type {User[]}
+   */
+  @ManyToMany(() => User)
+  @JoinTable()
+  members: User[];
+
+  /**
    * List of sectors associated with the project.
    * This field establishes a many-to-many relationship with the Sector entity.
    * A project can belong to multiple sectors.
