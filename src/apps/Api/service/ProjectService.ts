@@ -4,14 +4,14 @@ import { InvalidObjectError } from "../../../error/InvalidObjectError";
 import { NotFoundError } from "../../../error/NotFoundError";
 import ServiceInterface from "../../Auth/interface/ServiceInterface";
 import Profile from "../../Auth/model/Profile";
+import User from "../../Auth/model/User";
+import { userService } from "../../Auth/service/UserService";
 import ProjectDto from "../dto/ProjectDto";
 import Project from "../model/Project";
 import ProjectRequest from "../model/ProjectRequest";
-import { projectRequestService } from "./ProjectRequestService";
-import { userService } from "../../Auth/service/UserService";
-import { sectorService } from "./SectorService";
-import User from "../../Auth/model/User";
 import Sector from "../model/Sector";
+import { projectRequestService } from "./ProjectRequestService";
+import { sectorService } from "./SectorService";
 
 export class ProjectService implements ServiceInterface<Project, ProjectDto> {
   private projectRepository: Repository<Project>;
@@ -182,7 +182,7 @@ export class ProjectService implements ServiceInterface<Project, ProjectDto> {
 
 
     if (!coordinator) {
-      throw new NotFoundError(`Project Request with ID ${coordinatorId} not found.`)
+      throw new NotFoundError(`Coordinator with ID ${coordinatorId} not found.`)
     }
 
     project.coordinators = [...(project.coordinators || []), coordinator];
@@ -212,6 +212,85 @@ export class ProjectService implements ServiceInterface<Project, ProjectDto> {
     project.coordinators = project.coordinators.filter((coordinator) => coordinator.id !== coordinatorId);
 
     return await projectRepository.save(project);
+  }
+
+  async getAllByCoordinatorId(userId: string): Promise<Project[]> {
+    const projects = await this.projectRepository.find({
+      where: {
+        coordinators: {
+          id: userId
+        }
+      }
+    })
+
+    return projects;    
+  }
+
+  /**
+ * Adds a member to the project based on the member's ID.
+ * This method associates a user as a member with the project.
+ *
+ * @param {string} projectId - The ID of the project to update.
+ * @param {string} memberId - The ID of the member (user) to add to the project.
+ * @throws {NotFoundError} - If the project or user (member) is not found.
+ * @returns {Promise<Project>} - The updated project entity.
+ */
+  async addMember(projectId: string, memberId: string): Promise<Project> {
+    const project: Project = await this.projectRepository.findOne({
+      where: { id: projectId },
+      relations: ["members"],
+     });
+
+    if (!project) {
+      throw new NotFoundError(`Project with ID ${projectId} not found.`)
+    }
+
+    const member: User = await userService.findOne({ id: memberId });
+
+
+    if (!member) {
+      throw new NotFoundError(`Member with ID ${memberId} not found.`)
+    }
+
+    project.members = [...(project.members || []), member];
+
+    return await projectRepository.save(project);
+  }
+
+  /**
+ * Removes a member from the project based on the member's ID.
+ * This method disassociates a user from being a member of the project.
+ *
+ * @param {string} projectId - The ID of the project to update.
+ * @param {string} memberId - The ID of the member (user) to remove from the project.
+ * @throws {NotFoundError} - If the project is not found.
+ * @returns {Promise<Project>} - The updated project entity.
+ */
+  async removeMember(projectId: string, memberId: string): Promise<Project> {
+    const project: Project = await this.projectRepository.findOne({
+      where: { id: projectId },
+      relations: ["members"],
+     });
+
+    if (!project) {
+      throw new NotFoundError(`Project with ID ${projectId} not found.`)
+    }
+    
+    project.members = project.members.filter((member) => member.id !== memberId);
+
+    return await projectRepository.save(project);
+  }
+
+  async getAllByMemberId(userId: string): Promise<Project[]> {
+    const projects = await this.projectRepository.find({
+      where: {
+        members: {
+          id: userId
+        }
+      }
+    })
+
+    return projects;    
   }
 
   /**
