@@ -153,17 +153,44 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
       where: { id: sectorId },
       relations: ["users"],
     });
-
+  
     if (!sector) {
       throw new NotFoundError(`Sector with ID ${sectorId} not found.`);
     }
-
+  
     const user: User = await userService.findOne({ id: userId });
+  
+
+    if (sector.users.some(existingUser => existingUser.id === userId)) {
+      throw new Error(`User with ID ${userId} is already part of the sector.`);
+    }
 
     sector.users = [...(sector.users || []), user];
+  
+    const savedSector = await sectorRepository.save(sector);
+    interface UserDTO {
+      id: string;
+      name: string;
+      email: string;
+      phone: string;
+    }
+    
+  
 
-    return await sectorRepository.save(sector);
+    const usersDTO: UserDTO[] = savedSector.users.map(user => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+    }));
+  
+    return {
+      ...savedSector,
+      users: usersDTO,  
+    } as Sector;
   }
+  
+  
 
   async removeUser(sectorId: string, userId: string): Promise<Sector> {
     const sector: Sector = await sectorRepository.findOne({
