@@ -1,6 +1,7 @@
 import AppDataSource from "../../../database/dbConnection";
 import User from "../model/User";
 import Profile from "../model/Profile";
+import { utc } from "moment";
 
 async function run() {
   try {
@@ -21,7 +22,6 @@ async function run() {
       await profileRepository.save(adminProfile);
     }
 
-    // Verifica se o usuário Admin já existe
     const existingAdmin = await userRepository.findOneBy({
       email: "adminDaSilva@admin.com",
     });
@@ -31,7 +31,7 @@ async function run() {
         name: "Admin",
         email: "adminDaSilva@admin.com",
         cpf: "123456789",
-        birthDate: new Date("1822-09-07"),
+        birthDate: new Date("1822-09-07T00:00:00-03:00"),
         isActive: true,
         profile: adminProfile,
       });
@@ -39,7 +39,10 @@ async function run() {
       // adminUser.hashPassword();
       await userRepository.save(adminUser);
 
-      console.log("Admin user created successfully.");
+      console.log("✅ Admin user created successfully.");
+      console.log("ℹ️ Admin user credentials:");
+      console.log("   📧 Email: adminDaSilva@admin.com");
+      console.log("   🔑 Password: senhaSegura556");
     } else {
       console.log("Admin user already exists.");
     }
