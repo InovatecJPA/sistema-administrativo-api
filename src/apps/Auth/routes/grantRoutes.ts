@@ -13,5 +13,6 @@ router.get("/getById/:id", authMiddleware, grantController.getById);
 router.get("/getAll", authMiddleware, grantController.getAll);
 router.put("/put/:id", authMiddleware, grantController.put);
 router.delete("/delete/:id", authMiddleware, grantController.deleteById);
+router.post("/:id/postProfile", authMiddleware, grantController.postProfile);
 
 export default router;

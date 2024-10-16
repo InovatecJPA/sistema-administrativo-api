@@ -35,7 +35,7 @@ export class ProjectController {
   };
 
   /**
-   * PUT /projects/:projectId
+   * PUT /projects/:id
    * Updates an existing project by its ID.
    *
    * @param req - The HTTP request object, containing project ID in the params and updated data in the body.
@@ -49,10 +49,10 @@ export class ProjectController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { projectId } = req.params;
+      const { id } = req.params;
 
       const updatedProject: Project = await this.projectService.update(
-        projectId,
+        id,
         req.body
       );
       return res.status(HttpStatusCode.Ok).json(updatedProject);
@@ -62,7 +62,7 @@ export class ProjectController {
   };
 
   /**
-   * DELETE /projects/:projectId
+   * DELETE /projects/:id
    * Deletes a project by its ID.
    *
    * @param req - The HTTP request object, containing the project ID in the params.
@@ -76,11 +76,11 @@ export class ProjectController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const result = await this.projectService.delete(req.params.projectId);
+      const result = await this.projectService.delete(req.params.id);
 
       // If no project was deleted, throw a NotFoundError
       if (result.affected === 0) {
-        throw new NotFoundError(`Project with ID ${req.params.projectId} not found.`);
+        throw new NotFoundError(`Project with ID ${req.params.id} not found.`);
       }
 
       return res.json({ message: "Project deleted successfully" });
@@ -90,7 +90,7 @@ export class ProjectController {
   };
 
   /**
-   * GET /projects/:projectId
+   * GET /projects/:id
    * Retrieves a specific project by its unique ID.
    *
    * @param req - The HTTP request object, containing the project ID in the params.
@@ -105,12 +105,12 @@ export class ProjectController {
   ): Promise<Response | void> => {
     try {
       const project: Project = await this.projectService.findOneById(
-        req.params.projectId
+        req.params.id
       );
 
       // If no project is found, throw a NotFoundError
       if (!project) {
-        throw new NotFoundError(`Project with ID ${req.params.projectId} not found.`);
+        throw new NotFoundError(`Project with ID ${req.params.id} not found.`);
       }
 
       return res.status(HttpStatusCode.Ok).json(project);
@@ -169,7 +169,7 @@ export class ProjectController {
   };
 
   /**
-   * PUT /projects/:projectId/projectRequests/:projectRequestId
+   * PUT /projects/:id/projectRequests/:projectRequestId
    * Updates the project request for a specific project by its request ID.
    *
    * @param req - The HTTP request object, containing the project ID and request ID in the params.
@@ -178,10 +178,11 @@ export class ProjectController {
    * @returns A response with the updated project or an error.
    */
   async putProjectRequest(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const { projectId, projectRequestId } = req.params;
-
+    const { id } = req.params;
+    const { projectRequestId } = req.body;
+    
     try {
-      const updatedProject = await projectService.setProjectRequest(projectId, projectRequestId);
+      const updatedProject = await projectService.setProjectRequest(id, projectRequestId);
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error) {
       next(error);
@@ -189,7 +190,7 @@ export class ProjectController {
   }
 
   /**
-   * POST /projects/:projectId/coordinators/:coordinatorId
+   * POST /projects/:id/coordinators/:coordinatorId
    * Adds a coordinator to a specific project by their user ID.
    *
    * @param req - The HTTP request object, containing the project ID and coordinator ID in the params.
@@ -198,10 +199,11 @@ export class ProjectController {
    * @returns A response with the updated project or an error.
    */
   async postCoordinator(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const { projectId, coordinatorId } = req.params;
+    const { id } = req.params;
+    const { coordinatorId } = req.body;
 
     try {
-      const updatedProject = await projectService.addCoordinator(projectId, coordinatorId);
+      const updatedProject = await projectService.addCoordinator(id, coordinatorId);
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error) {
       next(error);
@@ -209,7 +211,7 @@ export class ProjectController {
   }
 
   /**
-   * DELETE /projects/:projectId/coordinators/:coordinatorId
+   * DELETE /projects/:id/coordinators
    * Removes a coordinator from a specific project by their user ID.
    *
    * @param req - The HTTP request object, containing the project ID and coordinator ID in the params.
@@ -218,10 +220,11 @@ export class ProjectController {
    * @returns A response with the updated project or an error.
    */
   async deleteCoordinator(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const { projectId, coordinatorId } = req.params;
+    const { id } = req.params;
+    const { coordinatorId } = req.body;
 
     try {
-      const updatedProject = await projectService.removeCoordinator(projectId, coordinatorId);
+      const updatedProject = await projectService.removeCoordinator(id, coordinatorId);
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error) {
       next(error);
@@ -234,7 +237,7 @@ export class ProjectController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const projects = await this.projectService.getAllByCoordinatorId(req.params.coordinatorId);
+      const projects = await this.projectService.getAllByCoordinatorId(req.params.id);
       return res.json(projects);
     } catch (error: any) {
       next(error);
@@ -242,7 +245,7 @@ export class ProjectController {
   };
 
   /**
-   * POST /projects/:projectId/members/:memberId
+   * POST /projects/:id/members/:memberId
    * Adds a member to the project.
    *
    * @param req - The HTTP request object, containing the project ID and member ID in the params.
@@ -256,8 +259,9 @@ export class ProjectController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { projectId, memberId } = req.params;
-      const updatedProject: Project = await this.projectService.addMember(projectId, memberId);
+      const { id } = req.params;
+      const { memberId } = req.body;
+      const updatedProject: Project = await this.projectService.addMember(id, memberId);
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error: any) {
       next(error);
@@ -265,7 +269,7 @@ export class ProjectController {
   };
 
   /**
-   * DELETE /projects/:projectId/members/:memberId
+   * DELETE /projects/:id/members
    * Removes a member from the project.
    *
    * @param req - The HTTP request object, containing the project ID and member ID in the params.
@@ -279,8 +283,10 @@ export class ProjectController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { projectId, memberId } = req.params;
-      const updatedProject: Project = await this.projectService.removeMember(projectId, memberId);
+      const { id } = req.params;
+      const { memberId } = req.body;
+
+      const updatedProject: Project = await this.projectService.removeMember(id, memberId);
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error: any) {
       next(error);
@@ -302,7 +308,7 @@ export class ProjectController {
   };
 
   /**
-   * POST /projects/:projectId/sectors/:sectorId
+   * POST /projects/:id/sectors
    * Adds a sector to a specific project by its sector ID.
    *
    * @param req - The HTTP request object, containing the project ID and sector ID in the params.
@@ -311,10 +317,11 @@ export class ProjectController {
    * @returns A response with the updated project or an error.
    */
   async postSector(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const { projectId, sectorId } = req.params;
+    const { id } = req.params;
+    const { sectorId } = req.body;
 
     try {
-      const updatedProject = await projectService.addSector(projectId, sectorId);
+      const updatedProject = await projectService.addSector(id, sectorId);
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error) {
       next(error);
@@ -322,7 +329,7 @@ export class ProjectController {
   }
 
   /**
-   * DELETE /projects/:projectId/sectors/:sectorId
+   * DELETE /projects/:id/sectors
    * Removes a sector from a specific project by its sector ID.
    *
    * @param req - The HTTP request object, containing the project ID and sector ID in the params.
@@ -331,10 +338,11 @@ export class ProjectController {
    * @returns A response with the updated project or an error.
    */
   async deleteSector(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const { projectId, sectorId } = req.params;
+    const { id } = req.params;
+    const { sectorId } = req.body;
 
     try {
-      const updatedProject = await projectService.removeSector(projectId, sectorId);
+      const updatedProject = await projectService.removeSector(id, sectorId);
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error) {
       next(error);

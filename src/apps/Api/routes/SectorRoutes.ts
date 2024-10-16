@@ -54,12 +54,12 @@ sectorRouter.put("/put/:id", authMiddleware, sectorController.put);
  */
 sectorRouter.delete("/delete/:id", authMiddleware, sectorController.deleteById);
 
-sectorRouter.post("/postUser/:sectorId/:userId", authMiddleware, sectorController.postUser);
+sectorRouter.post("/:id/postUser/", authMiddleware, sectorController.postUser);
 
-sectorRouter.delete("/deleteUser/:sectorId/:userId", authMiddleware, sectorController.deleteUser);
+sectorRouter.delete("/:id/deleteUser", authMiddleware, sectorController.deleteUser);
 
-sectorRouter.post("/postMessage/:sectorId/:messageId", authMiddleware, sectorController.postMessage);
+sectorRouter.post("/:id/postMessage", authMiddleware, sectorController.postMessage);
 
-sectorRouter.delete("/deleteMessage/:sectorId/:messageId", authMiddleware, sectorController.deleteMessage);
+sectorRouter.delete("/:id/deleteMessage", authMiddleware, sectorController.deleteMessage);
 
 export default sectorRouter;
