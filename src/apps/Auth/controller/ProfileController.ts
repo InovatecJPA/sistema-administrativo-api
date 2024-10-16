@@ -69,7 +69,7 @@ export class ProfileController {
 
     try {
       for (const grant of grants) {
-        await this.grantService.save(new GrantDto(grant.grant, grant.route, grant.note));
+        await this.grantService.save(new GrantDto(grant.grant, grant.note, grant.route,));
       }
       return res.status(200).json({ message: 'All default grants saved successfully' });
     } catch (error) {
