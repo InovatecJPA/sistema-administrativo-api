@@ -160,23 +160,25 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
   
     const user: User = await userService.findOne({ id: userId });
   
-
     if (sector.users.some(existingUser => existingUser.id === userId)) {
       throw new Error(`User with ID ${userId} is already part of the sector.`);
     }
-
-    sector.users = [...(sector.users || []), user];
   
+    // Adiciona o user ao setor e define o setor no user
+    sector.users = [...(sector.users || []), user];
+    user.sector = sector;
+  
+    // Salva as duas entidades para garantir que o setor_id seja atualizado no user
+    await userService.updateUser(user);  // Salva o user com o sector_id
     const savedSector = await sectorRepository.save(sector);
+  
     interface UserDTO {
       id: string;
       name: string;
       email: string;
       phone: string;
     }
-    
   
-
     const usersDTO: UserDTO[] = savedSector.users.map(user => ({
       id: user.id,
       name: user.name,
@@ -186,7 +188,7 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
   
     return {
       ...savedSector,
-      users: usersDTO,  
+      users: usersDTO,
     } as Sector;
   }
   
