@@ -76,18 +76,65 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
   public async findOneById(sectorId: string): Promise<Sector | null> {
     const sector = await this.sectorRepository.findOne({
       where: { id: sectorId },
+      relations: ["users"],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        users: {
+          id: true,
+          name: true,
+        }
+      }
     });
-    return sector ? sector : null;
+  
+    if (!sector) {
+      return null;
+    }
+  
+    const sectorDto = {
+      ...sector,
+      users: sector.users.map(user => ({
+        id: user.id,
+        name: user.name
+      }))
+    };
+  
+    return sectorDto as Sector; 
   }
+  
 
   /**
    * Finds and returns all sectors in the database.
    *
    * @returns {Promise<Sector[]>} A promise that resolves with an array of all `Sector` entities.
    */
-  async findAll(): Promise<Sector[]> {
-    return await this.sectorRepository.find();
+  public async findAll(): Promise<Sector[]> {
+    const sectors = await this.sectorRepository.find({
+      relations: ["users"],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        users: {
+          id: true,
+          name: true
+        }
+      }
+    });
+  
+
+    const sectorsDto = sectors.map(sector => ({
+      ...sector,
+      users: sector.users.map(user => ({
+        id: user.id,
+        name: user.name
+      }))
+    }));
+  
+    return sectorsDto as Sector[]; 
   }
+  
 
   /**
    * Updates an existing sector based on its ID or entity.
