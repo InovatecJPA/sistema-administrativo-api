@@ -1,6 +1,5 @@
 import { CustomValidationError } from "../../../error/CustomValidationError";
 import { NotFoundError } from "../../../error/NotFoundError";
-import GrantDto from "../dto/GrantDto";
 import ProfileDto from "../dto/ProfileDto";
 import Profile from "../model/Profile";
 import { grantService, GrantService } from "../service/GrantService";
@@ -27,14 +26,13 @@ export class ProfileController {
    */
   async createProfiles(req: Request, res: Response, next: NextFunction): Promise<Response> {
     const profiles = {
-      diretor_presidente: 'Administrador geral',
-      diretor_juridico: 'Administrador geral juridico',
-      secretaria_geral: 'Secretaria geral',
-      secretario: 'secretario',
-      gerente_administrativo: 'gerente_administrativo',
-      coordenador_projetos: 'coordenador_projetos',
-      coordenador_TI: 'coordenador_TI',
+      diretor_presidente: 'Diretor Presidente da empresa',
       admin: 'Administrador do sistema',
+      diretor: 'Diretor',
+      secretaria_geral: 'Secretaria geral',
+      secretario: 'Secretário',
+      gerente: 'Gerente',
+      coordenador: 'Coordenador',
     };
 
     try {
@@ -48,37 +46,7 @@ export class ProfileController {
   }
 
   /**
-   * Create default grants and save them to the database.
-   *
-   * @param req - The HTTP request object.
-   * @param res - The HTTP response object.
-   * @param next - The next middleware function.
-   * @returns A JSON response indicating success or passes errors to the next middleware.
-   */
-  async createGrants(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const grants = [
-      { grant: 'post', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
-      { grant: 'put', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
-      { grant: 'delete', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
-      { grant: 'get', route: '/v1/accounts/Users', note: 'User comum fazer o cheking' },
-      { grant: 'get', route: '/v1/accounts/Users/AllUsers', note: 'pegar o plano do user' },
-      { grant: 'post', route: '/v1/accounts/Users/RecuperarSenha', note: 'pegar o plano do user' },
-      { grant: 'post', route: '/v1/accounts/Users/MudarSenha', note: 'pegar o treino' },
-      { grant: 'post', route: '/v1/accounts/token/', note: 'pegar todos os treinos por cateoria' },
-    ];
-
-    try {
-      for (const grant of grants) {
-        await this.grantService.save(new GrantDto(grant.grant, grant.note, grant.route,));
-      }
-      return res.status(200).json({ message: 'All default grants saved successfully' });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Seed profiles and grants into the database.
+   * Seed profiles into the database.
    *
    * @param req - The HTTP request object.
    * @param res - The HTTP response object.
@@ -89,9 +57,8 @@ export class ProfileController {
     try {
       await Promise.all([
         this.createProfiles(req, res, next),
-        this.createGrants(req, res, next)
       ]);
-      res.status(200).json({ message: 'All profiles and grants seeded successfully' });
+      res.status(200).json({ message: 'All profiles seeded successfully' });
     } catch (error) {
       next(error);
     }

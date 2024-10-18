@@ -3,17 +3,23 @@ import testRouter from "../teste";
 import projectRequestRouter from "./Api/routes/ProjectRequestRoutes";
 import projectRouter from "./Api/routes/ProjectRoutes";
 import sectorRouter from "./Api/routes/SectorRoutes";
-import authenticationRouter from "./Auth/routes";
 import chatRouter from "./Messaging/routes/ChatRoutes";
 import messagesRouter from "./Messaging/routes/MessageRoutes";
+import authRouter from "./Auth/routes/authRoutes";
+import userRouter from "./Auth/routes/userRoutes";
+import grantRouter from "./Auth/routes/grantRoutes";
+import profileRouter from "./Auth/routes/profileRoutes";
 
 const router: Router = Router();
 
-router.use("/accounts", authenticationRouter);
+router.use("/accounts", authRouter);
+router.use("/user", userRouter);
+router.use("/grant", grantRouter);
+router.use("/profile", profileRouter);
 router.use("/messages", messagesRouter);
-router.use("/projects", projectRouter);
-router.use("/projectRequests", projectRequestRouter);
-router.use("/sectors", sectorRouter);
+router.use("/project", projectRouter);
+router.use("/projectRequest", projectRequestRouter);
+router.use("/sector", sectorRouter);
 router.use("/chat", chatRouter);
 router.use("/test", testRouter);
 

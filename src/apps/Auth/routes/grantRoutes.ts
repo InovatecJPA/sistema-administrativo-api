@@ -4,16 +4,16 @@ import { authMiddleware } from "../../../middlewares/auth";
 import { grantController } from "../controller/GrantController";
 import validateResponseMiddleware from "../../../middlewares/validateResponse";
 
-const router: Router = Router();
-router.use(validateResponseMiddleware);
+const grantRouter: Router = Router();
+grantRouter.use(validateResponseMiddleware);
 
-router.post("/post", authMiddleware, grantController.post);
-router.get("/getByName/:name", authMiddleware, grantController.get);
-router.get("/getById/:id", authMiddleware, grantController.getById);
-router.get("/getAll", authMiddleware, grantController.getAll);
-router.put("/put/:id", authMiddleware, grantController.put);
-router.delete("/delete/:id", authMiddleware, grantController.deleteById);
-router.post("/:id/postProfile", authMiddleware, grantController.postProfile);
-router.post("/:id/postSector", authMiddleware, grantController.postSector);
+grantRouter.post("/post", authMiddleware, grantController.post);
+grantRouter.get("/getByName/:name", authMiddleware, grantController.get);
+grantRouter.get("/getById/:id", authMiddleware, grantController.getById);
+grantRouter.get("/getAll", authMiddleware, grantController.getAll);
+grantRouter.put("/put/:id", authMiddleware, grantController.put);
+grantRouter.delete("/delete/:id", authMiddleware, grantController.deleteById);
+grantRouter.post("/:id/postProfile", authMiddleware, grantController.postProfile);
+grantRouter.post("/:id/postSector", authMiddleware, grantController.postSector);
 
-export default router;
+export default grantRouter;

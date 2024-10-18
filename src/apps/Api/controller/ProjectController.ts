@@ -262,6 +262,7 @@ export class ProjectController {
       const { id } = req.params;
       const { memberId } = req.body;
       const updatedProject: Project = await this.projectService.addMember(id, memberId);
+      
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error: any) {
       next(error);

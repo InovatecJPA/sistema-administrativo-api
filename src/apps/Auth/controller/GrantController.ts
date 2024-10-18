@@ -22,6 +22,112 @@ export class GrantController {
   }
 
   /**
+  * Create default grants and save them to the database.
+  *
+  * @param req - The HTTP request object.
+  * @param res - The HTTP response object.
+  * @param next - The next middleware function.
+  * @returns A JSON response indicating success or passes errors to the next middleware.
+  */
+  async createGrants(req: Request, res: Response, next: NextFunction): Promise<Response> {
+    const grants = [
+    // Grants para as rotas de autenticação
+      { grant: 'post', route: '/v1/accounts/user/singUp', note: 'Cria um novo usuário no sistema.' },
+      { grant: 'post', route: '/v1/accounts/user/login', note: 'Autentica um usuário com email e senha.' },
+      { grant: 'post', route: '/v1/accounts/user/forgotPassword', note: 'Inicia o processo de redefinição de senha.' },
+      { grant: 'post', route: '/v1/accounts/user/resetPassword/:token', note: 'Redefine a senha de um usuário usando um token.' },
+      { grant: 'patch', route: '/v1/accounts/user/changePassword', note: 'Permite que um usuário autenticado mude sua senha.' },
+
+      // Rotas de usuario
+      { grant: 'get', route: '/v1/user', note: 'Detalhes do usuário logado' },
+      { grant: 'get', route: '/v1/user/list', note: 'Lista todos os usuários' },
+      { grant: 'get', route: '/v1/user/listAll', note: 'Lista todos os usuários' },
+      { grant: 'patch', route: '/v1/user/:id/update', note: 'Atualiza um usuário' },
+      { grant: 'put', route: '/v1/user/:id/update/profile', note: 'Atualiza o perfil do usuário' },
+      { grant: 'delete', route: '/v1/user/:id', note: 'Apaga um usuário' },
+
+      // Rotas de perfil
+      { grant: 'post', route: '/v1/profile/post', note: 'Cria um novo perfil' },
+      { grant: 'get', route: '/v1/profile/getByName', note: 'Recupera perfil pelo nome' },
+      { grant: 'get', route: '/v1/profile/getById/:id', note: 'Recupera perfil pelo ID' },
+      { grant: 'get', route: '/v1/profile/getAll', note: 'Recupera todos os perfis' },
+      { grant: 'put', route: '/v1/profile/put/:id', note: 'Atualiza perfil pelo ID' },
+      { grant: 'delete', route: '/v1/profile/delete/:id', note: 'Deleta perfil pelo ID' },
+
+      // Rotas de grant
+      { grant: 'post', route: '/v1/grant/post', note: 'Cria um novo grant' },
+      { grant: 'get', route: '/v1/grant/getById/:id', note: 'Recupera grant pelo ID' },
+      { grant: 'get', route: '/v1/grant/getAll', note: 'Recupera todos os grants' },
+      { grant: 'put', route: '/v1/grant/put/:id', note: 'Atualiza grant pelo ID' },
+      { grant: 'delete', route: '/v1/grant/delete/:id', note: 'Deleta grant pelo ID' },
+      { grant: 'post', route: '/v1/grant/:id/postProfile', note: 'Adiciona perfil a um grant' },
+      { grant: 'post', route: '/v1/grant/:id/postSector', note: 'Adiciona setor a um grant' },
+
+      // Rotas de requisições de projeto
+      { grant: 'post', route: '/v1/projectsRequest/post', note: 'Cria uma nova requisição de projeto' },
+      { grant: 'get', route: '/v1/projectsRequest/getById/:id', note: 'Recupera requisição de projeto pelo ID' },
+      { grant: 'get', route: '/v1/projectsRequest/getAll', note: 'Recupera todas as requisições de projeto' },
+      { grant: 'put', route: '/v1/projectsRequest/put/:id', note: 'Atualiza requisição de projeto pelo ID' },
+      { grant: 'delete', route: '/v1/projectsRequest/delete/:id', note: 'Deleta requisição de projeto pelo ID' },
+
+      // Rotas de projeto
+      { grant: 'post', route: '/v1/projects/post', note: 'Cria um novo projeto' },
+      { grant: 'get', route: '/v1/projects/getById/:id', note: 'Recupera projeto pelo ID' },
+      { grant: 'get', route: '/v1/projects/getAll', note: 'Recupera todos os projetos' },
+      { grant: 'put', route: '/v1/projects/put/:id', note: 'Atualiza projeto pelo ID' },
+      { grant: 'delete', route: '/v1/projects/delete/:id', note: 'Deleta projeto pelo ID' },
+      { grant: 'put', route: '/v1/projects/:id/projectRequests/:id', note: 'Atualiza a requisição de projeto' },
+      { grant: 'post', route: '/v1/projects/:id/coordinators', note: 'Adiciona um coordenador a um projeto' },
+      { grant: 'delete', route: '/v1/projects/:id/coordinators', note: 'Remove um coordenador de um projeto' },
+      { grant: 'get', route: '/v1/projects/coordinator/:id', note: 'Recupera projetos por coordenador' },
+      { grant: 'post', route: '/v1/projects/:id/members', note: 'Adiciona um membro a um projeto' },
+      { grant: 'delete', route: '/v1/projects/:id/members', note: 'Remove um membro de um projeto' },
+      { grant: 'get', route: '/v1/projects/member/:id', note: 'Recupera projetos por membro' },
+      { grant: 'post', route: '/v1/projects/:id/sectors', note: 'Adiciona um setor a um projeto' },
+      { grant: 'delete', route: '/v1/projects/:id/sectors', note: 'Remove um setor de um projeto' },
+
+      // Rotas de setor
+      { grant: 'post', route: '/v1/sector/post', note: 'Cria um novo setor' },
+      { grant: 'get', route: '/v1/sector/getById/:id', note: 'Recupera setor pelo ID' },
+      { grant: 'get', route: '/v1/sector/getAll', note: 'Recupera todos os setores' },
+      { grant: 'put', route: '/v1/sector/put/:id', note: 'Atualiza setor pelo ID' },
+      { grant: 'delete', route: '/v1/sector/delete/:id', note: 'Deleta setor pelo ID' },
+      { grant: 'post', route: '/v1/sector/:id/postUser', note: 'Adiciona usuário a um setor' },
+      { grant: 'delete', route: '/v1/sector/:id/deleteUser', note: 'Remove usuário de um setor' },
+      { grant: 'post', route: '/v1/sector/:id/postMessage', note: 'Adiciona mensagem a um setor' },
+      { grant: 'delete', route: '/v1/sector/:id/deleteMessage', note: 'Remove mensagem de um setor' },
+    ];
+
+    try {
+      for (const grant of grants) {
+        await this.grantService.save(new GrantDto(grant.grant, grant.note, grant.route,));
+      }
+      return res.status(200).json({ message: 'All default grants saved successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+    /**
+   * Seed grants into the database.
+   *
+   * @param req - The HTTGrantControllerP request object.
+   * @param res - The HTTP response object.
+   * @param next - The next middleware function.
+   * @returns A JSON response indicating success or passes errors to the next middleware.
+   */
+  public store = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await Promise.all([
+        this.createGrants(req, res, next)
+      ]);
+      res.status(200).json({ message: 'All grants seeded successfully' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
    * Handles POST requests to create a new `Grant`.
    *
    * @param req - The HTTP request object, containing the new `Grant` data in its body.

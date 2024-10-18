@@ -15,10 +15,10 @@ import {
  * Router for handling authentication-related routes.
  * Includes registration, login, password reset requests, and password change functionalities.
  */
-const router: Router = Router();
+const authRouter: Router = Router();
 
 // Middleware to validate all response formats
-router.use(validateResponseMiddleware);
+authRouter.use(validateResponseMiddleware);
 
 /**
  * @route POST /singUp
@@ -26,7 +26,7 @@ router.use(validateResponseMiddleware);
  * Validates the incoming data against `userResistrationSchema`.
  * Calls the `singUp` method in `authController` to handle user registration.
  */
-router.post(
+authRouter.post(
   "/singUp",
   validateData(userResistrationSchema),
   authController.singUp
@@ -38,7 +38,7 @@ router.post(
  * Validates the incoming data against `userLoginSchema`.
  * Calls the `login` method in `authController` to handle user login.
  */
-router.post("/login", validateData(userLoginSchema), authController.login);
+authRouter.post("/login", validateData(userLoginSchema), authController.login);
 
 /**
  * @route POST /forgotPassword
@@ -46,7 +46,7 @@ router.post("/login", validateData(userLoginSchema), authController.login);
  * Validates the incoming data against `forgortPasswordSchema`.
  * Calls the `requestResetToken` method in `authController` to send a reset token to the user's email.
  */
-router.post(
+authRouter.post(
   "/forgotPassword",
   validateData(forgortPasswordSchema),
   authController.requestResetToken
@@ -59,7 +59,7 @@ router.post(
  * Calls the `resetPassword` method in `authController` to authorize and change the user's password.
  * @param {string} token - Token for resetting the password, provided as a URL parameter.
  */
-router.post(
+authRouter.post(
   "/resetPassword/:token",
   validateData(resetPasswordSchema),
   authController.resetPassword
@@ -72,11 +72,11 @@ router.post(
  * Validates the incoming data against `changePasswordSchema`.
  * Calls the `changePassword` method in `authController` to update the password.
  */
-router.patch(
+authRouter.patch(
   "/changePassword",
   validateData(changePasswordSchema),
   authMiddleware,
   authController.changePassword
 );
 
-export default router;
+export default authRouter;

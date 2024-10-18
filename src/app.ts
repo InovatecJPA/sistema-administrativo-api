@@ -1,4 +1,3 @@
-import { resolve } from "path";
 import express, { Request, Response, Application, NextFunction } from "express";
 
 import cors, { CorsOptions } from "cors";
@@ -9,6 +8,8 @@ import dbConnection from "./database/dbConnection";
 import { errorsHandler } from "./middlewares/errorsHandler";
 
 import v1 from "./apps";
+import ProfileController from "./apps/Auth/controller/ProfileController";
+import { GrantController } from "./apps/Auth/controller/GrantController";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerDocument from "../swagger.json";
 
@@ -42,6 +43,8 @@ class App {
     this.middlewares();
     this.routes();
     this.errorHandling();
+    ProfileController.createProfiles;
+    GrantController.createGrants;
   }
 
   middlewares(): void {

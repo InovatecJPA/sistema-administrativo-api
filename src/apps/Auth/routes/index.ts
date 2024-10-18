@@ -13,8 +13,8 @@ router.use(setCORSMiddleware);
 
 router.use("/user", userRoutes);
 router.use("/user", authRoutes);
-router.use("/tokens", tokenRoutes);
+router.use("/token", tokenRoutes);
 router.use("/grant", grantRoutes);
-router.use("/profiles", profileRouter);
+router.use("/profile", profileRouter);
 
 export default router;
