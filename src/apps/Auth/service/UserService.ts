@@ -201,6 +201,7 @@ export class UserService {
       name: _user.name,
       email: _user.email,
       profile: profile,
+      birthDate: _user.birthDate,
       phone: _user.phone,
       isActive: true,
     });
