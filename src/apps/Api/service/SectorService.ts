@@ -76,18 +76,65 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
   public async findOneById(sectorId: string): Promise<Sector | null> {
     const sector = await this.sectorRepository.findOne({
       where: { id: sectorId },
+      relations: ["users"],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        users: {
+          id: true,
+          name: true,
+        }
+      }
     });
-    return sector ? sector : null;
+  
+    if (!sector) {
+      return null;
+    }
+  
+    const sectorDto = {
+      ...sector,
+      users: sector.users.map(user => ({
+        id: user.id,
+        name: user.name
+      }))
+    };
+  
+    return sectorDto as Sector; 
   }
+  
 
   /**
    * Finds and returns all sectors in the database.
    *
    * @returns {Promise<Sector[]>} A promise that resolves with an array of all `Sector` entities.
    */
-  async findAll(): Promise<Sector[]> {
-    return await this.sectorRepository.find();
+  public async findAll(): Promise<Sector[]> {
+    const sectors = await this.sectorRepository.find({
+      relations: ["users"],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        users: {
+          id: true,
+          name: true
+        }
+      }
+    });
+  
+
+    const sectorsDto = sectors.map(sector => ({
+      ...sector,
+      users: sector.users.map(user => ({
+        id: user.id,
+        name: user.name
+      }))
+    }));
+  
+    return sectorsDto as Sector[]; 
   }
+  
 
   /**
    * Updates an existing sector based on its ID or entity.
@@ -153,17 +200,46 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
       where: { id: sectorId },
       relations: ["users"],
     });
-
+  
     if (!sector) {
       throw new NotFoundError(`Sector with ID ${sectorId} not found.`);
     }
-
+  
     const user: User = await userService.findOne({ id: userId });
-
+  
+    if (sector.users.some(existingUser => existingUser.id === userId)) {
+      throw new Error(`User with ID ${userId} is already part of the sector.`);
+    }
+  
+    // Adiciona o user ao setor e define o setor no user
     sector.users = [...(sector.users || []), user];
-
-    return await sectorRepository.save(sector);
+    user.sector = sector;
+  
+    // Salva as duas entidades para garantir que o setor_id seja atualizado no user
+    await userService.updateUser(user);  // Salva o user com o sector_id
+    const savedSector = await sectorRepository.save(sector);
+  
+    interface UserDTO {
+      id: string;
+      name: string;
+      email: string;
+      phone: string;
+    }
+  
+    const usersDTO: UserDTO[] = savedSector.users.map(user => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+    }));
+  
+    return {
+      ...savedSector,
+      users: usersDTO,
+    } as Sector;
   }
+  
+  
 
   async removeUser(sectorId: string, userId: string): Promise<Sector> {
     const sector: Sector = await sectorRepository.findOne({

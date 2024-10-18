@@ -19,13 +19,13 @@ projectRouter.use(validateResponseMiddleware);
 projectRouter.post("/post", authMiddleware, projectController.post);
 
 /**
- * GET /projects/getById/:projectId
+ * GET /projects/getById/:id
  * Route to retrieve a specific message by its unique ID. Protected by authentication middleware.
  *
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller projectController.getById - Handles the logic of retrieving a message by its ID.
  */
-projectRouter.get("/getById/:projectId", authMiddleware, projectController.getById);
+projectRouter.get("/getById/:id", authMiddleware, projectController.getById);
 
 /**
  * GET /projects/getAll
@@ -37,29 +37,29 @@ projectRouter.get("/getById/:projectId", authMiddleware, projectController.getBy
 projectRouter.get("/getAll", authMiddleware, projectController.getAll);
 
 /**
- * PUT /projects/put/:projectId
+ * PUT /projects/put/:id
  * Route to update a specific message by its unique ID. Protected by authentication middleware.
  *
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller projectController.put - Handles the logic of updating a message.
  */
-projectRouter.put("/put/:projectId", authMiddleware, projectController.put);
+projectRouter.put("/put/:id", authMiddleware, projectController.put);
 
 /**
- * DELETE /projects/delete/:projectId
+ * DELETE /projects/delete/:id
  * Route to delete a specific message by its unique ID. Protected by authentication middleware.
  *
  * @middleware authMiddleware - Validates if the user is authenticated.
  * @controller projectController.deleteById - Handles the logic of deleting a message.
  */
 projectRouter.delete(
-  "/delete/:projectId",
+  "/delete/:id",
   authMiddleware,
   projectController.deleteById
 );
 
 /**
- * PUT /projects/:projectId/projectRequests/:projectRequestId
+ * PUT /projects/:id/projectRequests/:id
  * Route to update the project request for a specific project by the project request ID.
  * Protected by authentication middleware.
  *
@@ -67,13 +67,13 @@ projectRouter.delete(
  * @controller projectController.putProjectRequest - Handles the logic of setting the project request for a project.
  */
 projectRouter.put(
-  "/projects/:projectId/projectRequest/:projectRequestId",
+  "/:id/projectRequest",
   authMiddleware,
   projectController.putProjectRequest
 );
 
 /**
- * POST /projects/:projectId/coordinators/:coordinatorId
+ * POST /projects/:id/coordinators/:id
  * Route to add a coordinator to a specific project by the coordinator's ID.
  * Protected by authentication middleware.
  *
@@ -81,13 +81,13 @@ projectRouter.put(
  * @controller projectController.addCoordinator - Handles the logic of adding a coordinator.
  */
 projectRouter.post(
-  "/projects/:projectId/coordinators/:coordinatorId",
+  "/:id/coordinators/",
   authMiddleware,
   projectController.postCoordinator
 );
 
 /**
- * DELETE /projects/:projectId/coordinators/:coordinatorId
+ * DELETE /projects/:id/coordinators/:id
  * Route to remove a coordinator from a specific project by the coordinator's ID.
  * Protected by authentication middleware.
  *
@@ -95,18 +95,18 @@ projectRouter.post(
  * @controller projectController.removeCoordinator - Handles the logic of removing a coordinator.
  */
 projectRouter.delete(
-  "/projects/:projectId/coordinators/:coordinatorId",
+  "/:id/coordinators",
   authMiddleware,
   projectController.deleteCoordinator
 );
 
-projectRouter.get("/projects/coordinator/:coordinatorId",
+projectRouter.get("/coordinator/:id",
   authMiddleware,
   projectController.getAllByCoordinatorId
 )
 
 /**
- * POST /projects/:projectId/members/:memberId
+ * POST /projects/:id/members/:id
  * Route to add a member to a specific project by the user's ID.
  * Protected by authentication middleware.
  *
@@ -114,13 +114,13 @@ projectRouter.get("/projects/coordinator/:coordinatorId",
  * @controller projectController.addTeamMember - Handles the logic of adding a member to a project.
  */
 projectRouter.post(
-  "/projects/:projectId/members/:memberId",
+  "/:id/members",
   authMiddleware,
   projectController.postMember
 );
 
 /**
- * DELETE /projects/:projectId/members/:memberId
+ * DELETE /projects/:id/members/:id
  * Route to remove a member from a specific project by the user's ID.
  * Protected by authentication middleware.
  *
@@ -128,18 +128,18 @@ projectRouter.post(
  * @controller projectController.deleteMember - Handles the logic of removing a member from a project.
  */
 projectRouter.delete(
-  "/projects/:projectId/members/:memberId",
+  "/:id/members",
   authMiddleware,
   projectController.deleteMember
 );
 
-projectRouter.get("/projects/member/:memberId",
+projectRouter.get("/member/:id",
   authMiddleware,
-  projectController.getAllByCoordinatorId
+  projectController.getAllByMemberId
 )
 
 /**
- * POST /projects/:projectId/sectors/:sectorId
+ * POST /projects/:id/sectors/:sectorId
  * Route to add a sector to a specific project by the sector's ID.
  * Protected by authentication middleware.
  *
@@ -147,13 +147,13 @@ projectRouter.get("/projects/member/:memberId",
  * @controller projectController.addSector - Handles the logic of adding a sector to a project.
  */
 projectRouter.post(
-  "/projects/:projectId/sectors/:sectorId",
+  "/:id/sectors/",
   authMiddleware,
   projectController.postSector
 );
 
 /**
- * DELETE /projects/:projectId/sectors/:sectorId
+ * DELETE /projects/:id/sectors/:sectorId
  * Route to remove a sector from a specific project by the sector's ID.
  * Protected by authentication middleware.
  *
@@ -161,7 +161,7 @@ projectRouter.post(
  * @controller projectController.removeSector - Handles the logic of removing a sector from a project.
  */
 projectRouter.delete(
-  "/projects/:projectId/sectors/:sectorId",
+  "/:id/sectors",
   authMiddleware,
   projectController.deleteSector
 );

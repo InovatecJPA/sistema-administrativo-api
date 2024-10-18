@@ -141,10 +141,11 @@ export class SectorController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
-    const { sectorId, userId } = req.params;
+    const { id } = req.params;
+    const { userId } = req.body;
 
     try {
-      const sector = await this.sectorService.addUser(sectorId, userId);
+      const sector = await this.sectorService.addUser(id, userId);
       return res.status(HttpStatusCode.Ok).json(sector);
     } catch (error) {
       next(error);
@@ -156,10 +157,11 @@ export class SectorController {
     res: Response,
     next: NextFunction
   ) => {
-    const { sectorId, userId } = req.params;
+    const { id } = req.params;
+    const { userId } = req.body;
 
     try {
-      const sector = await this.sectorService.removeUser(sectorId, userId);
+      const sector = await this.sectorService.removeUser(id, userId);
       return res.status(HttpStatusCode.Ok).json(sector);
     } catch (error) {
       next(error);
@@ -171,10 +173,11 @@ export class SectorController {
     res: Response,
     next: NextFunction
   ) => {
-    const { sectorId, messageId } = req.params;
+    const { id } = req.params;
+    const { messageId } = req.body;
 
     try {
-      const sector = await this.sectorService.addMessage(sectorId, messageId);
+      const sector = await this.sectorService.addMessage(id, messageId);
       return res.status(HttpStatusCode.Ok).json(sector);
     } catch (error) {
       next(error);
@@ -186,13 +189,11 @@ export class SectorController {
     res: Response,
     next: NextFunction
   ) => {
-    const { sectorId, messageId } = req.params;
+    const { id } = req.params;
+    const { messageId } = req.body;
 
     try {
-      const sector = await this.sectorService.removeMessage(
-        sectorId,
-        messageId
-      );
+      const sector = await this.sectorService.removeMessage(id, messageId);
       return res.status(HttpStatusCode.Ok).json(sector);
     } catch (error) {
       next(error);

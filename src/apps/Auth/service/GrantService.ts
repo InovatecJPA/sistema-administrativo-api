@@ -5,6 +5,7 @@ import Grant from "../model/Grant";
 
 import { DeleteResult, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
+import { profileService } from "./ProfileService";
 
 /**
  * Service class for managing `Grant` entities.
@@ -111,6 +112,13 @@ export class GrantService implements ServiceInterface<Grant, GrantDto> {
     }
 
     return await this.grantRepository.delete({ id });
+  }
+
+  async addProfileToGrant(grantId: string, profileId: string): Promise<Grant> {
+    const grant = await this.grantRepository.findOne({ where: { id: grantId },});
+    const profile = await profileService.findOneById(profileId);
+    grant.associatedProfiles.push(profile);
+    return await this.grantRepository.save(grant);
   }
 }
 

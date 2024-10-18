@@ -4,57 +4,38 @@ import Grant from "../apps/Auth/model/Grant";
 import { grantService } from '../apps/Auth/service/GrantService';
 import { profileService } from "../apps/Auth/service/ProfileService";
 import * as jwt from "../config/jwt";
+import { c } from "vite/dist/node/types.d-aGj9QkWt";
 
-/**
- * Checks if the user has permission to access a specific route based on their profile and grants.
- * @param userInfo - The user information including the requested path.
- * @param Grant[] - The list of grants associated with the user's profile.
- * @returns `true` if the user has permission to access the route, otherwise `false`.
- */
-const checkRoutePermission = (userInfo: UserDTO.userInfo, grantsWithId: Grant[]) => {
+function checkRoutePermission(currentPath: string, userId: string, grantsWithUUID: Grant[]): boolean {
 
-  console.log(userInfo.path);
-  // Verifica se o caminho atual é permitido por padrão
-  const defaultAllowedPaths = [
-    "/dev/accounts/users/profile",
-    "/dev/accounts/users/changePassword",
-    `/users/${userInfo.id}`,
-  ];
-
-  // If the user's path is in the default allowed paths, grant access
-  if (defaultAllowedPaths.includes(userInfo.path)) return true;
-
-  // Define regex patterns for routes that are allowed by default
-  const regexPatterns = [
-    /\/[a-zA-Z]+\/upload\//,
-    /^\/upload\/get\//,
-    /\/[a-zA-Z]+\/cpf\//,
-  ];
-
-  // Check if the user's path matches any of the regex patterns
-  if (regexPatterns.some((regex) => regex.test(userInfo.path))) return true;
-
-  // Regex pattern for UUIDs in routes
-  const uuidRegex =
-    /(\{)?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(\})?/;
-  const uuidMatches = userInfo.path.match(uuidRegex);
+  // Regex pattern for UUIDs in routes 
+  // UUID format xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
+  const uuidRegex: RegExp = /(\{)?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(\})?/;
+  const uuidMatches: RegExpMatchArray = currentPath.match(uuidRegex);
   const uuid = uuidMatches ? uuidMatches[0] : null;
 
   // Generate a list of routes with UUIDs replaced if applicable
-  const grants = grantsWithId.map((grant) => {
+  const grants = grantsWithUUID.map((grant) => {
     const { route } = grant;
     return route.includes(":id") && uuid ? route.replace(":id", uuid) : route;
   });
 
-  // Check if the user's path is in the list of permitted routes
-  return grants.includes(userInfo.path);
+  // Return true if the user has permission to access the route
+  return grants.includes(currentPath);
 };
 
-/**
- * Filters and sets the route filter based on the profile grants.
- * @param userInfo - The user information including the requested path.
- * @param profileGrants - The list of profile grants associated with the user's profile.
- */
+function freeRoutes(currentPath: string): boolean {
+
+  const defaultAllowedPaths = [
+    "/v1/accounts/profiles/store",
+    "/v1/accounts/users/profile",
+    "/v1/accounts/users/changePassword",
+    // `/users/${userId}`,
+  ];
+
+  if (defaultAllowedPaths.includes(currentPath)) return true;
+}
+
 // const filterRoute = (
 //   userInfo: UserDTO.userInfo,
 //   profileGrants: ProfileGrant[]
@@ -87,17 +68,18 @@ const checkRoutePermission = (userInfo: UserDTO.userInfo, grantsWithId: Grant[])
 
 // currentPath, user, userProfile, userGrants, profiles, grants,
 
-/**
- * Middleware function to handle authentication and authorization.
- * @param req - The request object.
- * @param res - The response object.
- * @param next - The next middleware function.
- */
+
 export const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+
+  // If the route is free, proceed to the next middleware or route handler
+  if (freeRoutes(req.originalUrl)) {
+    return next();
+  }
+
   // Retrieve the authorization header from the request
   const authHeader = req.headers.authorization;
 
@@ -140,17 +122,18 @@ export const authMiddleware = async (
   );
 
   // Retrieve profile grants from the database
-  const grantsWithId: Grant[] = await grantService.findAllByAssociatedProfile(userInfo.profile_id);
+  const grantsWithUUID: Grant[] = await grantService.findAllByAssociatedProfile(userInfo.profile_id);
   console.log(userInfo)
-  console.log("grantsWithId: ", grantsWithId);
+  console.log("grantsWithUUID: ", grantsWithUUID);
 
   // If the user has the Admin profile
   userInfo.profile = await profileService.findOneById(userInfo.profile_id);
   userInfo.isAdmin = userInfo.profile.name === "admin" ? true : false;
 
   // Check if the user has permission to access the route
-  if (!userInfo.isAdmin && !checkRoutePermission(req.userInfo, grantsWithId)) {
+  if (!userInfo.isAdmin && !checkRoutePermission(req.userInfo.path, req.userInfo.id, grantsWithUUID)) {
     return res.status(403).json({ error: "Access denied" });
+    
   } else {
     try {
       // Filter and set the route filter if applicable

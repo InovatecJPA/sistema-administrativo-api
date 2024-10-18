@@ -65,17 +65,11 @@ export class ProfileController {
       { grant: 'post', route: '/v1/accounts/Users/RecuperarSenha', note: 'pegar o plano do user' },
       { grant: 'post', route: '/v1/accounts/Users/MudarSenha', note: 'pegar o treino' },
       { grant: 'post', route: '/v1/accounts/token/', note: 'pegar todos os treinos por cateoria' },
-      { grant: 'post', route: '/v1/Processos', note: 'pegar todos os treinos por cateoria' },
-      { grant: 'get', route: '/v1/Events', note: 'pegar todos os treinos por cateoria' },
-      { grant: 'post', route: '/v1/Events', note: 'pegar todos os treinos por cateoria' },
-      { grant: 'delete', route: '/v1/Events/:id', note: 'Criar os planos,ver todos os plano criados pelo proprio treinador' },
-      { grant: 'get', route: '/v1/Events/:id', note: 'Criar os planos,ver todos os plano criados pelo proprio treinador' },
-      { grant: 'update', route: '/v1/Events/:id', note: 'Criar os planos,ver todos os plano criados pelo proprio treinador' },
     ];
 
     try {
       for (const grant of grants) {
-        await this.grantService.save(new GrantDto(grant.grant, grant.route, grant.note));
+        await this.grantService.save(new GrantDto(grant.grant, grant.note, grant.route,));
       }
       return res.status(200).json({ message: 'All default grants saved successfully' });
     } catch (error) {
@@ -142,7 +136,7 @@ export class ProfileController {
  */
   public get = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const { name } = req.params;
+      const { name } = req.body;
       const profile: Profile | null = await this.profileService.findOne({ name });
 
       if (!profile)
