@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { response, Router } from "express";
 
 import { authMiddleware } from "../../../middlewares/auth";
 import { grantController } from "../controller/GrantController";
@@ -14,5 +14,6 @@ router.get("/getAll", authMiddleware, grantController.getAll);
 router.put("/put/:id", authMiddleware, grantController.put);
 router.delete("/delete/:id", authMiddleware, grantController.deleteById);
 router.post("/:id/postProfile", authMiddleware, grantController.postProfile);
+router.get("/:id/postProfile", authMiddleware, (req, res) => {res.status(201).json({ message: "ok" })});
 
 export default router;

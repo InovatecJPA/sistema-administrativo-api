@@ -180,7 +180,7 @@ export class GrantController {
     try {
       const { id: grant_id } = req.params;
       const { profile_id } = req.body;
-      const grant: Grant = await this.grantService.addProfileToGrant(profile_id, grant_id);
+      const grant: Grant = await this.grantService.addProfileToGrant(grant_id, profile_id);
 
       return res.status(201).json(grant);
     } catch (error: any) {

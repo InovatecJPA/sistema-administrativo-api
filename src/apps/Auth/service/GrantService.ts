@@ -117,6 +117,7 @@ export class GrantService implements ServiceInterface<Grant, GrantDto> {
   async addProfileToGrant(grantId: string, profileId: string): Promise<Grant> {
     const grant = await this.grantRepository.findOne({ where: { id: grantId },});
     const profile = await profileService.findOneById(profileId);
+    
     grant.associatedProfiles.push(profile);
     return await this.grantRepository.save(grant);
   }
