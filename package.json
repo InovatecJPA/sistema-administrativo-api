@@ -43,7 +43,8 @@
     "typeorm:run-migrations": "ts-node-dev ./node_modules/typeorm/cli.js migration:run -d src/database/dbConnection.ts",
     "typeorm:drop": "ts-node-dev ./node_modules/typeorm/cli.js schema:drop -d src/database/dbConnection.ts",
     "seed:run": "ts-node src/database/db-seeds.ts",
-    "create:admin": "ts-node src/apps/Auth/seeds/create-admin.ts"
+    "create:admin": "ts-node src/apps/Auth/seeds/create-admin.ts",
+    "create:coordenador": "ts-node src/apps/Auth/seeds/create-coordenador.ts"
   },
   "nodemonConfig": {
     "watch": [
