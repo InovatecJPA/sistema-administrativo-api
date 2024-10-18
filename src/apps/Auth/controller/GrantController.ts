@@ -187,6 +187,18 @@ export class GrantController {
       next(error);
     }
   }
+
+  public postSector = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+      const { id: grant_id } = req.params;
+      const { service_id } = req.body;
+      const grant: Grant = await this.grantService.addSectorToGrant(grant_id, service_id);
+
+      return res.status(201).json(grant);
+    } catch (error: any) {
+      next(error);
+    }
+  }
 }
 
 // Initialize the controller with the service instance and export it

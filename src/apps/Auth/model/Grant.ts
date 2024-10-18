@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import Profile from "./Profile";
+import Sector from "../../Api/model/Sector";
 
 /**
  * Represents a grant entity in the system.
@@ -49,18 +50,6 @@ export default class Grant {
     nullable: true,
   })
   public note: string;
-
-  /**
-   * A filter for routing associated with the grant.
-   *
-   * @type {string}
-   * @memberof Grant
-   */
-  @Column({
-    type: "varchar",
-    nullable: true,
-  })
-  public routeFilter: string;
 
   /**
    * The route associated with the grant.
@@ -106,7 +95,7 @@ export default class Grant {
    * @type {Profile[]}
    * @memberof Grant
    */
-  @ManyToMany(() => Profile, { eager: true }) // You can choose to set eager loading as needed
+  @ManyToMany(() => Profile, { eager: true })
   @JoinTable({
     name: "grants_profiles",
     joinColumn: {
@@ -120,24 +109,35 @@ export default class Grant {
   })
   public associatedProfiles: Profile[];
 
+  @ManyToMany(() => Sector, { eager: true })
+  @JoinTable({
+    name: "grants_sectors",
+    joinColumn: {
+      name: "grant_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "sector_id",
+      referencedColumnName: "id",
+    },
+  })
+  public associatedSectors: Sector[];
+
   /**
    * Creates an instance of the Grant class.
    *
    * @param method - The method of the grant.
    * @param route - The route associated with the grant.
    * @param note - Optional additional notes about the grant.
-   * @param routeFilter - Optional filter for routing associated with the grant.
    * @memberof Grant
    */
   constructor(
     method: string,
     route: string,
     note?: string,
-    routeFilter?: string
   ) {
     this.method = method;
     this.route = route;
     this.note = note || null;
-    this.routeFilter = routeFilter || null;
   }
 }

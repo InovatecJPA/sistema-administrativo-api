@@ -6,6 +6,9 @@ import Grant from "../model/Grant";
 import { DeleteResult, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
 import { profileService } from "./ProfileService";
+import { sectorService } from "../../Api/service/SectorService";
+import Profile from "../model/Profile";
+import Sector from "../../Api/model/Sector";
 
 /**
  * Service class for managing `Grant` entities.
@@ -80,6 +83,16 @@ export class GrantService implements ServiceInterface<Grant, GrantDto> {
 
     return grants;}
 
+    async findAllByAssociatedSector(sectorId: string): Promise<Grant[] | null> {
+      const grants = await this.grantRepository
+        .createQueryBuilder('grant')
+        .innerJoin('grant.associatedSectors', 'sector')
+        .where('sector.id = :sectorId', { sectorId })
+        .getMany();
+  
+      return grants;}
+  
+
   /**
    * Updates an existing `Grant` entity.
    *
@@ -105,7 +118,7 @@ export class GrantService implements ServiceInterface<Grant, GrantDto> {
    * @throws CustomValidationError if no `Grant` with the specified ID is found.
    */
   async delete(id: string): Promise<DeleteResult> {
-    const grantToDelete = await this.grantRepository.findOneBy({ id });
+    const grantToDelete: Grant = await this.grantRepository.findOneBy({ id });
 
     if (!grantToDelete) {
       throw new CustomValidationError(`Grant with ID ${id} not found`);
@@ -115,10 +128,18 @@ export class GrantService implements ServiceInterface<Grant, GrantDto> {
   }
 
   async addProfileToGrant(grantId: string, profileId: string): Promise<Grant> {
-    const grant = await this.grantRepository.findOne({ where: { id: grantId },});
-    const profile = await profileService.findOneById(profileId);
+    const grant: Grant = await this.grantRepository.findOne({ where: { id: grantId },});
+    const profile: Profile = await profileService.findOneById(profileId);
     
     grant.associatedProfiles.push(profile);
+    return await this.grantRepository.save(grant);
+  }
+
+  async addSectorToGrant(grantId: string, sectorId: string): Promise<Grant> {
+    const grant: Grant = await this.grantRepository.findOne({ where: { id: grantId },});
+    const sector: Sector = await sectorService.findOneById(sectorId);
+    
+    grant.associatedSectors.push(sector);
     return await this.grantRepository.save(grant);
   }
 }

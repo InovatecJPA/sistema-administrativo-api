@@ -5,6 +5,18 @@ import { grantService } from '../apps/Auth/service/GrantService';
 import { profileService } from "../apps/Auth/service/ProfileService";
 import * as jwt from "../config/jwt";
 
+function freeRoutes(currentPath: string): boolean {
+
+  const defaultAllowedPaths = [
+    "/v1/accounts/profiles/store",
+    "/v1/accounts/users/profile",
+    "/v1/accounts/users/changePassword",
+    // `/users/${userId}`,
+  ];
+
+  if (defaultAllowedPaths.includes(currentPath)) return true;
+}
+
 function checkRoutePermission(currentPath: string, requestMethod: String, userId: string, grantsWithUUID: Grant[]): boolean {
 
   // Regex pattern for UUIDs in routes 
@@ -21,97 +33,73 @@ function checkRoutePermission(currentPath: string, requestMethod: String, userId
     return route.includes(":id") && uuid ? route.replace(":id", uuid) : route;
   });
 
-  console.log("grants: ", grants);
-
   // Return true if the user has permission to access the route
   return grants.includes(currentPath);
 };
 
-function freeRoutes(currentPath: string): boolean {
-
-  const defaultAllowedPaths = [
-    "/v1/accounts/profiles/store",
-    "/v1/accounts/users/profile",
-    "/v1/accounts/users/changePassword",
-    // `/users/${userId}`,
-  ];
-
-  if (defaultAllowedPaths.includes(currentPath)) return true;
-}
-
-export const authMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-
-  // If the route is free, proceed to the next middleware or route handler
-  if (freeRoutes(req.originalUrl)) {
-    return next();
-  }
-
-  // Retrieve the authorization header from the request
-  const authHeader = req.headers.authorization;
-
-  // Check if the authorization header is present
+const checkToken = (authHeader: string) => {
   if (!authHeader) {
-    return res.status(401).json({ error: "Token not provided." });
+      throw new Error("Token not provided.");
   }
 
-  // Split the authorization header into scheme and token
   const parts = authHeader.split(" ");
-
-  // Validate the authorization header format
   if (parts.length !== 2) {
-    return res.status(401).json({ error: "Token error." });
+      throw new Error("Token error.");
   }
 
   const [scheme, token] = parts;
-
-  // Check if the authorization scheme is 'Bearer'
   if (!/^Bearer$/i.test(scheme)) {
-    return res.status(401).json({ error: "Token poorly formatted." });
+      throw new Error("Token poorly formatted.");
   }
 
-  // Verify the JWT token and extract user information
   const userInfo = jwt.verifyToken(token);
-
-  // If the token is invalid, return an error response
   if (!userInfo) {
-    return res.status(401).json({ error: "Token invalid." });
+      throw new Error("Token invalid.");
   }
 
-  // Assign the user information to the request object
-  req.userInfo = userInfo as UserDTO.userInfo;
+  return userInfo;
+};
 
-  // Extract the base path from the request URL (excluding query parameters)
-  const startParams = req.originalUrl.indexOf("?");
-  req.userInfo.path = req.originalUrl.substring(
-    0,
-    startParams === -1 ? req.originalUrl.length : startParams
-  );
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
-  // Retrieve profile grants from the database
-  const grantsWithUUID: Grant[] = await grantService.findAllByAssociatedProfile(userInfo.profile_id);
-  console.log(userInfo)
-  console.log("grantsWithUUID: ", grantsWithUUID);
+  if (freeRoutes(req.originalUrl)) return next();
 
-  // If the user has the Admin profile
-  userInfo.profile = await profileService.findOneById(userInfo.profile_id);
-  userInfo.isAdmin = userInfo.profile.name === "admin" ? true : false;
+  try {
+      const authHeader = req.headers.authorization;
+      const userInfo = checkToken(authHeader);
+      req.userInfo = userInfo as UserDTO.userInfo;
+      const startParams = req.originalUrl.indexOf("?");
+      req.userInfo.path = req.originalUrl.substring(0, startParams === -1 ? req.originalUrl.length : startParams);
 
-  // Check if the user has permission to access the route
-  if (!userInfo.isAdmin && !checkRoutePermission(req.userInfo.path, req.method, req.userInfo.id, grantsWithUUID)) {
-    return res.status(403).json({ error: "Access denied" });
-    
-  } else {
-    try {
-      // Filter and set the route filter if applicable
-      // filterRoute(req.userInfo, profileGrants);
-      return next(); // Proceed to the next middleware or route handler
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({ error: "Bad request" });
-    }
+      const grantsByProfileWithUUID: Grant[] = await grantService.findAllByAssociatedProfile(userInfo.profile_id);
+      const grantsBySectorWithUUID: Grant[] = await grantService.findAllByAssociatedSector(userInfo.profile_id);
+      
+      const grantsMap = new Map<string, Grant>();
+
+      grantsByProfileWithUUID.forEach(grant => {
+          grantsMap.set(grant.id, grant);
+      });
+
+      grantsBySectorWithUUID.forEach(grant => {
+          grantsMap.set(grant.id, grant);
+      });
+
+      const uniqueGrantsWithUUID: Grant[] = Array.from(grantsMap.values());
+
+      userInfo.profile = await profileService.findOneById(userInfo.profile_id);
+      userInfo.isAdmin = userInfo.profile.name === "admin";
+
+      if (!userInfo.isAdmin && !checkRoutePermission(req.userInfo.path, req.method, req.userInfo.id, uniqueGrantsWithUUID)) {
+          return res.status(403).json({ error: "Access denied" });
+      }
+
+      return next();
+  } catch (error) {
+      const statusCode = error.message === "Token not provided." || 
+                         error.message === "Token error." || 
+                         error.message === "Token poorly formatted." || 
+                         error.message === "Token invalid."
+                         ? 401 : 400;
+      return res.status(statusCode).json({ error: error.message });
   }
 };
