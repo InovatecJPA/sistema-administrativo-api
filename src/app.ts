@@ -9,7 +9,7 @@ import { errorsHandler } from "./middlewares/errorsHandler";
 
 import v1 from "./apps";
 import ProfileController from "./apps/Auth/controller/ProfileController";
-import { GrantController } from "./apps/Auth/controller/GrantController";
+import { grantController } from "./apps/Auth/controller/GrantController";
 // import swaggerUi from "swagger-ui-express";
 // import swaggerDocument from "../swagger.json";
 
@@ -22,7 +22,7 @@ const corsOptions: CorsOptions = {
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) {
-    console.log("Request origin:", origin); // Adicione isto para ver qual origem está sendo recebida
+    console.log("Request origin:", origin);
     if (whiteList.indexOf(origin || "") !== -1 || !origin) {
       //console.log("Allowed by CORS");
       callback(null, true);
@@ -43,8 +43,8 @@ class App {
     this.middlewares();
     this.routes();
     this.errorHandling();
-    ProfileController.createProfiles;
-    GrantController.createGrants;
+    ProfileController.store;
+    grantController.store;
   }
 
   middlewares(): void {

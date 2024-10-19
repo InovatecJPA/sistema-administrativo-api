@@ -14,14 +14,13 @@ const getLocalIP = (): string => {
   for (const iface in interfaces) {
     for (const alias of interfaces[iface]!) {
       if (alias.family === "IPv4" && !alias.internal) {
-        return alias.address; // Retorna o primeiro endereço IP encontrado
+        return alias.address;
       }
     }
   }
-  return "127.0.0.1"; // Retorno padrão se não encontrar um IP válido
+  return "127.0.0.1";
 };
 
 console.log("IP da rede local:", getLocalIP());
-
 console.log(`Running in ${process.env.NODE_ENV} mode`);
 console.log(`Server running on port ${port}`);

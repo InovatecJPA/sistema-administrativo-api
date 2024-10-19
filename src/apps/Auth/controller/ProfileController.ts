@@ -2,18 +2,15 @@ import { CustomValidationError } from "../../../error/CustomValidationError";
 import { NotFoundError } from "../../../error/NotFoundError";
 import ProfileDto from "../dto/ProfileDto";
 import Profile from "../model/Profile";
-import { grantService, GrantService } from "../service/GrantService";
 import { profileService, ProfileService } from "../service/ProfileService";
 
 import { NextFunction, Request, Response } from "express";
 
 export class ProfileController {
   private profileService: ProfileService;
-  private grantService: GrantService;
 
-  constructor(profileService: ProfileService, grantService: GrantService) {
+  constructor(profileService: ProfileService) {
     this.profileService = profileService;
-    this.grantService = grantService;
   }
 
   /**
@@ -24,22 +21,17 @@ export class ProfileController {
    * @param next - The next middleware function.
    * @returns A JSON response indicating success or passes errors to the next middleware.
    */
-  async createProfiles(req: Request, res: Response, next: NextFunction): Promise<Response> {
+  async createProfiles(res: Response, next: NextFunction): Promise<Response> {
     const profiles = {
-      diretor_presidente: 'Diretor Presidente da empresa',
       admin: 'Administrador do sistema',
-      diretor: 'Diretor',
-      secretaria_geral: 'Secretaria geral',
-      secretario: 'Secretário',
-      gerente: 'Gerente',
-      coordenador: 'Coordenador',
+      administrativo: 'Setor administrativo da empresa',
     };
 
     try {
       for (const [key, value] of Object.entries(profiles)) {
         await this.profileService.save(new ProfileDto(key, value));
       }
-      return res.status(200).json({ message: 'All default profiles saved successfully' });
+      return res.status(200).json({ message: 'All profiles seeded successfully' });
     } catch (error) {
       next(error);
     }
@@ -53,12 +45,11 @@ export class ProfileController {
    * @param next - The next middleware function.
    * @returns A JSON response indicating success or passes errors to the next middleware.
    */
-  public store = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public store = async (res: Response, next: NextFunction): Promise<void> => {
     try {
       await Promise.all([
-        this.createProfiles(req, res, next),
+        this.createProfiles(res, next),
       ]);
-      res.status(200).json({ message: 'All profiles seeded successfully' });
     } catch (error) {
       next(error);
     }
@@ -207,4 +198,4 @@ export class ProfileController {
   }
 }
 
-export default new ProfileController(profileService, grantService);
+export default new ProfileController(profileService);

@@ -29,7 +29,7 @@ export class GrantController {
   * @param next - The next middleware function.
   * @returns A JSON response indicating success or passes errors to the next middleware.
   */
-  async createGrants(req: Request, res: Response, next: NextFunction): Promise<Response> {
+  async createGrants(res: Response, next: NextFunction): Promise<Response> {
     const grants = [
     // Grants para as rotas de autenticação
       { grant: 'post', route: '/v1/accounts/user/singUp', note: 'Cria um novo usuário no sistema.' },
@@ -102,7 +102,7 @@ export class GrantController {
       for (const grant of grants) {
         await this.grantService.save(new GrantDto(grant.grant, grant.note, grant.route,));
       }
-      return res.status(200).json({ message: 'All default grants saved successfully' });
+      return res.status(200).json({ message: 'All grants seeded successfully' });
     } catch (error) {
       next(error);
     }
@@ -116,12 +116,11 @@ export class GrantController {
    * @param next - The next middleware function.
    * @returns A JSON response indicating success or passes errors to the next middleware.
    */
-  public store = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public store = async (res: Response, next: NextFunction): Promise<void> => {
     try {
       await Promise.all([
-        this.createGrants(req, res, next)
+        this.createGrants(res, next)
       ]);
-      res.status(200).json({ message: 'All grants seeded successfully' });
     } catch (error) {
       next(error);
     }
