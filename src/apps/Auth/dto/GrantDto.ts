@@ -39,12 +39,10 @@ export default class GrantDto {
    * @param {string} name - The name of the grant.
    * @param {string} note - A note or description for the grant.
    * @param {string} route - The route associated with the grant.
-   * @param {string} [routeFilter] - An optional route filter.
    */
-  constructor(name: string, note: string, route: string, routeFilter?: string) {
+  constructor(name: string, note: string, route: string) {
     this.name = name;
     this.note = note;
-    this.routeFilter = routeFilter;
     this.route = route;
   }
 
@@ -86,25 +84,6 @@ export default class GrantDto {
     if (note !== null && note.trim() !== "") this.note = note;
   }
 
-  /**
-   * Gets the route filter associated with the grant.
-   *
-   * @returns {string | undefined} The route filter or `undefined` if not set.
-   */
-  public getRouteFilter(): string {
-    return this.routeFilter;
-  }
-
-  /**
-   * Sets the route filter for the grant.
-   * The route filter must be a non-null and non-empty string.
-   *
-   * @param {string} routeFilter - The new route filter to set.
-   */
-  public setRouteFilter(routeFilter: string): void {
-    if (routeFilter !== null && routeFilter.trim() !== "")
-      this.routeFilter = routeFilter;
-  }
 
   /**
    * Gets the route associated with the grant.
@@ -137,8 +116,6 @@ export default class GrantDto {
       this.name.trim() !== "" &&
       this.note !== null &&
       this.note.trim() !== "" &&
-      this.routeFilter !== null &&
-      this.routeFilter.trim() !== "" &&
       this.route !== null &&
       this.route.trim() !== ""
     );
@@ -150,6 +127,6 @@ export default class GrantDto {
    * @returns {Grant} A new `Grant` entity instance with properties from this DTO.
    */
   public toGrant(): Grant {
-    return new Grant(this.name, this.route, this.note, this.routeFilter);
+    return new Grant(this.name, this.route, this.note);
   }
 }

@@ -138,8 +138,8 @@ export class GrantController {
    */
   public post = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const { name, note, routeFilter, route } = req.body;
-      const grantDto = new GrantDto(name, note, routeFilter, route);
+      const { name, note,  route } = req.body;
+      const grantDto = new GrantDto(name, note,  route);
 
       if (!grantDto.isValid())
         throw new CustomValidationError('All fields of the new grant must be non-null or different of "" .');
@@ -240,8 +240,8 @@ export class GrantController {
   public put = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { id } = req.params;
-      const { name, note, routeFilter, route } = req.body;
-      const grantDto = new GrantDto(name, note, routeFilter, route);
+      const { name, note, route } = req.body;
+      const grantDto = new GrantDto(name, note, route);
 
       if(!grantDto.isValid())
         throw new CustomValidationError('All fields of the grant must be non-null or different of \"\".');
