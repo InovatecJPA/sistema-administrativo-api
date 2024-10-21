@@ -1,11 +1,11 @@
 const { MigrationInterface, QueryRunner } = require("typeorm");
 
-module.exports = class Initial1729105226938 {
-    name = 'Initial1729105226938'
+module.exports = class Initial1729531758832 {
+    name = 'Initial1729531758832'
 
     async up(queryRunner) {
         await queryRunner.query(`CREATE TABLE "chats" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, CONSTRAINT "PK_0117647b3c4a4e5ff198aeb6206" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "grants" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "method" character varying(6) NOT NULL, "note" text, "route_filter" character varying, "route" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_a25f5f89eff8b3277f7969b7094" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "grants" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "method" character varying(6) NOT NULL, "note" text, "route" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_a25f5f89eff8b3277f7969b7094" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "profiles" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying, "description" character varying, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "UQ_4e9da7cade0e9edd393329bb326" UNIQUE ("name"), CONSTRAINT "UQ_eaa0caf6ff8df342f2b1a693af2" UNIQUE ("description"), CONSTRAINT "PK_8e520eb4da7dc01d0e190447c8e" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "tokens" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "user_id" character varying NOT NULL, "token" character varying NOT NULL, "is_used" boolean NOT NULL DEFAULT false, "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_6a8ca5961656d13c16c04079dd3" UNIQUE ("token"), CONSTRAINT "PK_3001e89ada36263dabf1fb6210a" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_8769073e38c365f315426554ca" ON "tokens" ("user_id") `);
@@ -20,6 +20,9 @@ module.exports = class Initial1729105226938 {
         await queryRunner.query(`CREATE TABLE "grants_profiles" ("grant_id" uuid NOT NULL, "profile_id" uuid NOT NULL, CONSTRAINT "PK_9c40c0da06030e5bfb29107cb90" PRIMARY KEY ("grant_id", "profile_id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_adda5fcced1f51e4873851b6e1" ON "grants_profiles" ("grant_id") `);
         await queryRunner.query(`CREATE INDEX "IDX_edcb1ada9c908b1b6c9eb9426d" ON "grants_profiles" ("profile_id") `);
+        await queryRunner.query(`CREATE TABLE "grants_sectors" ("grant_id" uuid NOT NULL, "sector_id" uuid NOT NULL, CONSTRAINT "PK_8336c5e69351fcfd15eda89efb3" PRIMARY KEY ("grant_id", "sector_id"))`);
+        await queryRunner.query(`CREATE INDEX "IDX_d54648ad5c24824072d4dd3d10" ON "grants_sectors" ("grant_id") `);
+        await queryRunner.query(`CREATE INDEX "IDX_affdf2378019df7f3045300f00" ON "grants_sectors" ("sector_id") `);
         await queryRunner.query(`CREATE TABLE "projects_coordinators_users" ("projects_id" uuid NOT NULL, "users_id" uuid NOT NULL, CONSTRAINT "PK_4fd877c27b17037184258170c0a" PRIMARY KEY ("projects_id", "users_id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_5315ca43d46e7feafdc40bc0a0" ON "projects_coordinators_users" ("projects_id") `);
         await queryRunner.query(`CREATE INDEX "IDX_a5924dc50a7346e88318bf1447" ON "projects_coordinators_users" ("users_id") `);
@@ -40,6 +43,8 @@ module.exports = class Initial1729105226938 {
         await queryRunner.query(`ALTER TABLE "chat_users" ADD CONSTRAINT "FK_9a5f2493e2c02490ceb527649e4" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "grants_profiles" ADD CONSTRAINT "FK_adda5fcced1f51e4873851b6e15" FOREIGN KEY ("grant_id") REFERENCES "grants"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
         await queryRunner.query(`ALTER TABLE "grants_profiles" ADD CONSTRAINT "FK_edcb1ada9c908b1b6c9eb9426d3" FOREIGN KEY ("profile_id") REFERENCES "profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "grants_sectors" ADD CONSTRAINT "FK_d54648ad5c24824072d4dd3d10a" FOREIGN KEY ("grant_id") REFERENCES "grants"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "grants_sectors" ADD CONSTRAINT "FK_affdf2378019df7f3045300f00a" FOREIGN KEY ("sector_id") REFERENCES "sectors"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
         await queryRunner.query(`ALTER TABLE "projects_coordinators_users" ADD CONSTRAINT "FK_5315ca43d46e7feafdc40bc0a0a" FOREIGN KEY ("projects_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
         await queryRunner.query(`ALTER TABLE "projects_coordinators_users" ADD CONSTRAINT "FK_a5924dc50a7346e88318bf14471" FOREIGN KEY ("users_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
         await queryRunner.query(`ALTER TABLE "projects_members_users" ADD CONSTRAINT "FK_6f67aec6642458070c77a5fa84e" FOREIGN KEY ("projects_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
@@ -55,6 +60,8 @@ module.exports = class Initial1729105226938 {
         await queryRunner.query(`ALTER TABLE "projects_members_users" DROP CONSTRAINT "FK_6f67aec6642458070c77a5fa84e"`);
         await queryRunner.query(`ALTER TABLE "projects_coordinators_users" DROP CONSTRAINT "FK_a5924dc50a7346e88318bf14471"`);
         await queryRunner.query(`ALTER TABLE "projects_coordinators_users" DROP CONSTRAINT "FK_5315ca43d46e7feafdc40bc0a0a"`);
+        await queryRunner.query(`ALTER TABLE "grants_sectors" DROP CONSTRAINT "FK_affdf2378019df7f3045300f00a"`);
+        await queryRunner.query(`ALTER TABLE "grants_sectors" DROP CONSTRAINT "FK_d54648ad5c24824072d4dd3d10a"`);
         await queryRunner.query(`ALTER TABLE "grants_profiles" DROP CONSTRAINT "FK_edcb1ada9c908b1b6c9eb9426d3"`);
         await queryRunner.query(`ALTER TABLE "grants_profiles" DROP CONSTRAINT "FK_adda5fcced1f51e4873851b6e15"`);
         await queryRunner.query(`ALTER TABLE "chat_users" DROP CONSTRAINT "FK_9a5f2493e2c02490ceb527649e4"`);
@@ -75,6 +82,9 @@ module.exports = class Initial1729105226938 {
         await queryRunner.query(`DROP INDEX "public"."IDX_a5924dc50a7346e88318bf1447"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_5315ca43d46e7feafdc40bc0a0"`);
         await queryRunner.query(`DROP TABLE "projects_coordinators_users"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_affdf2378019df7f3045300f00"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_d54648ad5c24824072d4dd3d10"`);
+        await queryRunner.query(`DROP TABLE "grants_sectors"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_edcb1ada9c908b1b6c9eb9426d"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_adda5fcced1f51e4873851b6e1"`);
         await queryRunner.query(`DROP TABLE "grants_profiles"`);
