@@ -45,7 +45,7 @@ export class ProfileController {
    * @param next - The next middleware function.
    * @returns A JSON response indicating success or passes errors to the next middleware.
    */
-  public store = async (res: Response, next: NextFunction): Promise<void> => {
+  public store = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       await Promise.all([
         this.createProfiles(res, next),
