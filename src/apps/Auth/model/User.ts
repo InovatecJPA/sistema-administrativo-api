@@ -244,6 +244,34 @@ class User {
    */
   @OneToOne(() => Token, (token) => token.user)
   token: Token;
+
+   /**
+   * Converts the User entity to a DTO (Data Transfer Object).
+   * This method will return only the necessary fields.
+   *
+   * @returns An object containing the user DTO.
+   */
+  public toDto(): Record<string, any> {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      cpf: this.cpf,
+      birthDate: this.birthDate,
+      phone: this.phone,
+      profile: {
+        id: this.profile?.id,
+        name: this.profile?.name,
+      },
+      sector: {
+        id: this.sector?.id,
+        name: this.sector?.name,
+      },
+      isActive: this.isActive,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+  }
 }
 
 export default User;

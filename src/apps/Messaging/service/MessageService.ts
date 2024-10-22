@@ -28,6 +28,7 @@ export class MessageService {
   }
 
   async sendMessage(messageDto: MessageDto): Promise<Message> {
+    
     if (!messageDto.isValid()) {
       throw new InvalidObjectError("Invalid message object.");
     }

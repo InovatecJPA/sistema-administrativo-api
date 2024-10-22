@@ -38,7 +38,25 @@ export class MessageController {
 
         // Convert DTO to Message model and return the created message
         const newMessage = await this.messageService.sendMessage(messageDto);
-        return res.status(201).json(newMessage);
+        const response = {
+          id: newMessage.id,
+          text: newMessage.text,
+          sender: {
+            name: newMessage.sender.name, 
+            id: newMessage.sender.id,
+          },
+          receiver: {
+            name: newMessage.receiver.name,
+            id: newMessage.receiver.id,
+          },
+          sendedAt: newMessage.sendedAt,
+          chat: {
+            id: newMessage.chat.id,
+            name: newMessage.chat.name,
+          }
+        };
+        
+        return res.status(201).json(response);
 
       } catch (error: any) {
         next(error);

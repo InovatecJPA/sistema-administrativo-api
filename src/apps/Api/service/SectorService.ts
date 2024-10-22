@@ -238,8 +238,6 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
       users: usersDTO,
     } as Sector;
   }
-  
-  
 
   async removeUser(sectorId: string, userId: string): Promise<Sector> {
     const sector: Sector = await sectorRepository.findOne({
