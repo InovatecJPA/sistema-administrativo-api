@@ -294,7 +294,6 @@ export class UserService {
     if (!user) {
       throw new NotFoundError("Usuário não encontrado.");
     }
-    console.log(user);
 
     return {
       id: user.id,

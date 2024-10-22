@@ -5,12 +5,10 @@ import {
   MoreThanOrEqual, 
   Repository 
 } from "typeorm";
-import ServiceInterface from "../../Auth/interface/ServiceInterface";
 import MessageDto from "../dto/MessageDto";
 import Message from "../model/Message";
 import { InvalidObjectError } from "../../../error/InvalidObjectError";
 import AppDataSource from "../../../database/dbConnection";
-import { chatService } from "./ChatService";
 import User from "../../Auth/model/User";
 import Chat from "../model/Chat";
 
@@ -34,15 +32,10 @@ export class MessageService {
       throw new InvalidObjectError("Invalid message object.");
     }
 
-    const senderId = messageDto.getSenderId();
-    const receiverId = messageDto.getReceiverId();
+    const sender = messageDto.getSender();
+    const receiver = messageDto.getReceiver();
     const text = messageDto.getText();
 
-   
-    const [sender, receiver] = await Promise.all([
-      this.userRepository.findOne({ where: { id: senderId } }),
-      this.userRepository.findOne({ where: { id: receiverId } }),
-    ]);
 
     if (!sender || !receiver) {
       throw new Error("Sender or receiver not found.");
@@ -51,7 +44,7 @@ export class MessageService {
     let chat = await this.chatRepository
       .createQueryBuilder("chat")
       .innerJoin("chat.users", "user")
-      .where("user.id IN (:...userIds)", { userIds: [senderId, receiverId] })
+      .where("user.id IN (:...userIds)", { userIds: [sender.id, receiver.id] })
       .groupBy("chat.id")
       .having("COUNT(user.id) = 2")
       .getOne();

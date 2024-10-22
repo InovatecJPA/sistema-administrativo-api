@@ -16,11 +16,9 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      //console.log("req.body", req.body);
       const token = await this.authService.login(req.body);
       res.status(200).json(token);
     } catch (error) {
-      //console.log(error);
       next(error);
     }
   };
@@ -64,7 +62,6 @@ export class AuthController {
   ): Promise<void> => {
     try {
       const { token } = req.params;
-      //console.log("token no controller", token);
       const { password } = req.body;
 
       const loginToken = await this.authService.resetPassword(token, password);

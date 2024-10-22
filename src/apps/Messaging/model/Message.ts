@@ -62,9 +62,9 @@ export default class Message {
    * @type {Sector}
    * @memberof Message
    */
-  @ManyToOne(() => Sector, (sector) => sector.messages, { nullable: false })
+  @ManyToOne(() => Sector, (sector) => sector.messages)
   @JoinColumn({ name: "receiver_sector_id" })
-  receiverGroup: Sector;
+  receiverSector: Sector;
 
   /**
    * The chat that the message belongs to.
@@ -91,20 +91,20 @@ export default class Message {
    * @param {string} text - The text content of the message.
    * @param {User} sender - The user who sends the message.
    * @param {User} receiver - The user who receives the message.
-   * @param {Sector} receiverGroup - The user sector that receives the message.
+   * @param {Sector} receiverSector - The user sector that receives the message.
    * @param {Date} sendedAt - The timestamp when the message was sent.
    */
   constructor(
     text: string,
     sender: User,
     receiver: User,
-    receiverGroup: Sector,
+    receiverSector: Sector,
     sendedAt: Date
   ) {
     this.text = text;
     this.sender = sender;
     this.receiver = receiver;
-    this.receiverGroup = receiverGroup;
+    this.receiverSector = receiverSector;
     this.sendedAt = sendedAt;
   }
 }

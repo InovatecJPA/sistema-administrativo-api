@@ -1,5 +1,4 @@
 import { Router } from "express";
-import testRouter from "../teste";
 import projectRequestRouter from "./Api/routes/ProjectRequestRoutes";
 import projectRouter from "./Api/routes/ProjectRoutes";
 import sectorRouter from "./Api/routes/SectorRoutes";
@@ -21,6 +20,5 @@ router.use("/project", projectRouter);
 router.use("/projectRequest", projectRequestRouter);
 router.use("/sector", sectorRouter);
 router.use("/chat", chatRouter);
-router.use("/test", testRouter);
 
 export default router;

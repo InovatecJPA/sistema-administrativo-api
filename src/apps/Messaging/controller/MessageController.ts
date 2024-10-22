@@ -1,9 +1,10 @@
 import { messageService, MessageService } from "../service/MessageService";
 import { NotFoundError } from "../../../error/NotFoundError";
 import { NextFunction, Request, Response } from "express";
-import Message from "../model/Message";
 import MessageDto from "../dto/MessageDto";
 import { InvalidObjectError } from "../../../error/InvalidObjectError";
+import { sectorService } from "../../Api/service/SectorService";
+import { userService } from "../../Auth/service/UserService";
 
 export class MessageController {
 
@@ -25,10 +26,12 @@ export class MessageController {
      */
     public post = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
       try {
-        const { text, sender, receiver, receiverGroup } = req.body;
-        const messageDto: MessageDto = new MessageDto(text, sender, receiver, receiverGroup);
+        const { text, senderId, receiverId, receiverSectorName } = req.body;
+        const sender = await userService.findOne({ id: senderId });
+        const receiver = await userService.findOne({ id: receiverId });
+        const receiverSector = await sectorService.findOne({ name: receiverSectorName })
+        const messageDto: MessageDto = new MessageDto(text, sender, receiver, receiverSector);
 
-        // Check if the message data is valid
         if (!messageDto.isValid()) {
           throw new InvalidObjectError('All fields of the new message must be non-null or different of "".');
         }

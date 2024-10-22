@@ -33,7 +33,6 @@ export class SectorController {
       }
       
       const savedSector: Sector = await this.sectorService.save(sectorDto.toSector());
-      console.log(savedSector);
 
       if (!userList || userList.length === 0) {
         return res.status(201).json(savedSector);     

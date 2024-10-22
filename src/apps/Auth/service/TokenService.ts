@@ -56,8 +56,6 @@ export class TokenService {
     // Save the token to the database
     await this.tokenRepository.save(token);
 
-    console.log(resetToken);
-
     return resetToken;
   }
 

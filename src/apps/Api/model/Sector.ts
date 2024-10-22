@@ -26,7 +26,7 @@ export default class Sector {
    * @type {string}
    * @memberof Sector
    */
-  @Column({ type: "varchar", nullable: false })
+  @Column({ type: "varchar", nullable: false, unique: true })
   name: string;
 
   /**
@@ -47,7 +47,7 @@ export default class Sector {
   @OneToMany(() => User, (user) => user.sector, { cascade: true })
   users: User[];
 
-  @OneToMany(() => Message, (message) => message.receiverGroup)
+  @OneToMany(() => Message, (message) => message.receiverSector)
   messages: Message[];
 
   /**

@@ -27,7 +27,6 @@ export class AuthService {
     const user = await this.userService.findOne({email: logindto.email});
 
     if (!user || !(await user.comparePassword(logindto.password))) {
-      console.log("LOGIN ERROR - E-mail ou senha incorretos");
       throw new UnauthorizedException("E-mail ou senha incorretos");
     }
 

@@ -3,7 +3,6 @@ import { chatService } from "../service/ChatService";
 
 class ChatController {
   
-
   async createChat(req: Request, res: Response): Promise<Response> {
     try {
       const chatData = req.body;
@@ -13,7 +12,6 @@ class ChatController {
       return res.status(400).json({ message: error.message });
     }
   }
-
   
   async getChatById(req: Request, res: Response): Promise<Response> {
     try {
@@ -39,8 +37,6 @@ class ChatController {
       return res.status(500).json({ message: error.message });
     }
   }
-  
-
 
   async getAllChats(req: Request, res: Response): Promise<Response> {
     try {
@@ -137,7 +133,6 @@ class ChatController {
     }
   }
   
-  
   async updateChatName(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params; // ID do chat
@@ -157,8 +152,6 @@ class ChatController {
       return res.status(500).json({ message: 'Internal server error', error: error.message });
     }
   }
-  
-
   
   async deleteChat(req: Request, res: Response): Promise<Response> {
     try {
