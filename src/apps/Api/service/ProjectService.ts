@@ -8,9 +8,7 @@ import User from "../../Auth/model/User";
 import { userService } from "../../Auth/service/UserService";
 import ProjectDto from "../dto/ProjectDto";
 import Project from "../model/Project";
-import ProjectRequest from "../model/ProjectRequest";
 import Sector from "../model/Sector";
-import { projectRequestService } from "./ProjectRequestService";
 import { sectorService } from "./SectorService";
 
 export class ProjectService implements ServiceInterface<Project, ProjectDto> {
@@ -126,37 +124,6 @@ export class ProjectService implements ServiceInterface<Project, ProjectDto> {
     }
 
     return await this.projectRepository.delete({ id });
-  }
-
-  /**
- * Sets the project request associated with a specific project.
- * This method assigns a `ProjectRequest` to a project based on their respective IDs.
- *
- * @param {string} projectId - The ID of the project to update.
- * @param {string} projectRequestId - The ID of the project request to associate.
- * @throws {NotFoundError} - If the project or project request is not found.
- * @returns {Promise<Project>} - The updated project entity.
- */
-  async setProjectRequest(projectId: string, projectRequestId: string): Promise<Project> {
-    const project: Project = await this.projectRepository.findOne({
-       where: { id: projectId },
-       relations: ["projectRequest"],
-      });
-
-    if (!project) {
-      throw new NotFoundError(`Project with ID ${projectId} not found.`)
-    }
-
-    const projectRequest: ProjectRequest = await projectRequestService.findOneById(projectRequestId);
-
-    if (!projectRequest) {
-      throw new NotFoundError(`Project Request with ID ${projectRequestId} not found.`)
-    }
-
-    project.projectRequest = projectRequest;
-
-    return await projectRepository.save(project);
-
   }
 
   /**

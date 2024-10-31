@@ -76,7 +76,6 @@ export class GrantController {
       { grant: 'get', route: '/v1/projects/getAll', note: 'Recupera todos os projetos' },
       { grant: 'put', route: '/v1/projects/put/:id', note: 'Atualiza projeto pelo ID' },
       { grant: 'delete', route: '/v1/projects/delete/:id', note: 'Deleta projeto pelo ID' },
-      { grant: 'put', route: '/v1/projects/:id/projectRequests/:id', note: 'Atualiza a requisição de projeto' },
       { grant: 'post', route: '/v1/projects/:id/coordinators', note: 'Adiciona um coordenador a um projeto' },
       { grant: 'delete', route: '/v1/projects/:id/coordinators', note: 'Remove um coordenador de um projeto' },
       { grant: 'get', route: '/v1/projects/coordinator/:id', note: 'Recupera projetos por coordenador' },

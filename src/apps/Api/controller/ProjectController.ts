@@ -177,17 +177,17 @@ export class ProjectController {
    * @param next - Function to pass errors to the middleware.
    * @returns A response with the updated project or an error.
    */
-  async putProjectRequest(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const { id } = req.params;
-    const { projectRequestId } = req.body;
+  // async putProjectRequest(req: Request, res: Response, next: NextFunction): Promise<Response> {
+  //   const { id } = req.params;
+  //   const { projectRequestId } = req.body;
     
-    try {
-      const updatedProject = await projectService.setProjectRequest(id, projectRequestId);
-      return res.status(HttpStatusCode.Ok).json(updatedProject);
-    } catch (error) {
-      next(error);
-    }
-  }
+  //   try {
+  //     const updatedProject = await projectService.setProjectRequest(id, projectRequestId);
+  //     return res.status(HttpStatusCode.Ok).json(updatedProject);
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
 
   /**
    * POST /projects/:id/coordinators/:coordinatorId

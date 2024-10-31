@@ -1,5 +1,4 @@
 import { Router } from "express";
-import projectRequestRouter from "./Api/routes/ProjectRequestRoutes";
 import projectRouter from "./Api/routes/ProjectRoutes";
 import sectorRouter from "./Api/routes/SectorRoutes";
 import chatRouter from "./Messaging/routes/ChatRoutes";
@@ -17,7 +16,6 @@ router.use("/grant", grantRouter);
 router.use("/profile", profileRouter);
 router.use("/messages", messagesRouter);
 router.use("/project", projectRouter);
-router.use("/projectRequest", projectRequestRouter);
 router.use("/sector", sectorRouter);
 router.use("/chat", chatRouter);
 

@@ -1,6 +1,5 @@
 import User from "../../Auth/model/User";
 import Sector from "../model/Sector";
-import ProjectRequest from "../model/ProjectRequest";
 import Project from "../model/Project"; // Assuming Project is the entity for the project
 
 /**
@@ -14,12 +13,6 @@ export default class ProjectDto {
    * Private name of the project. 
    */
   private _name: string;
-
-  /**
-   * @private
-   * Private project request associated with the project.
-   */
-  private _projectRequest: ProjectRequest;
 
   /**
    * @private
@@ -37,18 +30,15 @@ export default class ProjectDto {
    * Constructor for creating an instance of `ProjectDto`.
    *
    * @param {string} name - The name of the project.
-   * @param {ProjectRequest} projectRequested - The project request associated with the project.
    * @param {Sector[]} [sectors] - Optional array of sectors associated with the project.
    * @param {User[]} [coordinators] - Optional array of coordinators for the project.
    */
   constructor(
     name: string,
-    projectRequested: ProjectRequest,
     sectors?: Sector[],
     coordinators?: User[]
   ) {
     this._name = name;
-    this._projectRequest = projectRequested;
     this._sectors = sectors;
     this._coordinators = coordinators;
   }
@@ -61,7 +51,7 @@ export default class ProjectDto {
    */
   public toProject(): Project {
     const now: Date = new Date();
-    const project = new Project(this.name, this._coordinators, this._sectors, this._projectRequest, now, now);
+    const project = new Project(this.name, this._coordinators, this._sectors, now, now);
     return project;
   }
 
@@ -81,24 +71,6 @@ export default class ProjectDto {
    */
   public set name(value: string) {
     this._name = value;
-  }
-
-  /**
-   * Getter for the project request associated with the project.
-   *
-   * @returns {ProjectRequest} The project request.
-   */
-  public get projectRequest(): ProjectRequest {
-    return this._projectRequest;
-  }
-
-  /**
-   * Setter for the project request associated with the project.
-   *
-   * @param {ProjectRequest} value The new project request.
-   */
-  public set projectRequest(value: ProjectRequest) {
-    this._projectRequest = value;
   }
 
   /**
@@ -143,6 +115,6 @@ export default class ProjectDto {
    * @returns {boolean} True if the instance is valid, false otherwise.
    */
   public isValid(): boolean {
-    return !!this._name && !!this._projectRequest;
+    return !!this._name;
   }
 }

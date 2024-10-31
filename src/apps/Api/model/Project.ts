@@ -9,7 +9,6 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import User from "../../Auth/model/User";
-import ProjectRequest from "./ProjectRequest";
 import Sector from "./Sector";
 
 /**
@@ -70,15 +69,6 @@ export default class Project {
   sectors: Sector[];
 
   /**
-   * A project request associated with this project.
-   * This is a one-to-one relationship with the ProjectRequest entity.
-   *
-   * @type {ProjectRequest}
-   */
-  @OneToOne(() => ProjectRequest)
-  projectRequest: ProjectRequest;
-
-  /**
    * The timestamp when the project was created.
    * This value is automatically set when the project is first created.
    *
@@ -106,18 +96,15 @@ export default class Project {
    * Constructor to create a Project instance with all fields.
    *
    * @param {string} name - The name of the project.
-   * @param {ProjectRequest} projectRequest - The associated project request.
    * @param {Date} createdAt - The timestamp when the project was created.
    * @param {Date} updatedAt - The timestamp when the project was last updated.
    */
   constructor(
     name: string,
-    projectRequest: ProjectRequest,
     createdAt: Date,
     updatedAt: Date
   ) {
     this.name = name;
-    this.projectRequest = projectRequest;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }

@@ -59,20 +59,6 @@ projectRouter.delete(
 );
 
 /**
- * PUT /projects/:id/projectRequests/:id
- * Route to update the project request for a specific project by the project request ID.
- * Protected by authentication middleware.
- *
- * @middleware authMiddleware - Validates if the user is authenticated.
- * @controller projectController.putProjectRequest - Handles the logic of setting the project request for a project.
- */
-projectRouter.put(
-  "/:id/projectRequest",
-  authMiddleware,
-  projectController.putProjectRequest
-);
-
-/**
  * POST /projects/:id/coordinators/:id
  * Route to add a coordinator to a specific project by the coordinator's ID.
  * Protected by authentication middleware.
