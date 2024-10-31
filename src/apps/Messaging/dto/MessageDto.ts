@@ -99,6 +99,7 @@ export default class MessageDto {
    */
   public isValid(): boolean {
     return (
+      this.text &&
       this.text.trim() !== "" &&
       this.sender !== null &&
       (this.receiver !== undefined || this.receiverSector !== undefined)
