@@ -51,7 +51,7 @@ export default class ProjectDto {
    */
   public toProject(): Project {
     const now: Date = new Date();
-    const project = new Project(this.name, this._coordinators, this._sectors, now, now);
+    const project = new Project(this.name, now, now);
     return project;
   }
 

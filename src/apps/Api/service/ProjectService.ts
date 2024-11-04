@@ -28,16 +28,20 @@ export class ProjectService implements ServiceInterface<Project, ProjectDto> {
    * @returns {Promise<Project>} - The newly saved project entity.
    */
   async save(objectDto: Partial<ProjectDto>): Promise<Project> {
-    if (!objectDto.isValid()) {
-      throw new InvalidObjectError(
-        'All fields of the new projecyt must be non-null or different of "" .'
-      );
+    // Converte `objectDto` para uma instância completa de `ProjectDto`
+    const projectDto = new ProjectDto(objectDto.name, objectDto.sectors, objectDto.coordinators);
+
+    // Valida usando o método `isValid`
+    if (!projectDto.isValid()) {
+        throw new InvalidObjectError(
+            'All fields of the new project must be non-null or different of "".'
+        );
     }
 
-    const newProject: Project = objectDto.toProject();
-
+    const newProject: Project = projectDto.toProject();
     return await this.projectRepository.save(newProject);
-  }
+}
+
 
   /**
    * Finds a project by a given set of conditions.
