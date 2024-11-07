@@ -27,6 +27,12 @@ export default class ProjectDto {
   private _coordinators?: User[];
 
   /**
+   * @private
+   * Private list of members associated with the project.
+   */
+  private _members?: User[];
+
+  /**
    * Constructor for creating an instance of `ProjectDto`.
    *
    * @param {string} name - The name of the project.
@@ -36,11 +42,13 @@ export default class ProjectDto {
   constructor(
     name: string,
     sectors?: Sector[],
-    coordinators?: User[]
+    coordinators?: User[],
+    members?: User[],
   ) {
     this._name = name;
     this._sectors = sectors;
     this._coordinators = coordinators;
+    this._members = members;
   }
 
   /**
@@ -115,6 +123,6 @@ export default class ProjectDto {
    * @returns {boolean} True if the instance is valid, false otherwise.
    */
   public isValid(): boolean {
-    return !!this._name;
+    return this._name != null;
   }
 }

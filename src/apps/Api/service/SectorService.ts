@@ -55,7 +55,6 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
     return await this.sectorRepository.save(newSector);
 }
 
-
   async findOne(object: Partial<Sector>): Promise<Sector> {
     const projectRecovered: Sector = await this.sectorRepository.findOne({
       where: object as FindOptionsWhere<Sector>,
