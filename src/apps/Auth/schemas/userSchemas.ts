@@ -15,7 +15,10 @@ export const userResistrationSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   phone: z.string(),
-  birthDate: z.date().optional(),
+  birthDate: z
+    .union([z.string(), z.date()])
+    .transform((value) => (typeof value === "string" ? new Date(value) : value))
+    .optional(),
   profileName: z.string().optional(),
   isActive: z.boolean().optional(),
 });
