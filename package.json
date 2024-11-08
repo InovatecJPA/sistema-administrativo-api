@@ -26,10 +26,8 @@
     "pg": "^8.4.0",
     "reflect-metadata": "^0.2.2",
     "swagger-ui-express": "^5.0.1",
-    "tsoa": "^6.4.0",
     "typeorm-extension": "^3.6.2",
     "typeorm-naming-strategies": "^4.1.0",
-    "typeorm-seeding": "^1.6.1",
     "typescript": "^5.5.4",
     "zod": "^3.23.8"
   },
@@ -37,7 +35,6 @@
     "start": "nodemon src/server.js",
     "dev": "cross-env NODE_ENV=dev env-cmd -f .env.development nodemon src/server.js",
     "build": "tsc -p .",
-    "swagger": "tsoa spec",
     "typeorm": "ts-node-dev ./node_modules/typeorm/cli.js",
     "typeorm:gen-migrations": "node -e \"try { require('child_process').execSync('ts-node-dev ./node_modules/typeorm/cli.js migration:generate -d src/database/dbConnection.ts -o src/database/migrations/' + process.argv[1], { stdio: 'inherit' }) } catch (err) { console.error('No changes detected or other error occurred:', err.message); }\"",
     "typeorm:run-migrations": "ts-node-dev ./node_modules/typeorm/cli.js migration:run -d src/database/dbConnection.ts",
