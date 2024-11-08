@@ -4,6 +4,12 @@ import { NotFoundError } from "../../../error/NotFoundError";
 import ProjectDto from "../dto/ProjectDto";
 import Project from "../model/Project";
 import { projectService, ProjectService } from "../service/ProjectService";
+import { InvalidObjectError } from "../../../error/InvalidObjectError";
+import UserController from "../../Auth/controller/UserController";
+import { userService } from "../../Auth/service/UserService";
+import User from "../../Auth/model/User";
+import Sector from "../model/Sector";
+import { sectorService } from "../service/SectorService";
 
 export class ProjectController {
   private projectService: ProjectService;
@@ -27,7 +33,36 @@ export class ProjectController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const savedProject: Project = await this.projectService.save(req.body);
+      const { name, sectors, coordinators, members } = req.body;
+      const projectDto: ProjectDto = new ProjectDto(name, sectors, coordinators, members);
+
+      if (!projectDto.isValid()) {
+        throw new InvalidObjectError("Project has missing values!");
+      }
+
+      const savedProject: Project = await this.projectService.save(projectDto.toProject());
+
+      if (sectors || sectors.length !== 0) {
+        coordinators.forEach(async sectorId => {
+          const sector: Sector = await sectorService.findOne({ id: sectorId})
+          this.projectService.addSector(savedProject.id, sector.id);
+        });
+      }
+
+      if (coordinators || coordinators.length !== 0) {
+        coordinators.forEach(async userId => {
+          const user: User = await userService.findOne({ id: userId})
+          this.projectService.addCoordinator(savedProject.id, user.id);
+        });
+      }
+
+      if (members || members.length !== 0) {
+        members.forEach(async userId => {
+          const user: User = await userService.findOne({ id: userId})
+          this.projectService.addMember(savedProject.id, user.id);
+        });
+      }
+      
       return res.status(201).json(savedProject);
     } catch (error: any) {
       next(error);

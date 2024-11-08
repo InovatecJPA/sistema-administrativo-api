@@ -234,8 +234,9 @@
     Body: {
       "name": "New Project",
       "description": "Description of the new project",
-      "sectors": ["Marketing", "IT"],
-      "coordinators": ["User1", "User2"]
+      "sectors": [sector.id],
+      "coordinators": [user.id],
+      "members": [user.id]
     }
 
   List Project by ID:
