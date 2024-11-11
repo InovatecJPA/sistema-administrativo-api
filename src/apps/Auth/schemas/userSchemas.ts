@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { date, z } from "zod";
 import CpfValidator from "../utils/CpfValidator";
 
 export const userResistrationSchema = z.object({
@@ -16,8 +16,25 @@ export const userResistrationSchema = z.object({
   password: z.string().min(6),
   phone: z.string(),
   birthDate: z
-    .union([z.string(), z.date()])
-    .transform((value) => (typeof value === "string" ? new Date(value) : value))
+    .string()
+    .refine(
+      (value: string) => {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          const [year, month, day] = value.split("-").map(Number);
+          const date = new Date(year, month - 1, day);
+          if (!isNaN(date.getTime())) {
+            console.log(date);
+            return true;
+          }
+        }
+        return false;
+      },
+      { message: "invalid. Use  YYYY-MM-DD" }
+    )
+    .transform((value) => {
+      const [year, month, day] = value.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    })
     .optional(),
   profileName: z.string().optional(),
   isActive: z.boolean().optional(),
@@ -80,7 +97,27 @@ export const updateUserSchema = z.object({
     .transform((cpf) => cpf.replace(/\D/g, ""))
     .optional(), // CPF com 11 caracteres
   email: z.string().email().optional(), // Email deve ser válido
-  birthDate: z.date().optional(), // Data de nascimento é opcional
+  birthDate: z
+    .string()
+    .refine(
+      (value: string) => {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          const [year, month, day] = value.split("-").map(Number);
+          const date = new Date(year, month - 1, day);
+          if (!isNaN(date.getTime())) {
+            console.log(date);
+            return true;
+          }
+        }
+        return false;
+      },
+      { message: "invalid. Use  YYYY-MM-DD" }
+    )
+    .transform((value) => {
+      const [year, month, day] = value.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    })
+    .optional(),
   phone: z.string().optional(), // Número de telefone opcional
   isActive: z.boolean().optional(), // Status da conta
   sector: z

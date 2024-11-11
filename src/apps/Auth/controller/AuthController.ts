@@ -48,7 +48,7 @@ export class AuthController {
       const { email } = req.body;
 
       await this.authService.requestResetToken(email);
-      res.status(200).json("Link enviado para o e-mail.");
+      res.status(200).json({ messagem: "Link enviado para o e-mail." });
     } catch (error) {
       next(error);
     }
