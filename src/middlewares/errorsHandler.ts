@@ -22,13 +22,13 @@ export const errorsHandler = (
   // Erros personalizados
   if (err instanceof BaseError) {
     console.error("Base error: ", err.status, err.message);
-    return res.status(err.status).json({ status: err.status, error: err.message });
+    return res.status(err.status).json({ status: err.status, message: err.message });
   }
 
   // Erro genérico
   console.error("Unexpected server error: ", err);
   res.status(500).json({
     status: 500,
-    error: "Internal server error.",
+    message: "Internal server error.",
   });
 };
