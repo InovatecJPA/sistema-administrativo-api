@@ -6,6 +6,7 @@ import { userService } from "../../Auth/service/UserService";
 import SectorDto from "../dto/SectorDto";
 import Sector from "../model/Sector";
 import { sectorService, SectorService } from "../service/SectorService";
+import User from "../../Auth/model/User";
 
 export class SectorController {
   private readonly sectorService: SectorService;
@@ -38,11 +39,12 @@ export class SectorController {
         return res.status(201).json(savedSector);     
       }
 
-      userList.array.forEach(user => {
-        if(!userService.findOne(user.id)) {
+      userList.array.forEach(async userId => {
+        const user: User = await userService.findOne({id: userId })
+        if(!user) {
           throw new NotFoundError(`User with ID ${ user.id } not found`);
         }
-        this.sectorService.addUser(savedSector.id, user);
+        this.sectorService.addUser(savedSector.id, user.id);
       });
 
       return res.status(201).json(savedSector);
