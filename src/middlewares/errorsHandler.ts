@@ -21,10 +21,8 @@ export const errorsHandler = (
 
   // Erros personalizados
   if (err instanceof BaseError) {
-    console.error("Base error: ", err.message);
-    return res.status(err.status).json({
-      error: err.message,
-    });
+    console.error("Base error: ", err.status, err.message);
+    return res.status(err.status).json({ status: err.status, error: err.message });
   }
 
   // Erro genérico

@@ -5,5 +5,172 @@
     "description": "API REST para o sistema administrativo.",
     "version": "1.0.0"
   },
-  "paths": {}
+  "paths": {
+    "/testDB": {
+      "get": {
+        "summary": "Testa a conexão com o banco de dados.",
+        "description": "Verifica a conexão com o banco de dados e retorna uma mensagem de confirmação.",
+        "responses": {
+          "200": {
+            "description": "Conectado ao banco de dados.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Connected to database"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao conectar ao banco de dados.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Error connecting to database"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/accounts/singUp": {
+      "post": {
+        "summary": "Cria um novo usuário.",
+        "description": "Cria um novo usuário no sistema.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cpf": {
+                    "type": "string",
+                    "example": "06093240479",
+                    "description": "CPF do usuário, contendo 11 dígitos numéricos.",
+                    "pattern": "^[0-9]{11}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "adminDaSilva@admin.com",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "senhaSegura556",
+                    "description": "Senha do usuário, com pelo menos 6 caracteres.",
+                    "minLength": 6
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "1234567890",
+                    "description": "Número de telefone do usuário, sem formatação específica."
+                  },
+                  "birthDate": {
+                    "type": "string",
+                    "example": "1990-01-01",
+                    "format": "date",
+                    "description": "Data de nascimento do usuário, opcional."
+                  },
+                  "profile": {
+                    "type": "string",
+                    "example": "admin",
+                    "description": "Nome do perfil do usuário, opcional."
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Status ativo do usuário, opcional."
+                  }
+                },
+                "required": ["cpf", "name", "email", "password", "phone"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação dos dados de entrada."
+          }
+        }
+      }
+    },
+    "/v1/accounts/login": {
+      "post": {
+        "summary": "Autentica um usuário.",
+        "description": "Autentica um usuário no sistema.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "adminDaSilva@admin.com",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "senhaSegura556"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário autenticado com sucesso. Retorna o token de acesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "JWT token de acesso para o usuário autenticado.",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "E-mail ou senha incorretos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "E-mail ou senha incorretos."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
