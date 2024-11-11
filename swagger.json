@@ -5,9 +5,22 @@
     "description": "API REST para o sistema administrativo.",
     "version": "1.0.0"
   },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearer": {
+          "format": "JWT",
+          "type": "http"
+        }
+      }
+    }
+  },
   "paths": {
     "/testDB": {
       "get": {
+        "tags": ["Teste"],
         "summary": "Testa a conexão com o banco de dados.",
         "description": "Verifica a conexão com o banco de dados e retorna uma mensagem de confirmação.",
         "responses": {
@@ -38,8 +51,9 @@
     },
     "/v1/accounts/singUp": {
       "post": {
+        "tags": ["Auth"],
         "summary": "Cria um novo usuário.",
-        "description": "Cria um novo usuário no sistema.",
+        "description": "Cria um novo usuário no sistema.\n\n `Obs. a ideia é que somente admin tenha acesso a essa rota para cadastro.`",
         "requestBody": {
           "required": true,
           "content": {
@@ -107,6 +121,7 @@
     },
     "/v1/accounts/login": {
       "post": {
+        "tags": ["Auth"],
         "summary": "Autentica um usuário.",
         "description": "Autentica um usuário no sistema.",
         "requestBody": {
@@ -163,6 +178,897 @@
                     "message": {
                       "type": "string",
                       "example": "E-mail ou senha incorretos."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/accounts/forgotPassword": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Faz a requisição de atualização de senha do usuário.",
+        "description": "Envia um link com token para reset de senha ao email do usuário.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "adminDaSilva@admin.com",
+                    "format": "email"
+                  }
+                },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário encontrado e link enviado para o e-mail.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "menssagem": {
+                      "type": "string",
+                      "example": "Link enviado para o e-mail."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não registrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Usuário não registrado."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/accounts/resetPassword/{token}": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Atualiza a senha do usuário",
+        "description": "Atualiza a senha do usuário utilizando o token de reset.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "abc123resetToken"
+            },
+            "description": "Token de reset de senha fornecido ao usuário."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "example": "novaSenha556",
+                    "description": "Nova senha do usuário, com pelo menos 6 caracteres.",
+                    "minLength": 6
+                  }
+                },
+                "required": ["password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "summary": "Senha atualizada com sucesso.",
+            "description": "Retorna um novo token de autenticação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação dos dados de entrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "password is Required."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/accounts/changePassword": {
+      "patch": {
+        "tags": ["Auth"],
+        "summary": "Atualiza a senha do usuário",
+        "description": "Permite que o usuário autenticado atualize sua senha, utilizando a senha antiga para autenticação e validação da nova senha. É necessário que o usuário esteja autenticado, e as informações do usuário estarão disponíveis no `userInfo`, presente no header.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "example": "senhaSegura556",
+                    "description": "Senha antiga do usuário, deve ter pelo menos 6 caracteres.",
+                    "minLength": 6
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "example": "novaSenha556",
+                    "description": "Nova senha do usuário, com pelo menos 6 caracteres.",
+                    "minLength": 6
+                  },
+                  "newPasswordConfirm": {
+                    "type": "string",
+                    "example": "novaSenha556",
+                    "description": "Confirmação da nova senha. Deve coincidir com a nova senha e ter pelo menos 6 caracteres.",
+                    "minLength": 6
+                  }
+                },
+                "required": ["oldPassword", "newPassword", "newPasswordConfirm"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Senha alterada com sucesso."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação dos dados de entrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password must contain at least 6 characters."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Falha na autenticação. Isso pode ocorrer se o token não for fornecido, se a senha antiga estiver incorreta, ou se as novas senhas não coincidirem.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Senha incorreta."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Retorna informações do usuário autenticado.",
+        "description": "Retorna informações do usuário autenticado, utilizando o token de acesso fornecido no header.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Informações do usuário autenticado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    },
+                    "cpf": {
+                      "type": "string",
+                      "example": "06093240479"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "adminDaSilva@admin.com"
+                    },
+                    "phone": {
+                      "type": "string",
+                      "example": "1234567890"
+                    },
+                    "isActive": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "profile": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "7e3f6c24-057f-4661-ab28-c8c9f72b5924"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "default_user"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Permissão de usuário padrão do sistema"
+                        }
+                      }
+                    },
+                    "sector": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Falha na autenticação. Isso pode ocorrer se o token não for fornecido ou se o token for inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not provided."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/list": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Retorna uma PAGINADA lista de usuários.",
+        "description": "Retorna uma lista de usuários cadastrados no sistema.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "listUser": [
+                    {
+                      "id": "7ea5f441-47bb-4eb5-8869-e69e10bbd167",
+                      "cpf": "123456789",
+                      "name": "Admin",
+                      "email": "adminDaSilva@admin.com",
+                      "phone": null,
+                      "isActive": true,
+                      "profile": {
+                        "id": "e6f28377-5ff0-4bde-a471-c1d6d53cdd4c",
+                        "name": "admin",
+                        "description": "Administrador do sistema"
+                      },
+                      "sector": null
+                    }
+                  ],
+                  "pagination": {
+                    "path": "/users",
+                    "page": 1,
+                    "prev_page_url": false,
+                    "next_page_url": false,
+                    "total": 1
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Falha na autenticação. Isso pode ocorrer se o token não for fornecido ou se o token for inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not provided."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/listAll": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Retorna uma lista de TODOS os usuários.",
+        "description": "Retorna uma lista de usuários cadastrados no sistema.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários.",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": "7ea5f441-47bb-4eb5-8869-e69e10bbd167",
+                    "cpf": "123456789",
+                    "name": "Admin",
+                    "email": "adminDaSilva@admin.com",
+                    "phone": null,
+                    "isActive": true,
+                    "profile": {
+                      "id": "e6f28377-5ff0-4bde-a471-c1d6d53cdd4c",
+                      "name": "admin",
+                      "description": "Administrador do sistema"
+                    },
+                    "sector": null
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Falha na autenticação. Isso pode ocorrer se o token não for fornecido ou se o token for inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not provided."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{id}/update": {
+      "patch": {
+        "tags": ["User"],
+        "summary": "Atualiza um usuário.",
+        "description": "Atualiza um usuário no sistema.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do usuário a ser atualizado."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cpf": {
+                    "type": "string",
+                    "example": "06093240479",
+                    "description": "CPF do usuário, contendo 11 dígitos numéricos.",
+                    "pattern": "^[0-9]{11}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "adminDaSilva@admin.com",
+                    "format": "email"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "1234567890",
+                    "description": "Número de telefone do usuário, sem formatação específica."
+                  },
+                  "birthDate": {
+                    "type": "string",
+                    "example": "1990-01-01",
+                    "format": "date",
+                    "description": "Data de nascimento do usuário, opcional."
+                  },
+                  "profile": {
+                    "type": "string",
+                    "example": "7e3f6c24-057f-4661-ab28-c8c9f72b5924",
+                    "description": "UUID do perfil do usuário, opcional."
+                  },
+                  "sector": {
+                    "type": "string",
+                    "example": "7e3f6c24-057f-4661-ab28-c8c9f72b5924",
+                    "description": "UUID do setor do usuário, opcional."
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Status ativo do usuário, opcional."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Usuário atualizado com sucesso."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação dos dados de entrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "birthDate is invalid. Use  YYYY-MM-DD"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Falha na autenticação. Isso pode ocorrer se o token não for fornecido ou se o token for inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not provided."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{id}/update/profile": {
+      "put": {
+        "tags": ["User"],
+        "summary": "Atualiza O PERFIL UM usuário.",
+        "description": "Atualiza O PERFIL UM usuário no sistema.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do usuário a ser atualizado."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "profileId": {
+                    "type": "string",
+                    "example": "7e3f6c24-057f-4661-ab28-c8c9f72b5924",
+                    "description": "UUID do perfil do usuário, opcional."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perfil do usuário atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Perfil do usuário atualizado com sucesso."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Perfil não encontrado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Falha na autenticação. Isso pode ocorrer se o token não for fornecido ou se o token for inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not provided."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{id}": {
+      "delete": {
+        "tags": ["User"],
+        "summary": "Desativa um usuário.",
+        "description": "Desativa um usuário no sistema.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do usuário a ser desativado."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário desativado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Usuário desativado com sucesso."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Usuário não encontrado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Falha na autenticação. Isso pode ocorrer se o token não for fornecido ou se o token for inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token not provided."
                     }
                   }
                 }
