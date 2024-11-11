@@ -9,16 +9,16 @@ export function validateData(schema: z.ZodObject<any, any>) {
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const errorMessages = error.errors.map((issue: any) => ({
-          message: `${issue.path.join(".")} is ${issue.message}`,
-        }));
+        const errorMessages = error.errors
+          .map((issue: any) => `${issue.path.join(".")} is ${issue.message}`)
+          .join("; ");
         res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ error: "Invalid data", details: errorMessages });
+          .status(400)
+          .json({ status: 400, message: errorMessages });
       } else {
         res
           .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: "Internal Server Error" });
+          .json({ status: 500, message: "Internal Server Error" });
       }
     }
   };
