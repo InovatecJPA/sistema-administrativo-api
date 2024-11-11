@@ -13,6 +13,7 @@ import {
   userLoginDTO,
   changePasswordDTO,
 } from "../schemas/userSchemas";
+import { CustomValidationError } from "../../../error/CustomValidationError";
 
 // import { sendMailPromise } from "../../mail/mailer";
 
@@ -24,10 +25,15 @@ export class AuthService {
   }
 
   public login = async (logindto: userLoginDTO): Promise<{ token: string }> => {
-    const user = await this.userService.findOne({email: logindto.email});
+    const user: User = await this.userService.findOne({
+      email: logindto.email,
+    });
 
     if (!user || !(await user.comparePassword(logindto.password))) {
       throw new UnauthorizedException("E-mail ou senha incorretos");
+    }
+    if (user.isActive === false) {
+      throw new UnauthorizedException("Usuário desativado");
     }
 
     const userInformation: UserDTO.userInfo = {
@@ -64,7 +70,7 @@ export class AuthService {
     // Vai ser ajustado por arthur
     // let emailData = helper.createDefaultEmailConfig(email);
 
-    let user: User | null = await this.userService.findOne({email: email});
+    let user: User | null = await this.userService.findOne({ email: email });
 
     if (!user) {
       throw new NotFoundError("Usuário não registrado.");
@@ -122,13 +128,16 @@ export class AuthService {
     userInfo: UserDTO.userInfo,
     changePasswordDTO: changePasswordDTO
   ): Promise<boolean> => {
-    let user = await this.userService.findOne({id: userInfo.id});
+    let user = await this.userService.findOne({ id: userInfo.id });
+
+    if (!(await user.comparePassword(changePasswordDTO.oldPassword))) {
+      throw new UnauthorizedException("Senha incorreta.");
+    }
 
     if (
-      changePasswordDTO.newPassword !== changePasswordDTO.newPasswordConfirm ||
-      !(await user.comparePassword(changePasswordDTO.oldPassword))
+      changePasswordDTO.newPassword !== changePasswordDTO.newPasswordConfirm
     ) {
-      throw new UnauthorizedException("As senhas não coincidem.");
+      throw new CustomValidationError("As senhas não coincidem.");
     }
 
     user.password = changePasswordDTO.newPassword;

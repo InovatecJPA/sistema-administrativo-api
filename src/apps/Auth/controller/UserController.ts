@@ -68,7 +68,7 @@ class UserController {
     try {
       const updateData: UpdateUserDTO = updateUserSchema.parse(req.body);
 
-      await this.userService.updateUser(req.userInfo.id, updateData);
+      await this.userService.updateUser(req.params.id, updateData);
 
       res.status(200).json({ message: "Usuário atualizado com sucesso." });
     } catch (error) {
@@ -89,12 +89,14 @@ class UserController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const userId = req.userInfo.id;
+      const userId = req.params.id;
       const profileId = req.body.profileId;
 
       await this.userService.updateUserProfile(userId, profileId);
 
-      res.status(200).json({ message: "Perfil atualizado com sucesso." });
+      res
+        .status(200)
+        .json({ message: "Perfil do usuário atualizado com sucesso." });
     } catch (error) {
       next(error);
     }
@@ -138,7 +140,8 @@ class UserController {
     next: NextFunction
   ): Promise<Response> => {
     try {
-      const userId = req.userInfo.id;
+      const userId = req.params.id;
+      console.log(userId);
 
       await this.userService.delete(userId);
 

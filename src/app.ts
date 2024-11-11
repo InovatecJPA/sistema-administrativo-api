@@ -10,8 +10,9 @@ import { errorsHandler } from "./middlewares/errorsHandler";
 import v1 from "./apps";
 import ProfileController from "./apps/Auth/controller/ProfileController";
 import { grantController } from "./apps/Auth/controller/GrantController";
-// import swaggerUi from "swagger-ui-express";
-// import swaggerDocument from "../swagger.json";
+
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "../swagger.json";
 
 // Temp. desenvolvimento das rotas
 
@@ -56,11 +57,8 @@ class App {
   }
 
   routes(): void {
-    // Dev-back routes
-    //this.app.use("/dev", devRoutes);
-
-    //this.app.use("/api-docs", swaggerUi.serve);
-    //this.app.get("/api-docs", swaggerUi.setup(swaggerDocument));
+    this.app.use("/api-docs", swaggerUi.serve);
+    this.app.get("/api-docs", swaggerUi.setup(swaggerDocument));
 
     this.app.use("/v1", v1);
     this.app.get("/testDB", async (req: Request, res: Response) => {
