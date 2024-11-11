@@ -11,6 +11,7 @@ import { InvalidObjectError } from "../../../error/InvalidObjectError";
 import AppDataSource from "../../../database/dbConnection";
 import User from "../../Auth/model/User";
 import Chat from "../model/Chat";
+import { ReplicationStatus } from "@aws-sdk/client-s3";
 
 export class MessageService {
   private messageRepository: Repository<Message>;
@@ -72,19 +73,62 @@ export class MessageService {
     return await this.messageRepository.save(message);
   }
 
-  async findOne(object: Partial<Message>): Promise<Message> {
-    return this.messageRepository.findOne({
+  async findOne(object: Partial<Message>): Promise<any> {
+    const message = await this.messageRepository.findOne({
       where: object as FindOptionsWhere<Message>,
+      relations: ["sender"],
     });
+  
+    if (message) {
+      return {
+        ...message,
+        sender: {
+          id: message.sender.id,
+          name: message.sender.name,
+        },
+      };
+    }
+    return null;
   }
+  
 
-  async findOneById(id: string): Promise<Message> {
-    return this.messageRepository.findOneBy({ id });
+  async findOneById(id: string): Promise<any> {
+    const message = await this.messageRepository.findOne({
+      where: { id },
+      relations: ["sender"],
+    });
+  
+    if (message) {
+      return {
+        ...message,
+        sender: {
+          id: message.sender.id,
+          name: message.sender.name,
+        },
+      };
+    }
+    return null;
   }
+  
+  
+  
 
-  async findAll(): Promise<Message[]> {
-    return this.messageRepository.find();
+  async findAll(): Promise<Array<Omit<Message, 'sender'> & { sender: { id: string; name: string } }>> {
+    const messages = await this.messageRepository.find({
+      relations: ["sender"],
+    });
+  
+    return messages.map(message => ({
+      ...message,
+      sender: {
+        id: message.sender.id,
+        name: message.sender.name,
+      },
+    }));
   }
+  
+  
+  
 
   async findAllByDate(sendedAtDay: string): Promise<Message[]> {
     const startOfDay = new Date(sendedAtDay);
@@ -98,6 +142,7 @@ export class MessageService {
         { sendedAt: MoreThanOrEqual(startOfDay) },
         { sendedAt: LessThan(endOfDay) },
       ],
+      relations: ["sender"],
     });
   }
 
