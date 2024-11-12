@@ -23,7 +23,6 @@ export const userResistrationSchema = z.object({
           const [year, month, day] = value.split("-").map(Number);
           const date = new Date(year, month - 1, day);
           if (!isNaN(date.getTime())) {
-            console.log(date);
             return true;
           }
         }

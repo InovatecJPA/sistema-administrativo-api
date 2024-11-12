@@ -1,0 +1,71 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API ADM inovatec-jp",
+    "description": "API REST para o sistema administrativo.",
+    "version": "1.0.0"
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearer": {
+          "format": "JWT",
+          "type": "http"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/testDB": {
+      "get": {
+        "tags": ["Teste"],
+        "summary": "Testa a conexão com o banco de dados.",
+        "description": "Verifica a conexão com o banco de dados e retorna uma mensagem de confirmação.",
+        "responses": {
+          "200": {
+            "description": "Conectado ao banco de dados.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Connected to database"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao conectar ao banco de dados.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Error connecting to database"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user": {
+      "$ref": "./paths/user.json#/~1"
+    },
+    "/v1/user/list": {
+      "$ref": "./paths/user.json#/~1list"
+    },
+    "/v1/user/listAll": {
+      "$ref": "./paths/user.json#/~1listAll"
+    },
+    "/v1/user/{id}/update": {
+      "$ref": "./paths/user.json#/~1{id}~1update"
+    },
+    "/v1/user/{id}/update/profile": {
+      "$ref": "./paths/user.json#/~1{id}~1update~1profile"
+    },
+    "/v1/user/{id}": {
+      "$ref": "./paths/user.json#/~1{id}"
+    }
+  }
+}
