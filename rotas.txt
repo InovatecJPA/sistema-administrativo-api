@@ -1,0 +1,74 @@
+
+-----------MESSAGES-----------
+
+
+http://localhost:3010/v1/messages/post
+
+method: POST
+body:
+{
+    "text": "texto tal tal tal ",
+    "senderId": "adasd-dsada-dasdja",
+    "receiverId: "adas-sdads-dsada",
+    "receiverSector": "sector name"
+} 
+
+
+http://localhost:3010/v1/messages/getByDate/:sendedAtDay
+
+method: GET
+body:
+{
+   
+} 
+
+
+http://localhost:3010/v1/messages/getById/:id
+
+method: GET
+body:
+{
+   
+} 
+
+
+http://localhost:3010/v1/messages/getAll
+
+method: GET
+body:
+{
+   
+} 
+
+
+http://localhost:3010/v1/messages/put/:id
+
+method: PUT
+body:
+{
+   "text": "texto tal tal tal ",
+    "senderId": "adasd-dsada-dasdja",
+    "receiverId: "adas-sdads-dsada",
+    "receiverSector": "sector name"
+} 
+
+
+http://localhost:3010/v1/messages/delete/:id
+
+method: DELETE
+body:
+{
+   
+}
+
+
+-----------CHAT-----------
+
+
+http://localhost:3010/v1/post
+
+method: POST
+body:
+{
+   "name": "chat-name"
+}
