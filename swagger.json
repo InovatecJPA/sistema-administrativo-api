@@ -1077,6 +1077,585 @@
           }
         }
       }
+    },
+    "/v1/project/post": {
+      "post": {
+        "tags": ["Projeto"],
+        "summary": "Cria um novo projeto.",
+        "description": "Cadastra um novo projeto no sistema, incluindo setores, coordenadores e membros associados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nome do projeto.",
+                    "example": "Novo Projeto"
+                  },
+                  "sectors": {
+                    "type": "array",
+                    "description": "Lista de IDs dos setores associados ao projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  },
+                  "coordinators": {
+                    "type": "array",
+                    "description": "Lista de IDs dos coordenadores do projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  },
+                  "members": {
+                    "type": "array",
+                    "description": "Lista de IDs dos membros do projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Projeto criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nome do projeto.",
+                      "example": "Novo Projeto"
+                    },
+                    "sectors": {
+                      "type": "array",
+                      "description": "Lista de IDs dos setores associados ao projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "coordinators": {
+                      "type": "array",
+                      "description": "Lista de IDs dos coordenadores do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "members": {
+                      "type": "array",
+                      "description": "Lista de IDs dos membros do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    }
+                  },
+                  "required": ["name"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados do projeto inválidos ou ausentes."
+          },
+          "401": {
+            "description": "Autenticação necessária."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/v1/project/put/{id}": {
+      "put": {
+        "tags": ["Projeto"],
+        "summary": "Atualiza um projeto existente.",
+        "description": "Atualiza um projeto existente no sistema, incluindo setores, coordenadores e membros associados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto a ser atualizado."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nome do projeto.",
+                    "example": "Novo Projeto"
+                  },
+                  "sectors": {
+                    "type": "array",
+                    "description": "Lista de IDs dos setores associados ao projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  },
+                  "coordinators": {
+                    "type": "array",
+                    "description": "Lista de IDs dos coordenadores do projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  },
+                  "members": {
+                    "type": "array",
+                    "description": "Lista de IDs dos membros do projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Projeto criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nome do projeto.",
+                      "example": "Novo Projeto"
+                    },
+                    "sectors": {
+                      "type": "array",
+                      "description": "Lista de IDs dos setores associados ao projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "coordinators": {
+                      "type": "array",
+                      "description": "Lista de IDs dos coordenadores do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "members": {
+                      "type": "array",
+                      "description": "Lista de IDs dos membros do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    }
+                  },
+                  "required": ["name"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados do projeto inválidos ou ausentes."
+          },
+          "401": {
+            "description": "Autenticação necessária."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/v1/project/getById/{id}": {
+      "get": {
+        "tags": ["Projeto"],
+        "summary": "Retorna um projeto existente.",
+        "description": "Retorna um projeto existente no sistema, incluindo setores, coordenadores e membros associados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto a ser atualizado."
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Projeto criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nome do projeto.",
+                      "example": "Novo Projeto"
+                    },
+                    "sectors": {
+                      "type": "array",
+                      "description": "Lista de IDs dos setores associados ao projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "coordinators": {
+                      "type": "array",
+                      "description": "Lista de IDs dos coordenadores do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "members": {
+                      "type": "array",
+                      "description": "Lista de IDs dos membros do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    }
+                  },
+                  "required": ["name"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados do projeto inválidos ou ausentes."
+          },
+          "401": {
+            "description": "Autenticação necessária."
+          },
+          "500": {
+            "description": "Erro interno do servidor."
+          }
+        }
+      }
+    },
+    "/v1/project/getAll": {
+      "get": {
+        "tags": ["Projeto"],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/project/delete/{id}": {
+      "delete": {
+        "tags": ["Projeto"],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      }
+    },
+    "/v1/project/{id}/coordinators/": {
+      "post": {
+        "tags": ["Projeto"],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Projeto"],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      }
+    },
+    "/v1/project/coordinator/{id}":{
+      "get": {
+        "tags": ["Projeto"],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      }
+    },
+    "/v1/poject/{id}/members": {
+      "post": {
+        "tags": ["Projeto"],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Projeto"],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      }
+    },
+    "/v1/project/member/{id}": {
+      "get": {
+        "tags": ["Projeto"],
+        "description": "Retorna os membros de um projeto. Não entendi pq passa o id na url",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      }
+    },
+    "/v1/project/{id}/sectors/": {
+      "post": {
+        "tags": ["Projeto"],
+        "description": "Retorna os membros de um projeto. Não entendi pq passa o id na url",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Projeto"],
+        "description": "Retorna os membros de um projeto. Não entendi pq passa o id na url",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      }
     }
   }
 }
