@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "API ADM inovatec-jp",
-    "description": "API REST para o sistema administrativo.",
+    "description": "API REST para o sistema administrativo.\n\nStatus:\n\n- **/accounts** ➜ MAPEADO e DOCUMENTADO\n- **/user** ➜ MAPEADO e DOCUMENTADO\n- **/grant** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*Arthur*__\n- **/profile** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/sector** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/project** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/messages** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*José*__\n- **/chat** ➜ MAPEADO, falta __*validar*__ documentação (não é prioritário) - Responsável: __*José*__",
     "version": "1.0.0"
   },
   "components": {
@@ -49,6 +49,22 @@
         }
       }
     },
+    "/v1/accounts/singUp": {
+      "$ref": "./paths/auth.json#/~1singUp"
+    },
+    "/v1/accounts/login": {
+      "$ref": "./paths/auth.json#/~1login"
+    },
+    "/v1/accounts/forgotPassword": {
+      "$ref": "./paths/auth.json#/~1forgotPassword"
+    },
+    "/v1/accounts/resetPassword/{token}": {
+      "$ref": "./paths/auth.json#/~1resetPassword~1{token}"
+    },
+    "/v1/accounts/changePassword": {
+      "$ref": "./paths/auth.json#/~1changePassword"
+    },
+
     "/v1/user": {
       "$ref": "./paths/user.json#/~1"
     },
@@ -66,6 +82,156 @@
     },
     "/v1/user/{id}": {
       "$ref": "./paths/user.json#/~1{id}"
+    },
+
+    "/v1/project/post": {
+      "$ref": "./paths/project.json#/~1post"
+    },
+    "/v1/project/put/{id}": {
+      "$ref": "./paths/project.json#/~1put~1{id}"
+    },
+    "/v1/project/getById/{id}": {
+      "$ref": "./paths/project.json#/~1getById~1{id}"
+    },
+    "/v1/project/getAll": {
+      "$ref": "./paths/project.json#/~1getAll"
+    },
+    "/v1/project/delete/{id}": {
+      "$ref": "./paths/project.json#/~1delete~1{id}"
+    },
+    "/v1/project/{id}/coordinators/": {
+      "$ref": "./paths/project.json#/~1{id}~1coordinators~1"
+    },
+    "/v1/project/coordinator/{id}": {
+      "$ref": "./paths/project.json#/~1coordinator~1{id}"
+    },
+    "/v1/project/{id}/members": {
+      "$ref": "./paths/project.json#/~1{id}~1members"
+    },
+    "/v1/project/member/{id}": {
+      "$ref": "./paths/project.json#/~1member~1{id}"
+    },
+    "/v1/project/{id}/sectors/": {
+      "$ref": "./paths/project.json#/~1{id}~1sectors~1"
+    },
+
+    "/v1/messages/post": {
+      "$ref": "./paths/messages.json#/~1post"
+    },
+    "/v1/messages/getByDate/{sendedAtDay}": {
+      "$ref": "./paths/messages.json#/~1getByDate~1{sendedAtDay}"
+    },
+    "/v1/messages/getById/{id}": {
+      "$ref": "./paths/messages.json#/~1getById~1{id}"
+    },
+    "/v1/messages/getAll": {
+      "$ref": "./paths/messages.json#/~1getAll"
+    },
+    "/v1/messages/put/{id}": {
+      "$ref": "./paths/messages.json#/~1put~1{id}"
+    },
+    "/v1/messages/delete/{id}": {
+      "$ref": "./paths/messages.json#/~1delete~1{id}"
+    },
+
+    "/v1/grant/post": {
+      "$ref": "./paths/grants.json#/~1post"
+    },
+    "/v1/grant/getByName/{name}": {
+      "$ref": "./paths/grants.json#/~1getByName~1{name}"
+    },
+    "/v1/grant/getById/{id}": {
+      "$ref": "./paths/grants.json#/~1getById~1{id}"
+    },
+    "/v1/grant/getAll": {
+      "$ref": "./paths/grants.json#/~1getAll"
+    },
+    "/v1/grant/put/{id}": {
+      "$ref": "./paths/grants.json#/~1put~1{id}"
+    },
+    "/v1/grant/delete/{id}": {
+      "$ref": "./paths/grants.json#/~1delete~1{id}"
+    },
+    "/v1/grant/{id}/postProfile": {
+      "$ref": "./paths/grants.json#/~1{id}~1postProfile"
+    },
+    "/v1/grant/{id}/postSector": {
+      "$ref": "./paths/grants.json#/~1{id}~1postSector"
+    },
+
+    "/v1/profile/store": {
+      "$ref": "./paths/profile.json#/~1store"
+    },
+    "/v1/profile/post": {
+      "$ref": "./paths/profile.json#/~1post"
+    },
+    "/v1/profile/getByName/{name}": {
+      "$ref": "./paths/profile.json#/~1getByName~1{name}"
+    },
+    "/v1/profile/getById/{id}": {
+      "$ref": "./paths/profile.json#/~1getById~1{id}"
+    },
+    "/v1/profile/getAll": {
+      "$ref": "./paths/profile.json#/~1getAll"
+    },
+    "/v1/profile/put/{id}": {
+      "$ref": "./paths/profile.json#/~1put~1{id}"
+    },
+    "/v1/profile/delete/{id}": {
+      "$ref": "./paths/profile.json#/~1delete~1{id}"
+    },
+
+    "/v1/sector/post": {
+      "$ref": "./paths/sector.json#/~1post"
+    },
+    "/v1/sector/getById/{id}": {
+      "$ref": "./paths/sector.json#/~1getById~1{id}"
+    },
+    "/v1/sector/getAll": {
+      "$ref": "./paths/sector.json#/~1getAll"
+    },
+    "/v1/sector/put/{id}": {
+      "$ref": "./paths/sector.json#/~1put~1{id}"
+    },
+    "/v1/sector/delete/{id}": {
+      "$ref": "./paths/sector.json#/~1delete~1{id}"
+    },
+    "/v1/sector/{id}/postUser": {
+      "$ref": "./paths/sector.json#/~1{id}~1postUser"
+    },
+    "/v1/sector/{id}/deleteUser": {
+      "$ref": "./paths/sector.json#/~1{id}~1deleteUser"
+    },
+    "/v1/sector/{id}/postMessage": {
+      "$ref": "./paths/sector.json#/~1{id}~1postMessage"
+    },
+    "/v1/sector/{id}/deleteMessage": {
+      "$ref": "./paths/sector.json#/~1{id}~1deleteMessage"
+    },
+
+    "/v1/chat/post": {
+      "$ref": "./paths/chat.json#/~1post"
+    },
+    "/v1/chat/getById/{id}": {
+      "$ref": "./paths/chat.json#/~1getById~1{id}"
+    },
+    "/v1/chat/getAll": {
+      "$ref": "./paths/chat.json#/~1getAll"
+    },
+    "/v1/chat/getByName/{name}": {
+      "$ref": "./paths/chat.json#/~1getByName~1{name}"
+    },
+    "/v1/chat/addUser/{id}": {
+      "$ref": "./paths/chat.json#/~1addUser~1{id}"
+    },
+    "/v1/chat/updateName/{id}": {
+      "$ref": "./paths/chat.json#/~1updateName~1{id}"
+    },
+    "/v1/chat/removeUser/{id}": {
+      "$ref": "./paths/chat.json#/~1removeUser~1{id}"
+    },
+    "/v1/chat/delete/{id}": {
+      "$ref": "./paths/chat.json#/~1delete~1{id}"
     }
   }
 }

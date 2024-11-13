@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "API ADM inovatec-jp",
-    "description": "API REST para o sistema administrativo.",
+    "description": "API REST para o sistema administrativo.\n\nStatus:\n\n- **/accounts** ➜ MAPEADO e DOCUMENTADO\n- **/user** ➜ MAPEADO e DOCUMENTADO\n- **/grant** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*Arthur*__\n- **/profile** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/sector** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/project** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/messages** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*José*__\n- **/chat** ➜ MAPEADO, falta __*validar*__ documentação (não é prioritário) - Responsável: __*José*__",
     "version": "1.0.0"
   },
   "components": {
@@ -44,6 +44,432 @@
                 "schema": {
                   "type": "string",
                   "example": "Error connecting to database"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/accounts/singUp": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Cria um novo usuário.",
+        "description": "Cria um novo usuário no sistema.\n\n `Obs. a ideia é que somente admin tenha acesso a essa rota para cadastro.`",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cpf": {
+                    "type": "string",
+                    "example": "06093240479",
+                    "description": "CPF do usuário, contendo 11 dígitos numéricos.",
+                    "pattern": "^[0-9]{11}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "adminDaSilva@admin.com",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "senhaSegura556",
+                    "description": "Senha do usuário, com pelo menos 6 caracteres.",
+                    "minLength": 6
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "1234567890",
+                    "description": "Número de telefone do usuário, sem formatação específica."
+                  },
+                  "birthDate": {
+                    "type": "string",
+                    "example": "1990-01-01",
+                    "format": "date",
+                    "description": "Data de nascimento do usuário, opcional."
+                  },
+                  "profile": {
+                    "type": "string",
+                    "example": "admin",
+                    "description": "Nome do perfil do usuário, opcional."
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Status ativo do usuário, opcional."
+                  }
+                },
+                "required": [
+                  "cpf",
+                  "name",
+                  "email",
+                  "password",
+                  "phone"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso."
+          },
+          "400": {
+            "description": "Erro de validação dos dados de entrada."
+          }
+        }
+      }
+    },
+    "/v1/accounts/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Autentica um usuário.",
+        "description": "Autentica um usuário no sistema.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "adminDaSilva@admin.com",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "senhaSegura556"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário autenticado com sucesso. Retorna o token de acesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "JWT token de acesso para o usuário autenticado.",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "E-mail ou senha incorretos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "E-mail ou senha incorretos."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/accounts/forgotPassword": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Faz a requisição de atualização de senha do usuário.",
+        "description": "Envia um link com token para reset de senha ao email do usuário.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "adminDaSilva@admin.com",
+                    "format": "email"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário encontrado e link enviado para o e-mail.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "menssagem": {
+                      "type": "string",
+                      "example": "Link enviado para o e-mail."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não registrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Usuário não registrado."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/accounts/resetPassword/{token}": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Atualiza a senha do usuário",
+        "description": "Atualiza a senha do usuário utilizando o token de reset.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "abc123resetToken"
+            },
+            "description": "Token de reset de senha fornecido ao usuário."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "example": "novaSenha556",
+                    "description": "Nova senha do usuário, com pelo menos 6 caracteres.",
+                    "minLength": 6
+                  }
+                },
+                "required": [
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "summary": "Senha atualizada com sucesso.",
+            "description": "Retorna um novo token de autenticação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação dos dados de entrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "password is Required."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/accounts/changePassword": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Atualiza a senha do usuário",
+        "description": "Permite que o usuário autenticado atualize sua senha, utilizando a senha antiga para autenticação e validação da nova senha. É necessário que o usuário esteja autenticado, e as informações do usuário estarão disponíveis no `userInfo`, presente no header.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "example": "senhaSegura556",
+                    "description": "Senha antiga do usuário, deve ter pelo menos 6 caracteres.",
+                    "minLength": 6
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "example": "novaSenha556",
+                    "description": "Nova senha do usuário, com pelo menos 6 caracteres.",
+                    "minLength": 6
+                  },
+                  "newPasswordConfirm": {
+                    "type": "string",
+                    "example": "novaSenha556",
+                    "description": "Confirmação da nova senha. Deve coincidir com a nova senha e ter pelo menos 6 caracteres.",
+                    "minLength": 6
+                  }
+                },
+                "required": [
+                  "oldPassword",
+                  "newPassword",
+                  "newPasswordConfirm"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Senha alterada com sucesso."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação dos dados de entrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password must contain at least 6 characters."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Falha na autenticação. Isso pode ocorrer se o token não for fornecido, se a senha antiga estiver incorreta, ou se as novas senhas não coincidirem.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Senha incorreta."
+                    }
+                  }
                 }
               }
             }
@@ -473,8 +899,8 @@
         "tags": [
           "User"
         ],
-        "summary": "Atualiza O PERFIL UM usuário.",
-        "description": "Atualiza O PERFIL UM usuário no sistema.",
+        "summary": "Atualiza O PERFIL de UM usuário.",
+        "description": "Atualiza O PERFIL de UM usuário no sistema.",
         "security": [
           {
             "bearerAuth": []
@@ -607,7 +1033,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "uuid",
+              "type": "string",
+              "format": "uuid",
               "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
             },
             "description": "ID do usuário a ser desativado."
@@ -689,6 +1116,3202 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/v1/project/post": {
+      "post": {
+        "tags": [
+          "Projeto"
+        ],
+        "summary": "Cria um novo projeto.",
+        "description": "Cadastra um novo projeto no sistema, incluindo setores, coordenadores e membros associados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nome do projeto.",
+                    "example": "Novo Projeto"
+                  },
+                  "sectors": {
+                    "type": "array",
+                    "description": "Lista de IDs dos setores associados ao projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  },
+                  "coordinators": {
+                    "type": "array",
+                    "description": "Lista de IDs dos coordenadores do projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  },
+                  "members": {
+                    "type": "array",
+                    "description": "Lista de IDs dos membros do projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Projeto criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nome do projeto.",
+                      "example": "Novo Projeto"
+                    },
+                    "sectors": {
+                      "type": "array",
+                      "description": "Lista de IDs dos setores associados ao projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "coordinators": {
+                      "type": "array",
+                      "description": "Lista de IDs dos coordenadores do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "members": {
+                      "type": "array",
+                      "description": "Lista de IDs dos membros do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/project/put/{id}": {
+      "put": {
+        "tags": [
+          "Projeto"
+        ],
+        "summary": "Atualiza um projeto existente.",
+        "description": "Atualiza um projeto existente no sistema, incluindo setores, coordenadores e membros associados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto a ser atualizado."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nome do projeto.",
+                    "example": "Novo Projeto"
+                  },
+                  "sectors": {
+                    "type": "array",
+                    "description": "Lista de IDs dos setores associados ao projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  },
+                  "coordinators": {
+                    "type": "array",
+                    "description": "Lista de IDs dos coordenadores do projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  },
+                  "members": {
+                    "type": "array",
+                    "description": "Lista de IDs dos membros do projeto.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    ]
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Projeto criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nome do projeto.",
+                      "example": "Novo Projeto"
+                    },
+                    "sectors": {
+                      "type": "array",
+                      "description": "Lista de IDs dos setores associados ao projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "coordinators": {
+                      "type": "array",
+                      "description": "Lista de IDs dos coordenadores do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "members": {
+                      "type": "array",
+                      "description": "Lista de IDs dos membros do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/project/getById/{id}": {
+      "get": {
+        "tags": [
+          "Projeto"
+        ],
+        "summary": "Retorna um projeto existente.",
+        "description": "Retorna um projeto existente no sistema, incluindo setores, coordenadores e membros associados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto a ser atualizado."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Projeto criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nome do projeto.",
+                      "example": "Novo Projeto"
+                    },
+                    "sectors": {
+                      "type": "array",
+                      "description": "Lista de IDs dos setores associados ao projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "coordinators": {
+                      "type": "array",
+                      "description": "Lista de IDs dos coordenadores do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    },
+                    "members": {
+                      "type": "array",
+                      "description": "Lista de IDs dos membros do projeto.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
+                        "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/project/getAll": {
+      "get": {
+        "tags": [
+          "Projeto"
+        ],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/project/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Projeto"
+        ],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/project/{id}/coordinators/": {
+      "post": {
+        "tags": [
+          "Projeto"
+        ],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Projeto"
+        ],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/project/coordinator/{id}": {
+      "get": {
+        "tags": [
+          "Projeto"
+        ],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/project/{id}/members": {
+      "post": {
+        "tags": [
+          "Projeto"
+        ],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Projeto"
+        ],
+        "summary": "",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      }
+    },
+    "/v1/project/member/{id}": {
+      "get": {
+        "tags": [
+          "Projeto"
+        ],
+        "description": "Retorna os membros de um projeto. Não entendi pq passa o id na url",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      }
+    },
+    "/v1/project/{id}/sectors/": {
+      "post": {
+        "tags": [
+          "Projeto"
+        ],
+        "description": "Retorna os membros de um projeto. Não entendi pq passa o id na url",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Projeto"
+        ],
+        "description": "Retorna os membros de um projeto. Não entendi pq passa o id na url",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID do projeto."
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/messages/post": {
+      "post": {
+        "tags": [
+          "Menssagens"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "text": "Insira uma string aqui",
+                  "senderId": "bd103b27-d6b3-4037-b1f3-9905cece9628",
+                  "receiverId": "bd103b27-d6b3-4037-b1f3-9905cece9628",
+                  "receiverSector": "sector name"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/messages/getByDate/{sendedAtDay}": {
+      "get": {
+        "tags": [
+          "Menssagens"
+        ],
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sendedAtDay",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "2020-01-01"
+            },
+            "description": "Data de envio."
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/messages/getById/{id}": {
+      "get": {
+        "tags": [
+          "Menssagens"
+        ],
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID da menssagem."
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/messages/getAll": {
+      "get": {
+        "tags": [
+          "Menssagens"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retorna todas as menssagens cadastradas no sistema.",
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/messages/put/{id}": {
+      "put": {
+        "tags": [
+          "Menssagens"
+        ],
+        "description": "Atualiza uma menssagem existente.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID da menssagem."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "text": "Insira uma string aqui",
+                  "senderId": "bd103b27-d6b3-4037-b1f3-9905cece9628",
+                  "receiverId": "bd103b27-d6b3-4037-b1f3-9905cece9628",
+                  "receiverSector": "sector name"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/messages/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Menssagens"
+        ],
+        "description": "Deleta uma menssagem existente no sisema",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+            },
+            "description": "ID da menssagem."
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Token inválido ou expirado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token inválido ou expirado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/grant/post": {
+      "post": {
+        "tags": [
+          "Grants"
+        ],
+        "summary": "Cria uma nova grant",
+        "description": "Cria uma nova grant",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "O nome da grant."
+                  },
+                  "note": {
+                    "type": "string",
+                    "description": "Uma nota ou descrição para a grant."
+                  },
+                  "route": {
+                    "type": "string",
+                    "description": "A rota associada à grant."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1v1~1grant~1post/post/requestBody/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/grant/getByName/{name}": {
+      "get": {
+        "tags": [
+          "Grants"
+        ],
+        "summary": "Obtém uma grant pelo nome",
+        "description": "Obtém uma grant pelo nome",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "O nome da grant",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1v1~1grant~1put~1%7Bid%7D/put/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/grant/getById/{id}": {
+      "get": {
+        "tags": [
+          "Grants"
+        ],
+        "summary": "Obtém uma grant pelo id",
+        "description": "Obtém uma grant pelo id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "O id da grant",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1v1~1grant~1put~1%7Bid%7D/put/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/grant/getAll": {
+      "get": {
+        "tags": [
+          "Grants"
+        ],
+        "summary": "Obtém todas as grants",
+        "description": "Obtém todas as grants",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1v1~1grant~1put~1%7Bid%7D/put/responses/200/content/application~1json/schema"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/grant/put/{id}": {
+      "put": {
+        "tags": [
+          "Grants"
+        ],
+        "summary": "Atualiza uma grant",
+        "description": "Atualiza uma grant",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "O id da grant",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/paths/~1v1~1grant~1post/post/requestBody/content/application~1json/schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "The unique identifier for the grant."
+                    },
+                    "method": {
+                      "type": "string",
+                      "maxLength": 6,
+                      "description": "The method of the grant. It must be unique."
+                    },
+                    "note": {
+                      "type": "string",
+                      "nullable": true,
+                      "description": "Additional notes about the grant."
+                    },
+                    "route": {
+                      "type": "string",
+                      "description": "The route associated with the grant."
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2024-11-13T20:20:39.000Z",
+                      "description": "The timestamp when the grant was created, in ISO 8601 format."
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2024-11-13T20:20:39.000Z",
+                      "description": "The timestamp when the grant was last updated, in ISO 8601 format."
+                    },
+                    "associatedProfiles": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "The unique identifier for the profile."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The name of the profile."
+                          }
+                        }
+                      },
+                      "description": "The profiles associated with this grant."
+                    },
+                    "associatedSectors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "The unique identifier for the sector."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The name of the sector."
+                          }
+                        }
+                      },
+                      "description": "The sectors associated with this grant."
+                    }
+                  },
+                  "required": [
+                    "method",
+                    "route",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/grant/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Grants"
+        ],
+        "summary": "Deleta uma grant",
+        "description": "Deleta uma grant",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "O id da grant",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A grant foi deletada com sucesso."
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/grant/{id}/postProfile": {
+      "post": {
+        "tags": [
+          "Grants"
+        ],
+        "summary": "Associa um perfil a uma grant",
+        "description": "Associa um perfil a uma grant",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "O id da grant",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "profile_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "O id do perfil a ser associado à grant."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1v1~1grant~1put~1%7Bid%7D/put/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/grant/{id}/postSector": {
+      "post": {
+        "tags": [
+          "Grants"
+        ],
+        "summary": "Associa um setor a uma grant",
+        "description": "Associa um setor a uma grant",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "O id da grant",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "service_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "O id do setor a ser associado à grant."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1v1~1grant~1put~1%7Bid%7D/put/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/profile/store": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Faz a seed de perfis no banco de dados.",
+        "description": "Faz a seed de perfis{admin, administrativo} no banco de dados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfis criados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "All profiles seeded successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/profile/post": {
+      "post": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Cria um novo perfil.",
+        "description": "Cria um novo perfil no banco de dados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {}
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perfil criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/profile/getByName/{name}": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Busca um perfil pelo nome.",
+        "description": "Busca um perfil pelo nome no banco de dados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Nome do perfil.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "admin"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/profile/getById/{id}": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Busca um perfil pelo ID.",
+        "description": "Busca um perfil pelo ID no banco de dados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do perfil.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/profile/getAll": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Busca todos os perfis.",
+        "description": "Busca todos os perfis no banco de dados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfis encontrados.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/profile/put/{id}": {
+      "put": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Atualiza um perfil.",
+        "description": "Atualiza um perfil no banco de dados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do perfil.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {}
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perfil atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/profile/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Deleta um perfil.",
+        "description": "Deleta um perfil no banco de dados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do perfil.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil deletado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/sector/post": {
+      "post": {
+        "tags": [
+          "Setor"
+        ],
+        "summary": "Cria um novo setor.",
+        "description": "Cria um novo setor no banco de dados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Setor criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/sector/getById/{id}": {
+      "get": {
+        "tags": [
+          "Setor"
+        ],
+        "summary": "Busca um setor pelo ID.",
+        "description": "Busca um setor no banco de dados pelo ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Setor encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/sector/getAll": {
+      "get": {
+        "tags": [
+          "Setor"
+        ],
+        "summary": "Busca todos os setores.",
+        "description": "Busca todos os setores no banco de dados.",
+        "responses": {
+          "200": {
+            "description": "Setores encontrados.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/sector/put/{id}": {
+      "put": {
+        "tags": [
+          "Setor"
+        ],
+        "summary": "Atualiza um setor.",
+        "description": "Atualiza um setor no banco de dados.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Setor atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/sector/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Setor"
+        ],
+        "summary": "Deleta um setor.",
+        "description": "Deleta um setor no banco de dados.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Setor deletado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/sector/{id}/postUser": {
+      "post": {
+        "tags": [
+          "Setor"
+        ],
+        "summary": "Adiciona um usuário ao setor.",
+        "description": "Adiciona um usuário ao setor no banco de dados.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário adicionado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/sector/{id}/deleteUser": {
+      "delete": {
+        "tags": [
+          "Setor"
+        ],
+        "summary": "Deleta um usuário do setor.",
+        "description": "Deleta um usuário do setor no banco de dados.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário deletado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/sector/{id}/postMessage": {
+      "post": {
+        "tags": [
+          "Setor"
+        ],
+        "summary": "Envia uma mensagem ao setor.",
+        "description": "Envia uma mensagem ao setor no banco de dados.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mensagem enviada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/sector/{id}/deleteMessage": {
+      "delete": {
+        "tags": [
+          "Setor"
+        ],
+        "summary": "Deleta uma mensagem do setor.",
+        "description": "Deleta uma mensagem do setor no banco de dados.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mensagem deletada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/chat/post": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Cria um novo chat",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Chat criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Falha na requisição. verifique se o corpo da requisição está correto. O OBJETO DEVE TER A MESMA CHAVE QUE OS EXEMPLOS!",
+            "sumary": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid REQUEST format."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Falha na autenticação. Isso pode ocorrer se o token não for fornecido, se a senha antiga estiver incorreta, ou se as novas senhas não coincidirem.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Senha incorreta."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Access denied."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Objeto não encontrado",
+            "sumary": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Not Found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor. Tente novamente mais tarde.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server error."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/chat/getById/{id}": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Busca um chat pelo id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat encontrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/chat/getAll": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Busca todos os chats",
+        "responses": {
+          "200": {
+            "description": "Chats encontrados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/chat/getByName/{name}": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Busca um chat pelo nome",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat encontrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/chat/addUser/{id}": {
+      "put": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Adiciona um usuário ao chat",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário adicionado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/chat/updateName/{id}": {
+      "put": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Atualiza o nome do chat",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nome do chat atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/chat/removeUser/{id}": {
+      "put": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Remove um usuário do chat",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário removido com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
+          }
+        }
+      }
+    },
+    "/v1/chat/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Deleta um chat",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/403"
+          },
+          "404": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/404"
+          },
+          "500": {
+            "$ref": "#/paths/~1v1~1chat~1post/post/responses/500"
           }
         }
       }

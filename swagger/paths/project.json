@@ -1,5 +1,5 @@
 {
-  "/v1/project/post": {
+  "/post": {
     "post": {
       "tags": ["Projeto"],
       "summary": "Cria um novo projeto.",
@@ -159,7 +159,7 @@
       }
     }
   },
-  "/v1/project/put/{id}": {
+  "/put/{id}": {
     "put": {
       "tags": ["Projeto"],
       "summary": "Atualiza um projeto existente.",
@@ -331,7 +331,7 @@
       }
     }
   },
-  "/v1/project/getById/{id}": {
+  "/getById/{id}": {
     "get": {
       "tags": ["Projeto"],
       "summary": "Retorna um projeto existente.",
@@ -452,7 +452,7 @@
       }
     }
   },
-  "/v1/project/getAll": {
+  "/getAll": {
     "get": {
       "tags": ["Projeto"],
       "summary": "",
@@ -506,7 +506,7 @@
       }
     }
   },
-  "/v1/project/delete/{id}": {
+  "/delete/{id}": {
     "delete": {
       "tags": ["Projeto"],
       "summary": "",
@@ -572,7 +572,7 @@
       }
     }
   },
-  "/v1/project/{id}/coordinators/": {
+  "/{id}/coordinators/": {
     "post": {
       "tags": ["Projeto"],
       "summary": "",
@@ -702,7 +702,7 @@
       }
     }
   },
-  "/v1/project/coordinator/{id}": {
+  "/coordinator/{id}": {
     "get": {
       "tags": ["Projeto"],
       "summary": "",
@@ -768,7 +768,7 @@
       }
     }
   },
-  "/v1/poject/{id}/members": {
+  "/{id}/members": {
     "post": {
       "tags": ["Projeto"],
       "summary": "",
@@ -856,7 +856,7 @@
       ]
     }
   },
-  "/v1/project/member/{id}": {
+  "/member/{id}": {
     "get": {
       "tags": ["Projeto"],
       "description": "Retorna os membros de um projeto. Não entendi pq passa o id na url",
@@ -879,7 +879,7 @@
       ]
     }
   },
-  "/v1/project/{id}/sectors/": {
+  "/{id}/sectors/": {
     "post": {
       "tags": ["Projeto"],
       "description": "Retorna os membros de um projeto. Não entendi pq passa o id na url",

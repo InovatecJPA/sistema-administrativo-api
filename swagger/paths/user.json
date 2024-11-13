@@ -411,8 +411,8 @@
   "/{id}/update/profile": {
     "put": {
       "tags": ["User"],
-      "summary": "Atualiza O PERFIL UM usuário.",
-      "description": "Atualiza O PERFIL UM usuário no sistema.",
+      "summary": "Atualiza O PERFIL de UM usuário.",
+      "description": "Atualiza O PERFIL de UM usuário no sistema.",
       "security": [
         {
           "bearerAuth": []
@@ -543,7 +543,8 @@
           "in": "path",
           "required": true,
           "schema": {
-            "type": "uuid",
+            "type": "string",
+            "format": "uuid",
             "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
           },
           "description": "ID do usuário a ser desativado."

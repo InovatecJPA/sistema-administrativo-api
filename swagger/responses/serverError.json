@@ -1,0 +1,22 @@
+{
+  "500": {
+    "description": "Erro interno do servidor. Tente novamente mais tarde.",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "integer",
+              "example": 500
+            },
+            "message": {
+              "type": "string",
+              "example": "Internal server error."
+            }
+          }
+        }
+      }
+    }
+  }
+}

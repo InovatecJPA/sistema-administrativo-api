@@ -1,5 +1,5 @@
 {
-  "v1/messages/post": {
+  "/post": {
     "post": {
       "tags": ["Menssagens"],
       "security": [
@@ -65,7 +65,7 @@
       }
     }
   },
-  "v1/messages/getByDate/{sendedAtDay}": {
+  "/getByDate/{sendedAtDay}": {
     "get": {
       "tags": ["Menssagens"],
       "description": "",
@@ -130,7 +130,7 @@
       }
     }
   },
-  "v1/messages/getById/{id}": {
+  "/getById/{id}": {
     "get": {
       "tags": ["Menssagens"],
       "description": "",
@@ -145,7 +145,8 @@
           "in": "path",
           "required": true,
           "schema": {
-            "type": "uuid",
+            "type": "string",
+            "format": "uuid",
             "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
           },
           "description": "ID da menssagem."
@@ -195,7 +196,7 @@
       }
     }
   },
-  "v1/messages/getAll": {
+  "/getAll": {
     "get": {
       "tags": ["Menssagens"],
       "security": [
@@ -248,7 +249,7 @@
       }
     }
   },
-  "v1/messages/put/{id}": {
+  "/put/{id}": {
     "put": {
       "tags": ["Menssagens"],
       "description": "Atualiza uma menssagem existente.",
@@ -263,7 +264,8 @@
           "in": "path",
           "required": true,
           "schema": {
-            "type": "uuid",
+            "type": "string",
+            "format": "uuid",
             "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
           },
           "description": "ID da menssagem."
@@ -327,7 +329,7 @@
       }
     }
   },
-  "v1/messages/delete/{id}": {
+  "/delete/{id}": {
     "delete": {
       "tags": ["Menssagens"],
       "description": "Deleta uma menssagem existente no sisema",
@@ -342,7 +344,8 @@
           "in": "path",
           "required": true,
           "schema": {
-            "type": "uuid",
+            "type": "string",
+            "format": "uuid",
             "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
           },
           "description": "ID da menssagem."

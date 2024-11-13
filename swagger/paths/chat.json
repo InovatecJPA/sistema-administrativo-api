@@ -1,0 +1,346 @@
+{
+  "/post": {
+    "post": {
+      "tags": ["Chat"],
+      "summary": "Cria um novo chat",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Chat criado com sucesso",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getById/{id}": {
+    "get": {
+      "tags": ["Chat"],
+      "summary": "Busca um chat pelo id",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Chat encontrado com sucesso",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getAll": {
+    "get": {
+      "tags": ["Chat"],
+      "summary": "Busca todos os chats",
+      "responses": {
+        "200": {
+          "description": "Chats encontrados com sucesso",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {}
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getByName/{name}": {
+    "get": {
+      "tags": ["Chat"],
+      "summary": "Busca um chat pelo nome",
+      "parameters": [
+        {
+          "name": "name",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Chat encontrado com sucesso",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/addUser/{id}": {
+    "put": {
+      "tags": ["Chat"],
+      "summary": "Adiciona um usuário ao chat",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Usuário adicionado com sucesso",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/updateName/{id}": {
+    "put": {
+      "tags": ["Chat"],
+      "summary": "Atualiza o nome do chat",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Nome do chat atualizado com sucesso",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/removeUser/{id}": {
+    "put": {
+      "tags": ["Chat"],
+      "summary": "Remove um usuário do chat",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Usuário removido com sucesso",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/delete/{id}": {
+    "delete": {
+      "tags": ["Chat"],
+      "summary": "Deleta um chat",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Chat deletado com sucesso",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  }
+}
