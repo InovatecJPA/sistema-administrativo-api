@@ -10,10 +10,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "bearer": {
-          "format": "JWT",
-          "type": "http"
-        }
+        "bearerFormat": "JWT"
       }
     }
   },

@@ -58,7 +58,14 @@ class App {
 
   routes(): void {
     this.app.use("/api-docs", swaggerUi.serve);
-    this.app.get("/api-docs", swaggerUi.setup(swaggerDocument));
+    this.app.get(
+      "/api-docs",
+      (req: Request, res: Response, next: NextFunction) => {
+        res.setHeader("Content-Security-Policy", `script-src 'self'`);
+        next();
+      },
+      swaggerUi.setup(swaggerDocument)
+    );
 
     this.app.use("/v1", v1);
     this.app.get("/testDB", async (req: Request, res: Response) => {
