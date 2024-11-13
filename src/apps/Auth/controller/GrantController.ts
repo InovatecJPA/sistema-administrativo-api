@@ -5,6 +5,7 @@ import { CustomValidationError } from "../../../error/CustomValidationError";
 
 import { DeleteResult } from "typeorm";
 import { Request, Response, NextFunction } from "express";
+import { NotFoundError } from "../../../error/NotFoundError";
 
 /**
  * Controller for handling requests related to `Grant` resources.
@@ -168,7 +169,7 @@ export class GrantController {
       const grant: Grant | null = await this.grantService.findOne({ route });
 
       if (!grant)
-        throw new CustomValidationError(`Grant ${route} not found.`);
+        throw new NotFoundError(`Grant ${route} not found.`);
 
       return res.status(200).json(grant);
 
@@ -193,7 +194,7 @@ export class GrantController {
       const grant: Grant | null = await this.grantService.findOneById(id);
 
       if (!grant)
-        throw new CustomValidationError(`Grant with ID ${id} not found.`);
+        throw new NotFoundError(`Grant with ID ${id} not found.`);
 
       return res.status(200).json(grant);
 
@@ -217,7 +218,7 @@ export class GrantController {
       const grants: Grant[] | null = await this.grantService.findAll();
 
       if(!grants) 
-        throw new CustomValidationError("No grants found.");
+        throw new NotFoundError("No grants found.");
 
       return res.status(200).json(grants);
 
@@ -272,7 +273,7 @@ export class GrantController {
       const deleted: DeleteResult = await this.grantService.delete(id);
 
       if (deleted.affected === 0)
-        throw new CustomValidationError(`Grant with ID ${id} not found.`);
+        throw new NotFoundError(`Grant with ID ${id} not found.`);
 
       return res.status(200).send();
     } catch (error: any) {

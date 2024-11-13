@@ -94,7 +94,7 @@ export class ProfileController {
  */
   public get = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const { name } = req.body;
+      const { name } = req.params;
       const profile: Profile | null = await this.profileService.findOne({ name });
 
       if (!profile)

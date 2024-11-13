@@ -1,0 +1,84 @@
+{
+  "401": {
+    "description": "Falha na autenticação. Isso pode ocorrer se o token não for fornecido, se a senha antiga estiver incorreta, ou se as novas senhas não coincidirem.",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "integer",
+              "example": 401
+            },
+            "message": {
+              "type": "string",
+              "example": "Senha incorreta."
+            }
+          }
+        }
+      }
+    }
+  },
+  "403": {
+    "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "integer",
+              "example": 403
+            },
+            "message": {
+              "type": "string",
+              "example": "Access denied."
+            }
+          }
+        }
+      }
+    }
+  },
+  "400": {
+    "description": "Falha na requisição. verifique se o corpo da requisição está correto. O OBJETO DEVE TER A MESMA CHAVE QUE OS EXEMPLOS!",
+    "sumary": "Bad Request",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "integer",
+              "example": 400
+            },
+            "message": {
+              "type": "string",
+              "example": "Invalid REQUEST format."
+            }
+          }
+        }
+      }
+    }
+  },
+  "404": {
+    "description": "Objeto não encontrado",
+    "sumary": "Not Found",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "integer",
+              "example": 404
+            },
+            "message": {
+              "type": "string",
+              "example": "Not Found."
+            }
+          }
+        }
+      }
+    }
+  }
+}

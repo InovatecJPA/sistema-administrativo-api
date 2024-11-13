@@ -1,0 +1,398 @@
+{
+  "/post": {
+    "post": {
+      "tags": ["Menssagens"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "text": "Insira uma string aqui",
+                "senderId": "bd103b27-d6b3-4037-b1f3-9905cece9628",
+                "receiverId": "bd103b27-d6b3-4037-b1f3-9905cece9628",
+                "receiverSector": "sector name"
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "401": {
+          "description": "Token inválido ou expirado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 401
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Token inválido ou expirado."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 403
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Access denied."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/getByDate/{sendedAtDay}": {
+    "get": {
+      "tags": ["Menssagens"],
+      "description": "",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "sendedAtDay",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "2020-01-01"
+          },
+          "description": "Data de envio."
+        }
+      ],
+      "responses": {
+        "401": {
+          "description": "Token inválido ou expirado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 401
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Token inválido ou expirado."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 403
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Access denied."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/getById/{id}": {
+    "get": {
+      "tags": ["Menssagens"],
+      "description": "",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+          },
+          "description": "ID da menssagem."
+        }
+      ],
+      "responses": {
+        "401": {
+          "description": "Token inválido ou expirado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 401
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Token inválido ou expirado."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 403
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Access denied."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/getAll": {
+    "get": {
+      "tags": ["Menssagens"],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "description": "Retorna todas as menssagens cadastradas no sistema.",
+      "responses": {
+        "401": {
+          "description": "Token inválido ou expirado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 401
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Token inválido ou expirado."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 403
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Access denied."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/put/{id}": {
+    "put": {
+      "tags": ["Menssagens"],
+      "description": "Atualiza uma menssagem existente.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+          },
+          "description": "ID da menssagem."
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "example": {
+                "text": "Insira uma string aqui",
+                "senderId": "bd103b27-d6b3-4037-b1f3-9905cece9628",
+                "receiverId": "bd103b27-d6b3-4037-b1f3-9905cece9628",
+                "receiverSector": "sector name"
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "401": {
+          "description": "Token inválido ou expirado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 401
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Token inválido ou expirado."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 403
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Access denied."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/delete/{id}": {
+    "delete": {
+      "tags": ["Menssagens"],
+      "description": "Deleta uma menssagem existente no sisema",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
+          },
+          "description": "ID da menssagem."
+        }
+      ],
+      "responses": {
+        "401": {
+          "description": "Token inválido ou expirado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 401
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Token inválido ou expirado."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Falha na autenticação. Usuário não tem premissão de acesso a rota.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 403
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Access denied."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,350 @@
+{
+  "components": {
+    "schemas": {}
+  },
+
+  "/store": {
+    "get": {
+      "tags": ["Profile"],
+      "summary": "Faz a seed de perfis no banco de dados.",
+      "description": "Faz a seed de perfis{admin, administrativo} no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Perfis criados com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "All profiles seeded successfully"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/post": {
+    "post": {
+      "tags": ["Profile"],
+      "summary": "Cria um novo perfil.",
+      "description": "Cria um novo perfil no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {}
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Perfil criado com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getByName/{name}": {
+    "get": {
+      "tags": ["Profile"],
+      "summary": "Busca um perfil pelo nome.",
+      "description": "Busca um perfil pelo nome no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "in": "query",
+          "description": "Nome do perfil.",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "admin"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Perfil encontrado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getById/{id}": {
+    "get": {
+      "tags": ["Profile"],
+      "summary": "Busca um perfil pelo ID.",
+      "description": "Busca um perfil pelo ID no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "ID do perfil.",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Perfil encontrado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getAll": {
+    "get": {
+      "tags": ["Profile"],
+      "summary": "Busca todos os perfis.",
+      "description": "Busca todos os perfis no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Perfis encontrados.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/put/{id}": {
+    "put": {
+      "tags": ["Profile"],
+      "summary": "Atualiza um perfil.",
+      "description": "Atualiza um perfil no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "ID do perfil.",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {}
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Perfil atualizado com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/delete/{id}": {
+    "delete": {
+      "tags": ["Profile"],
+      "summary": "Deleta um perfil.",
+      "description": "Deleta um perfil no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "ID do perfil.",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Perfil deletado com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  }
+}

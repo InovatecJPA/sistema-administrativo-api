@@ -74,7 +74,7 @@ export class MessageController {
      */
     public getByDate = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
         try {
-            const { sendedAtDay } = req.params;
+            const sendedAtDay = req.params.sendedAtDay;
             const messages = await this.messageService.findAllByDate(sendedAtDay);
             
             // If no messages found, throw a NotFoundError

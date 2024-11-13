@@ -1,0 +1,441 @@
+{
+  "/post": {
+    "post": {
+      "tags": ["Setor"],
+      "summary": "Cria um novo setor.",
+      "description": "Cria um novo setor no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Setor criado com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getById/{id}": {
+    "get": {
+      "tags": ["Setor"],
+      "summary": "Busca um setor pelo ID.",
+      "description": "Busca um setor no banco de dados pelo ID.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Setor encontrado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getAll": {
+    "get": {
+      "tags": ["Setor"],
+      "summary": "Busca todos os setores.",
+      "description": "Busca todos os setores no banco de dados.",
+      "responses": {
+        "200": {
+          "description": "Setores encontrados.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/put/{id}": {
+    "put": {
+      "tags": ["Setor"],
+      "summary": "Atualiza um setor.",
+      "description": "Atualiza um setor no banco de dados.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Setor atualizado com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/delete/{id}": {
+    "delete": {
+      "tags": ["Setor"],
+      "summary": "Deleta um setor.",
+      "description": "Deleta um setor no banco de dados.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Setor deletado com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/{id}/postUser": {
+    "post": {
+      "tags": ["Setor"],
+      "summary": "Adiciona um usuário ao setor.",
+      "description": "Adiciona um usuário ao setor no banco de dados.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Usuário adicionado com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/{id}/deleteUser": {
+    "delete": {
+      "tags": ["Setor"],
+      "summary": "Deleta um usuário do setor.",
+      "description": "Deleta um usuário do setor no banco de dados.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Usuário deletado com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/{id}/postMessage": {
+    "post": {
+      "tags": ["Setor"],
+      "summary": "Envia uma mensagem ao setor.",
+      "description": "Envia uma mensagem ao setor no banco de dados.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Mensagem enviada com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/{id}/deleteMessage": {
+    "delete": {
+      "tags": ["Setor"],
+      "summary": "Deleta uma mensagem do setor.",
+      "description": "Deleta uma mensagem do setor no banco de dados.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Mensagem deletada com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  }
+}

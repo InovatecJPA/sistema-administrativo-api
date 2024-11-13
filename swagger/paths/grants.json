@@ -1,0 +1,544 @@
+{
+  "components": {
+    "schemas": {
+      "GrantDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "O nome da grant."
+          },
+          "note": {
+            "type": "string",
+            "description": "Uma nota ou descrição para a grant."
+          },
+          "routeFilter": {
+            "type": "string",
+            "description": "O filtro de rota associado à grant, opcional."
+          },
+          "route": {
+            "type": "string",
+            "description": "A rota associada à grant."
+          }
+        }
+      },
+      "GrantPostDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "O nome da grant."
+          },
+          "note": {
+            "type": "string",
+            "description": "Uma nota ou descrição para a grant."
+          },
+          "route": {
+            "type": "string",
+            "description": "A rota associada à grant."
+          }
+        }
+      },
+      "Grant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier for the grant."
+          },
+          "method": {
+            "type": "string",
+            "maxLength": 6,
+            "description": "The method of the grant. It must be unique."
+          },
+          "note": {
+            "type": "string",
+            "nullable": true,
+            "description": "Additional notes about the grant."
+          },
+          "route": {
+            "type": "string",
+            "description": "The route associated with the grant."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-11-13T20:20:39.000Z",
+            "description": "The timestamp when the grant was created, in ISO 8601 format."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-11-13T20:20:39.000Z",
+            "description": "The timestamp when the grant was last updated, in ISO 8601 format."
+          },
+          "associatedProfiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Profile"
+            },
+            "description": "The profiles associated with this grant."
+          },
+          "associatedSectors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sector"
+            },
+            "description": "The sectors associated with this grant."
+          }
+        },
+        "required": ["method", "route", "createdAt", "updatedAt"]
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier for the profile."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the profile."
+          }
+        }
+      },
+      "Sector": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier for the sector."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the sector."
+          }
+        }
+      }
+    }
+  },
+
+  "/post": {
+    "post": {
+      "tags": ["Grants"],
+      "summary": "Cria uma nova grant",
+      "description": "Cria uma nova grant",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GrantPostDTO"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrantPostDTO"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getByName/{name}": {
+    "get": {
+      "tags": ["Grants"],
+      "summary": "Obtém uma grant pelo nome",
+      "description": "Obtém uma grant pelo nome",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "name",
+          "in": "path",
+          "description": "O nome da grant",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Grant"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getById/{id}": {
+    "get": {
+      "tags": ["Grants"],
+      "summary": "Obtém uma grant pelo id",
+      "description": "Obtém uma grant pelo id",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "O id da grant",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Grant"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/getAll": {
+    "get": {
+      "tags": ["Grants"],
+      "summary": "Obtém todas as grants",
+      "description": "Obtém todas as grants",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Grant"
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/put/{id}": {
+    "put": {
+      "tags": ["Grants"],
+      "summary": "Atualiza uma grant",
+      "description": "Atualiza uma grant",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "O id da grant",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GrantPostDTO"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Grant"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/delete/{id}": {
+    "delete": {
+      "tags": ["Grants"],
+      "summary": "Deleta uma grant",
+      "description": "Deleta uma grant",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "O id da grant",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "A grant foi deletada com sucesso."
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/{id}/postProfile": {
+    "post": {
+      "tags": ["Grants"],
+      "summary": "Associa um perfil a uma grant",
+      "description": "Associa um perfil a uma grant",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "O id da grant",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profile_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "O id do perfil a ser associado à grant."
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Grant"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  },
+  "/{id}/postSector": {
+    "post": {
+      "tags": ["Grants"],
+      "summary": "Associa um setor a uma grant",
+      "description": "Associa um setor a uma grant",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "O id da grant",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "service_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "O id do setor a ser associado à grant."
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Grant"
+              }
+            }
+          }
+        },
+
+        "400": {
+          "$ref": "../responses/cilentError.json#/400"
+        },
+        "401": {
+          "$ref": "../responses/cilentError.json#/401"
+        },
+        "403": {
+          "$ref": "../responses/cilentError.json#/403"
+        },
+        "404": {
+          "$ref": "../responses/cilentError.json#/404"
+        },
+        "500": {
+          "$ref": "../responses/serverError.json#/500"
+        }
+      }
+    }
+  }
+}
