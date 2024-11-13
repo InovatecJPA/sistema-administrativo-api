@@ -27,15 +27,18 @@
         "properties": {
           "name": {
             "type": "string",
+            "example":"Nome da grant",
             "description": "O nome da grant."
           },
           "note": {
             "type": "string",
+            "example":"Nova grant para o sistema",
             "description": "Uma nota ou descrição para a grant."
           },
           "route": {
             "type": "string",
-            "description": "A rota associada à grant."
+            "example":"/v1/nova_grant",
+            "description": "A url associada à grant."
           }
         }
       },
@@ -45,20 +48,24 @@
           "id": {
             "type": "string",
             "format": "uuid",
+            "example":"123e4567-e89b-12d3-a456-426614174000",
             "description": "The unique identifier for the grant."
           },
           "method": {
             "type": "string",
             "maxLength": 6,
+            "example":"post",
             "description": "The method of the grant. It must be unique."
           },
           "note": {
             "type": "string",
             "nullable": true,
+            "example":"Nova grant para o sistema",
             "description": "Additional notes about the grant."
           },
           "route": {
             "type": "string",
+            "example":"/v1/nova_grant",
             "description": "The route associated with the grant."
           },
           "createdAt": {
@@ -125,13 +132,14 @@
     "post": {
       "tags": ["Grants"],
       "summary": "Cria uma nova grant",
-      "description": "Cria uma nova grant",
+      "description": "Cria uma nova grant para o sistema.",
       "security": [
         {
           "bearerAuth": []
         }
       ],
       "requestBody": {
+        "required": true,
         "content": {
           "application/json": {
             "schema": {
@@ -142,6 +150,7 @@
       },
       "responses": {
         "201": {
+          "description":"A grant foi criada com sucesso. A grant criada será retornada.",
           "content": {
             "application/json": {
               "schema": {
@@ -169,7 +178,7 @@
     "get": {
       "tags": ["Grants"],
       "summary": "Obtém uma grant pelo nome",
-      "description": "Obtém uma grant pelo nome",
+      "description": "Obtém uma grant pelo nome passado como parametro da requisição.",
       "security": [
         {
           "bearerAuth": []
@@ -187,7 +196,8 @@
         }
       ],
       "responses": {
-        "200": {
+        "200": { 
+          "description": "A grant foi encontrada e será retornada.",
           "content": {
             "application/json": {
               "schema": {
@@ -218,7 +228,7 @@
     "get": {
       "tags": ["Grants"],
       "summary": "Obtém uma grant pelo id",
-      "description": "Obtém uma grant pelo id",
+      "description": "Obtém uma grant pelo id passado como parametro da requisição.",
       "security": [
         {
           "bearerAuth": []
@@ -232,12 +242,14 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
           }
         }
       ],
       "responses": {
         "200": {
+          "description": "A grant foi encontrada e será retornada.",
           "content": {
             "application/json": {
               "schema": {
@@ -268,7 +280,7 @@
     "get": {
       "tags": ["Grants"],
       "summary": "Obtém todas as grants",
-      "description": "Obtém todas as grants",
+      "description": "Obtém todas as grants cadastradas no sistema.",
       "security": [
         {
           "bearerAuth": []
@@ -309,7 +321,7 @@
     "put": {
       "tags": ["Grants"],
       "summary": "Atualiza uma grant",
-      "description": "Atualiza uma grant",
+      "description": "Atualiza uma grant pelo id passado como parametro da requisição. A grant atualizada será retornada.",
       "security": [
         {
           "bearerAuth": []
@@ -323,11 +335,13 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
           }
         }
       ],
       "requestBody": {
+        "required": true,
         "content": {
           "application/json": {
             "schema": {
@@ -368,7 +382,7 @@
     "delete": {
       "tags": ["Grants"],
       "summary": "Deleta uma grant",
-      "description": "Deleta uma grant",
+      "description": "Deleta uma grant pelo id passado como parametro da requisição.",
       "security": [
         {
           "bearerAuth": []
@@ -382,13 +396,27 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
           }
         }
       ],
       "responses": {
         "200": {
-          "description": "A grant foi deletada com sucesso."
+          "description": "A grant foi deletada com sucesso.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 200
+                  }
+                }
+              }
+            }
+          }
         },
         "400": {
           "$ref": "../responses/cilentError.json#/400"
@@ -412,7 +440,7 @@
     "post": {
       "tags": ["Grants"],
       "summary": "Associa um perfil a uma grant",
-      "description": "Associa um perfil a uma grant",
+      "description": "Associa um perfil a uma grant pelo id passado como parametro da requisição. O id do perfil deve ser passado no corpo da requisição. A grant atualizada será retornada.",
       "security": [
         {
           "bearerAuth": []
@@ -426,7 +454,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
           }
         }
       ],
@@ -448,6 +477,7 @@
       },
       "responses": {
         "201": {
+          "description": "A grant foi atualizada com sucesso. A grant atualizada será retornada.",
           "content": {
             "application/json": {
               "schema": {
@@ -478,7 +508,7 @@
     "post": {
       "tags": ["Grants"],
       "summary": "Associa um setor a uma grant",
-      "description": "Associa um setor a uma grant",
+      "description": "Associa um setor a uma grant pelo id passado como parametro da requisição. O id do setor deve ser passado no corpo da requisição. A grant atualizada será retornada.",
       "security": [
         {
           "bearerAuth": []
@@ -492,7 +522,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
           }
         }
       ],
@@ -502,7 +533,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "service_id": {
+                "sector_id": {
                   "type": "string",
                   "format": "uuid",
                   "description": "O id do setor a ser associado à grant."
@@ -514,6 +545,7 @@
       },
       "responses": {
         "201": {
+          "description": "A grant foi atualizada com sucesso. A grant atualizada será retornada.",
           "content": {
             "application/json": {
               "schema": {
