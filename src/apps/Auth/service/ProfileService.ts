@@ -6,6 +6,8 @@ import { DeleteResult, FindOptionsWhere, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
 import { InvalidObjectError } from "../../../error/InvalidObjectError";
 import { NotFoundError } from "../../../error/NotFoundError";
+import User from "../model/User";
+import Grant from "../model/Grant";
 
 /**
  * Service class for managing `Profile` entities.
@@ -107,6 +109,24 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
     }
 
     return await this.profileRepository.delete({ id });
+  }
+
+  addUserToProfile(user: User, profile: Profile) {
+    this.findOneById(profile.id).then((profile) => {
+      if (profile) {
+        profile.users.push(user);
+        this.profileRepository.save(profile);
+      }
+    });
+  }
+  
+  addGrantToProfile(grant: Grant, profile: Profile) {
+    this.findOneById(profile.id).then((profile) => {
+      if (profile) {
+        profile.associatedGrants.push(grant);
+        this.profileRepository.save(profile);
+      }
+    });
   }
 }
 

@@ -2,9 +2,13 @@ import { CustomValidationError } from "../../../error/CustomValidationError";
 import { NotFoundError } from "../../../error/NotFoundError";
 import ProfileDto from "../dto/ProfileDto";
 import Profile from "../model/Profile";
+import User from "../model/User";
 import { profileService, ProfileService } from "../service/ProfileService";
 
 import { NextFunction, Request, Response } from "express";
+import { userService } from "../service/UserService";
+import Grant from "../model/Grant";
+import { grantService } from "../service/GrantService";
 
 export class ProfileController {
   private profileService: ProfileService;
@@ -68,7 +72,24 @@ export class ProfileController {
   public post = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { name, description, users, associatedGrants } = req.body;
-      const profileDto = new ProfileDto(name, description, users, associatedGrants);
+
+      const profileDto = new ProfileDto(name, description);
+
+      users.forEach(async (user: string) => {
+        const userExists: User = await userService.findOne({ id: user });
+        if (!userExists) {
+          throw new CustomValidationError(`User with ID ${user} not found.`);
+        }
+        this.profileService.addUserToProfile(userExists, profileDto.toProfile());
+      });
+
+      associatedGrants.forEach(async (grant: string) => {
+        const grantExists: Grant = await grantService.findOne({ id: grant });
+        if (!grantExists) {
+          throw new CustomValidationError(`Grant with ID ${grant} not found.`);
+        }
+        this.profileService.addGrantToProfile(grantExists, profileDto.toProfile());
+      });
 
       if (!profileDto.isValid())
         throw new CustomValidationError('All fields of the new profile must be non-null or different of "" .');
