@@ -54,7 +54,7 @@ sectorRouter.put("/put/:id", authMiddleware, sectorController.put);
  */
 sectorRouter.delete("/delete/:id", authMiddleware, sectorController.deleteById);
 
-sectorRouter.post("/:id/postUser/", authMiddleware, sectorController.postUser);
+sectorRouter.post("/:id/postUser", authMiddleware, sectorController.postUser);
 
 sectorRouter.delete("/:id/deleteUser", authMiddleware, sectorController.deleteUser);
 
