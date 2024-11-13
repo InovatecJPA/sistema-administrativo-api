@@ -3,6 +3,11 @@
     "post": {
       "tags": ["Chat"],
       "summary": "Cria um novo chat",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "requestBody": {
         "content": {
           "application/json": {
@@ -41,6 +46,11 @@
     "get": {
       "tags": ["Chat"],
       "summary": "Busca um chat pelo id",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -83,6 +93,11 @@
     "get": {
       "tags": ["Chat"],
       "summary": "Busca todos os chats",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "responses": {
         "200": {
           "description": "Chats encontrados com sucesso",
@@ -117,6 +132,11 @@
     "get": {
       "tags": ["Chat"],
       "summary": "Busca um chat pelo nome",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "name",
@@ -158,6 +178,11 @@
     "put": {
       "tags": ["Chat"],
       "summary": "Adiciona um usuário ao chat",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -207,6 +232,11 @@
     "put": {
       "tags": ["Chat"],
       "summary": "Atualiza o nome do chat",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -267,6 +297,11 @@
           }
         }
       ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "requestBody": {
         "content": {
           "application/json": {
@@ -305,6 +340,11 @@
     "delete": {
       "tags": ["Chat"],
       "summary": "Deleta um chat",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",

@@ -53,6 +53,11 @@
       "tags": ["Setor"],
       "summary": "Busca um setor pelo ID.",
       "description": "Busca um setor no banco de dados pelo ID.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -99,6 +104,11 @@
       "tags": ["Setor"],
       "summary": "Busca todos os setores.",
       "description": "Busca todos os setores no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "responses": {
         "200": {
           "description": "Setores encontrados.",
@@ -137,6 +147,11 @@
       "tags": ["Setor"],
       "summary": "Atualiza um setor.",
       "description": "Atualiza um setor no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -193,6 +208,11 @@
       "tags": ["Setor"],
       "summary": "Deleta um setor.",
       "description": "Deleta um setor no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -239,6 +259,11 @@
       "tags": ["Setor"],
       "summary": "Adiciona um usuário ao setor.",
       "description": "Adiciona um usuário ao setor no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -295,6 +320,11 @@
       "tags": ["Setor"],
       "summary": "Deleta um usuário do setor.",
       "description": "Deleta um usuário do setor no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -341,6 +371,11 @@
       "tags": ["Setor"],
       "summary": "Envia uma mensagem ao setor.",
       "description": "Envia uma mensagem ao setor no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -397,6 +432,11 @@
       "tags": ["Setor"],
       "summary": "Deleta uma mensagem do setor.",
       "description": "Deleta uma mensagem do setor no banco de dados.",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
