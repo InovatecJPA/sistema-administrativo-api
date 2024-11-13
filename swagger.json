@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "API ADM inovatec-jp",
-    "description": "API REST para o sistema administrativo.\n\nStatus:\n\n- **/accounts** ➜ MAPEADO e DOCUMENTADO\n- **/user** ➜ MAPEADO e DOCUMENTADO\n- **/grant** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*Arthur*__\n- **/profile** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/sector** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/project** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/messages** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*José*__\n- **/chat** ➜ MAPEADO, falta __*validar*__ documentação (não é prioritário) - Responsável: __*José*__",
+    "description": "API REST para o sistema administrativo.\n\nStatus:\n\n- **/accounts** ➜ MAPEADO e DOCUMENTADO\n- **/user** ➜ MAPEADO e DOCUMENTADO\n- **/grant** ➜ MAPEADO e DOCUMENTADO\n- **/profile** ➜ MAPEADO e DOCUMENTADO\n- **/sector** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/project** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/messages** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*José*__\n- **/chat** ➜ MAPEADO, falta __*validar*__ documentação (não é prioritário) - Responsável: __*José*__",
     "version": "1.0.0"
   },
   "components": {
@@ -3089,7 +3089,7 @@
           "Profile"
         ],
         "summary": "Faz a seed de perfis no banco de dados.",
-        "description": "Faz a seed de perfis{admin, administrativo} no banco de dados.",
+        "description": "Faz a seed de perfis (admin e administrativo) no banco de dados. É utilizado apenas ao subir a aplicação. Não precisa de parâmetros.",
         "security": [
           {
             "bearerAuth": []
@@ -3136,24 +3136,73 @@
           "Profile"
         ],
         "summary": "Cria um novo perfil.",
-        "description": "Cria um novo perfil no banco de dados.",
+        "description": "Cria um novo perfil no banco de dados. O perfil deve ser passado no corpo da requisição.",
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
-            "application/json": {}
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the profile.",
+                    "example": "Perfil administrativo"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "The description of the profile.",
+                    "example": "Perfil com acesso total ao sistema."
+                  },
+                  "users": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "description": "The users IDs associated with this profile.",
+                    "example": [
+                      "123e4567-e89b-12d3-a456-426614174000",
+                      "987f1234-a12b-34c7-d890-456789abcdef",
+                      "456e7890-e12f-34c7-a456-789abcdef123"
+                    ]
+                  },
+                  "associatedGrants": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "description": "The grants IDs associated with this profile.",
+                    "example": [
+                      "123e4567-e89b-12d3-a456-426614174000",
+                      "987f1234-a12b-34c7-d890-456789abcdef",
+                      "456e7890-e12f-34c7-a456-789abcdef123"
+                    ]
+                  }
+                },
+                "required": [
+                  "name",
+                  "description"
+                ]
+              }
+            }
           }
         },
         "responses": {
           "200": {
-            "description": "Perfil criado com sucesso.",
+            "description": "Perfil criado com sucesso. Retorna o perfil criado.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/paths/~1v1~1profile~1put~1%7Bid%7D/put/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -3182,7 +3231,7 @@
           "Profile"
         ],
         "summary": "Busca um perfil pelo nome.",
-        "description": "Busca um perfil pelo nome no banco de dados.",
+        "description": "Busca um perfil pelo nome no banco de dados. O nome do perfil deve ser passado como parâmetro na URL.",
         "security": [
           {
             "bearerAuth": []
@@ -3202,12 +3251,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Perfil encontrado.",
+            "description": "Perfil encontrado com sucesso. Retorna o perfil encontrado.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {}
+                  "$ref": "#/paths/~1v1~1profile~1put~1%7Bid%7D/put/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -3236,7 +3284,7 @@
           "Profile"
         ],
         "summary": "Busca um perfil pelo ID.",
-        "description": "Busca um perfil pelo ID no banco de dados.",
+        "description": "Busca um perfil pelo ID no banco de dados. O ID do perfil deve ser passado como parâmetro na URL.",
         "security": [
           {
             "bearerAuth": []
@@ -3257,11 +3305,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Perfil encontrado.",
+            "description": "Perfil encontrado com sucesso. Retorna o perfil encontrado.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/paths/~1v1~1profile~1put~1%7Bid%7D/put/requestBody/content/application~1json/schema"
                 }
               }
             }
@@ -3290,7 +3338,7 @@
           "Profile"
         ],
         "summary": "Busca todos os perfis.",
-        "description": "Busca todos os perfis no banco de dados.",
+        "description": "Busca todos os perfis no banco de dados. Não precisa de parâmetros.",
         "security": [
           {
             "bearerAuth": []
@@ -3298,14 +3346,30 @@
         ],
         "responses": {
           "200": {
-            "description": "Perfis encontrados.",
+            "description": "Perfis encontrados com sucesso. Retorna todos os perfis encontrados.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object"
-                  }
+                    "$ref": "#/paths/~1v1~1profile~1put~1%7Bid%7D/put/requestBody/content/application~1json/schema"
+                  },
+                  "example": [
+                    {
+                      "id": "123e4567-e89b-12d3-a456-426614174000",
+                      "name": "Admin",
+                      "description": "Administrador com acesso total ao sistema.",
+                      "createdAt": "2023-10-01T10:00:00Z",
+                      "updatedAt": "2023-10-02T12:00:00Z"
+                    },
+                    {
+                      "id": "987f1234-a12b-34c7-d890-456789abcdef",
+                      "name": "User",
+                      "description": "Usuário com acesso limitado.",
+                      "createdAt": "2023-10-01T11:00:00Z",
+                      "updatedAt": "2023-10-02T13:00:00Z"
+                    }
+                  ]
                 }
               }
             }
@@ -3334,7 +3398,7 @@
           "Profile"
         ],
         "summary": "Atualiza um perfil.",
-        "description": "Atualiza um perfil no banco de dados.",
+        "description": "Atualiza um perfil no banco de dados. O perfil deve ser passado no corpo da requisição e o ID do perfil deve ser passado como parâmetro na URL.",
         "security": [
           {
             "bearerAuth": []
@@ -3354,8 +3418,95 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
-            "application/json": {}
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the profile."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "The description of the profile."
+                  },
+                  "users": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the user."
+                        },
+                        "cpf": {
+                          "type": "string",
+                          "description": "The CPF (Cadastro de Pessoas Físicas) of the user, unique in Brazil."
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "description": "The email address of the user. It must be unique."
+                        },
+                        "birthDate": {
+                          "type": "string",
+                          "format": "date",
+                          "description": "The birth date of the user."
+                        },
+                        "phone": {
+                          "type": "string",
+                          "description": "The phone number of the user. It must be unique.",
+                          "example": "(83) 91234-5678"
+                        },
+                        "profile": {
+                          "type": "string",
+                          "description": "The profile associated with the user.",
+                          "example": "Administrador"
+                        },
+                        "sector": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "string",
+                            "example": "123e4567-e89b-12d3-a456-426614174000"
+                          },
+                          "description": "The users IDs associated with this profile.",
+                          "example": [
+                            "Setor administrativo",
+                            "987f1234-a12b-34c7-d890-456789abcdef"
+                          ]
+                        },
+                        "isActive": {
+                          "type": "boolean",
+                          "default": true,
+                          "description": "Indicates whether the user's account is active."
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "cpf",
+                        "email",
+                        "isActive"
+                      ]
+                    },
+                    "description": "The users associated with this profile."
+                  },
+                  "associatedGrants": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/paths/~1v1~1grant~1put~1%7Bid%7D/put/responses/200/content/application~1json/schema"
+                    },
+                    "description": "The grants associated with this profile."
+                  }
+                }
+              },
+              "example": {
+                "name": "Updated Profile Name",
+                "description": "Updated profile description."
+              }
+            }
           }
         },
         "responses": {
@@ -3364,7 +3515,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/paths/~1v1~1profile~1put~1%7Bid%7D/put/requestBody/content/application~1json/schema"
+                },
+                "example": {
+                  "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+                  "name": "Updated Profile Name",
+                  "description": "Updated profile description.",
+                  "createdAt": "2023-10-01T10:00:00Z",
+                  "updatedAt": "2023-10-05T12:00:00Z"
                 }
               }
             }
@@ -3393,7 +3551,7 @@
           "Profile"
         ],
         "summary": "Deleta um perfil.",
-        "description": "Deleta um perfil no banco de dados.",
+        "description": "Deleta um perfil no banco de dados. O ID do perfil deve ser passado como parâmetro na URL. Retorna uma mensagem de sucesso. Não precisa de corpo na requisição.",
         "security": [
           {
             "bearerAuth": []

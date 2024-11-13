@@ -1,4 +1,38 @@
 {
+  "components": {
+    "schemas": {
+        "Chat": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The unique identifier for the chat."
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the chat."
+            },
+            "users": {
+              "type": "array",
+              "items": {
+                "$ref": "./user.json#/components/schemas/User"
+              },
+              "description": "The users that are part of the chat. Many users can participate in many chats."
+            },
+            "messages": {
+              "type": "array",
+              "items": {
+                "$ref": "./messages.json#/components/schemas/Message"
+              },
+              "description": "The messages that are part of the chat. One chat can have many messages."
+            }
+          },
+          "required": ["id", "name"]
+        }
+      }
+    },
+
   "/post": {
     "post": {
       "tags": ["Chat"],

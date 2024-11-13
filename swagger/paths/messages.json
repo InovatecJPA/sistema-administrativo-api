@@ -1,4 +1,44 @@
 {
+  "components": {
+    "schemas": {
+      "Message": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier for the message."
+          },
+          "text": {
+            "type": "string",
+            "description": "The text content of the message."
+          },
+          "sender": {
+            "$ref": "./user.json#/components/schemas/User",
+            "description": "The user who sent the message."
+          },
+          "receiver": {
+            "$ref": "./user.json#/components/schemas/User",
+            "description": "The user who receives the message."
+          },
+          "receiverSector": {
+            "$ref": "./sector.json#/components/schemas/Sector",
+            "description": "The user sector that receives the message."
+          },
+          "chat": {
+            "$ref": "./chat.json#/components/schemas/Chat",
+            "description": "The chat that the message belongs to."
+          },
+          "sendedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp indicating when the message was sent."
+          }
+        },
+        "required": ["id", "text", "sender", "receiver", "chat", "sendedAt"]
+      }
+    }
+  },
   "/post": {
     "post": {
       "tags": ["Menssagens"],

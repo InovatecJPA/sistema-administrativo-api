@@ -1,4 +1,117 @@
 {
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the user."
+          },
+          "cpf": {
+            "type": "string",
+            "description": "The CPF (Cadastro de Pessoas Físicas) of the user, unique in Brazil."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The email address of the user. It must be unique."
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The birth date of the user."
+          },
+          "phone": {
+            "type": "string",
+            "description": "The phone number of the user. It must be unique.",
+            "example": "(83) 91234-5678"
+          },
+          "profile": {
+            "type": "string",
+            "description": "The profile associated with the user.",
+            "example": "Administrador"
+          },
+          "sector": {
+            "$ref": "./sector.json#/components/schemas/Sector",
+            "description": "The sector associated with the user."
+          },
+          "messagesSended": {
+            "type": "array",
+            "items": {
+              "$ref": "./messages.json#/components/schemas/Message"
+            },
+            "description": "The messages sent by the user."
+          },
+          "messagesReceived": {
+            "type": "array",
+            "items": {
+              "$ref": "./messages.json#/components/schemas/Message"
+            },
+            "description": "The messages received by the user."
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true,
+            "description": "Indicates whether the user's account is active."
+          }
+        },
+        "required": ["name", "cpf", "email", "isActive"]
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the user."
+          },
+          "cpf": {
+            "type": "string",
+            "description": "The CPF (Cadastro de Pessoas Físicas) of the user, unique in Brazil."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The email address of the user. It must be unique."
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The birth date of the user."
+          },
+          "phone": {
+            "type": "string",
+            "description": "The phone number of the user. It must be unique.",
+            "example": "(83) 91234-5678"
+          },
+          "profile": {
+            "type": "string",
+            "description": "The profile associated with the user.",
+            "example": "Administrador"
+          },
+          "sector": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "string",
+              "example": "123e4567-e89b-12d3-a456-426614174000"
+            },
+            "description": "The users IDs associated with this profile.",
+            "example": [
+              "Setor administrativo",
+              "987f1234-a12b-34c7-d890-456789abcdef"
+            ]
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true,
+            "description": "Indicates whether the user's account is active."
+          }
+        },
+        "required": ["name", "cpf", "email", "isActive"]
+      }
+    }    
+  },
   "/": {
     "get": {
       "tags": ["User"],

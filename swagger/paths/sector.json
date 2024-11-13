@@ -1,4 +1,51 @@
 {
+  "components": {
+    "schemas": {
+      "Sector": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier for the sector."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the sector."
+          },
+          "description": {
+            "type": "string",
+            "description": "A brief description of the sector."
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "./user.json#/components/schemas/User"
+            },
+            "description": "The users associated with this sector."
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "./messages.json#/components/schemas/Message"
+            },
+            "description": "The messages received by this sector."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the sector was created."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the sector was last updated."
+          }
+        },
+        "required": ["id", "name", "description", "createdAt", "updatedAt"]
+      }
+    }      
+  },
   "/post": {
     "post": {
       "tags": ["Setor"],
