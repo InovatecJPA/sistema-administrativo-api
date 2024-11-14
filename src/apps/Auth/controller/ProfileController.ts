@@ -9,6 +9,7 @@ import { NextFunction, Request, Response } from "express";
 import { userService } from "../service/UserService";
 import Grant from "../model/Grant";
 import { grantService } from "../service/GrantService";
+import { HttpStatusCode } from "axios";
 
 export class ProfileController {
   private profileService: ProfileService;
@@ -213,6 +214,78 @@ export class ProfileController {
       }
 
       return res.json({ message: "Profile deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public postUser = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+    const { profileId } = req.params;
+    const { userId } = req.body;
+
+    try {
+      const profile = await this.profileService.findOneById(profileId);
+      if (!profile) {
+        throw new NotFoundError(`Profile with ID ${profileId} not found.`);
+      }
+  
+      const user = await userService.findOne(userId);
+      if (!user) {
+        throw new NotFoundError(`User with ID ${userId} not found.`);
+      }
+  
+      const profileUpdated: Profile = await this.profileService.addUserToProfile(user, profile);
+  
+      return res.status(HttpStatusCode.Ok).json(profileUpdated);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<Response> => { 
+    const { profileId } = req.params;
+    const { userId } = req.body;
+
+    try {
+      const profile = await this.profileService.removeUser(userId, profileId);
+      return res.status(HttpStatusCode.Ok).json(profile);
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public postGrant = async (req: Request, res: Response, next: NextFunction): Promise<Response> => { 
+    const { profileId } = req.params;
+    const { grantId } = req.body;
+
+    try {
+      const profile = await this.profileService.findOneById(profileId);
+      if (!profile) {
+        throw new NotFoundError(`Profile with ID ${profileId} not found.`);
+      }
+  
+      const grant = await grantService.findOne(grantId);
+      if (!grant) {
+        throw new NotFoundError(`Grant with ID ${grantId} not found.`);
+      }
+  
+      const profileUpdated: Profile = await this.profileService.addGrantToProfile(grant, profile);
+  
+      return res.status(HttpStatusCode.Ok).json(profileUpdated);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public deleteGrant = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+    const { profileId } = req.params;
+    const { grantId } = req.body;
+
+    try {
+      const profile = await this.profileService.removeGrant(grantId, profileId);
+      return res.status(HttpStatusCode.Ok).json(profile);
+      
     } catch (error) {
       next(error);
     }

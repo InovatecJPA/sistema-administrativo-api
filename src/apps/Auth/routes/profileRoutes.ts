@@ -14,5 +14,9 @@ profileRouter.get("/getById/:id", authMiddleware, profileController.getById);
 profileRouter.get("/getAll", authMiddleware, profileController.getAll);
 profileRouter.put("/put/:id", authMiddleware, profileController.put);
 profileRouter.delete("/delete/:id", authMiddleware, profileController.deleteById);
+profileRouter.post("/postUser/:id", authMiddleware, profileController.postUser);
+profileRouter.delete("/deleteUser/:id", authMiddleware, profileController.deleteUser);
+profileRouter.post("/postGrant/:id", authMiddleware, profileController.postGrant);
+profileRouter.delete("/deleteGrant/:id", authMiddleware, profileController.deleteGrant);
 
 export default profileRouter;

@@ -111,22 +111,48 @@ export class ProfileService implements ServiceInterface<Profile, ProfileDto> {
     return await this.profileRepository.delete({ id });
   }
 
-  addUserToProfile(user: User, profile: Profile) {
-    this.findOneById(profile.id).then((profile) => {
-      if (profile) {
-        profile.users.push(user);
-        this.profileRepository.save(profile);
-      }
-    });
+  async addUserToProfile(user: User, profile: Profile): Promise<Profile> {
+    profile.users.push(user);
+    return this.profileRepository.save(profile);
   }
   
-  addGrantToProfile(grant: Grant, profile: Profile) {
-    this.findOneById(profile.id).then((profile) => {
-      if (profile) {
-        profile.associatedGrants.push(grant);
-        this.profileRepository.save(profile);
-      }
+  async removeUser(userId: string, profileId: string): Promise<Profile> {
+    const profile: Profile = await profileRepository.findOne({
+      where: { id: profileId },
+      relations: ["users"],
     });
+
+    if (!profile) {
+      throw new NotFoundError(`Profile with ID ${profileId} not found.`);
+    }
+
+    profile.users = profile.users.filter(
+      (user) => user.id !== userId
+    );
+
+    return profileRepository.save(profile);
+  }
+
+  async addGrantToProfile(grant: Grant, profile: Profile): Promise<Profile> {
+    profile.associatedGrants.push(grant);
+    return this.profileRepository.save(profile);
+  }
+
+  async removeGrant(grantId: string, profileId: string): Promise<Profile> {
+    const profile: Profile = await profileRepository.findOne({
+      where: { id: profileId },
+      relations: ["associatedGrants"],
+    });
+
+    if (!profile) {
+      throw new NotFoundError(`Profile with ID ${profileId} not found.`);
+    }
+
+    profile.associatedGrants = profile.associatedGrants.filter(
+      (grant) => grant.id !== grantId
+    );
+
+    return profileRepository.save(profile);
   }
 }
 
