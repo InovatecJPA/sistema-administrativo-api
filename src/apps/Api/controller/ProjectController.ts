@@ -34,41 +34,49 @@ export class ProjectController {
   ): Promise<Response | void> => {
     try {
       const { name, sectors, coordinators, members } = req.body;
-      const projectDto: ProjectDto = new ProjectDto(name, sectors, coordinators, members);
-
+  
+      const projectDto: ProjectDto = new ProjectDto(
+        name,
+        sectors,
+        coordinators,
+        members
+      );
+  
       if (!projectDto.isValid()) {
         throw new InvalidObjectError("Project has missing values!");
       }
-
-      const savedProject: Project = await this.projectService.save(projectDto.toProject());
-
-      if (sectors || sectors.length !== 0) {
-        coordinators.forEach(async sectorId => {
-          const sector: Sector = await sectorService.findOne({ id: sectorId})
-          this.projectService.addSector(savedProject.id, sector.id);
-        });
+  
+      const savedProject: Project = await this.projectService.save(
+        projectDto.toProject()
+      );
+  
+      if (sectors && sectors.length !== 0) {
+        for (const sectorId of sectors) {
+          const sector: Sector = await sectorService.findOne({ id: sectorId });
+          await this.projectService.addSector(savedProject.id, sector.id);
+        }
       }
-
-      if (coordinators || coordinators.length !== 0) {
-        coordinators.forEach(async userId => {
-          const user: User = await userService.findOne({ id: userId})
-          this.projectService.addCoordinator(savedProject.id, user.id);
-        });
+  
+      if (coordinators && coordinators.length !== 0) {
+        for (const userId of coordinators) {
+          const user: User = await userService.findOne({ id: userId });
+          await this.projectService.addCoordinator(savedProject.id, user.id);
+        }
       }
-
-      if (members || members.length !== 0) {
-        members.forEach(async userId => {
-          const user: User = await userService.findOne({ id: userId})
-          this.projectService.addMember(savedProject.id, user.id);
-        });
+  
+      if (members && members.length !== 0) {
+        for (const userId of members) {
+          const user: User = await userService.findOne({ id: userId });
+          await this.projectService.addMember(savedProject.id, user.id);
+        }
       }
-      
+  
       return res.status(201).json(savedProject);
     } catch (error: any) {
       next(error);
     }
   };
-
+  
   /**
    * PUT /projects/:id
    * Updates an existing project by its ID.
@@ -215,7 +223,7 @@ export class ProjectController {
   // async putProjectRequest(req: Request, res: Response, next: NextFunction): Promise<Response> {
   //   const { id } = req.params;
   //   const { projectRequestId } = req.body;
-    
+
   //   try {
   //     const updatedProject = await projectService.setProjectRequest(id, projectRequestId);
   //     return res.status(HttpStatusCode.Ok).json(updatedProject);
@@ -233,12 +241,19 @@ export class ProjectController {
    * @param next - Function to pass errors to the middleware.
    * @returns A response with the updated project or an error.
    */
-  async postCoordinator(req: Request, res: Response, next: NextFunction): Promise<Response> {
+  async postCoordinator(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response> {
     const { id } = req.params;
     const { coordinatorId } = req.body;
 
     try {
-      const updatedProject = await projectService.addCoordinator(id, coordinatorId);
+      const updatedProject = await projectService.addCoordinator(
+        id,
+        coordinatorId
+      );
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error) {
       next(error);
@@ -254,12 +269,19 @@ export class ProjectController {
    * @param next - Function to pass errors to the middleware.
    * @returns A response with the updated project or an error.
    */
-  async deleteCoordinator(req: Request, res: Response, next: NextFunction): Promise<Response> {
+  async deleteCoordinator(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response> {
     const { id } = req.params;
     const { coordinatorId } = req.body;
 
     try {
-      const updatedProject = await projectService.removeCoordinator(id, coordinatorId);
+      const updatedProject = await projectService.removeCoordinator(
+        id,
+        coordinatorId
+      );
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error) {
       next(error);
@@ -272,7 +294,9 @@ export class ProjectController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const projects = await this.projectService.getAllByCoordinatorId(req.params.id);
+      const projects = await this.projectService.getAllByCoordinatorId(
+        req.params.id
+      );
       return res.json(projects);
     } catch (error: any) {
       next(error);
@@ -296,8 +320,11 @@ export class ProjectController {
     try {
       const { id } = req.params;
       const { memberId } = req.body;
-      const updatedProject: Project = await this.projectService.addMember(id, memberId);
-      
+      const updatedProject: Project = await this.projectService.addMember(
+        id,
+        memberId
+      );
+
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error: any) {
       next(error);
@@ -322,7 +349,10 @@ export class ProjectController {
       const { id } = req.params;
       const { memberId } = req.body;
 
-      const updatedProject: Project = await this.projectService.removeMember(id, memberId);
+      const updatedProject: Project = await this.projectService.removeMember(
+        id,
+        memberId
+      );
       return res.status(HttpStatusCode.Ok).json(updatedProject);
     } catch (error: any) {
       next(error);
@@ -336,7 +366,9 @@ export class ProjectController {
   ): Promise<Response | void> => {
     try {
       const { memberId } = req.params;
-      const projects: Project[] = await this.projectService.getAllByMemberId(memberId);
+      const projects: Project[] = await this.projectService.getAllByMemberId(
+        memberId
+      );
       return res.status(HttpStatusCode.Ok).json(projects);
     } catch (error: any) {
       next(error);
@@ -352,7 +384,11 @@ export class ProjectController {
    * @param next - Function to pass errors to the middleware.
    * @returns A response with the updated project or an error.
    */
-  async postSector(req: Request, res: Response, next: NextFunction): Promise<Response> {
+  async postSector(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response> {
     const { id } = req.params;
     const { sectorId } = req.body;
 
@@ -373,7 +409,11 @@ export class ProjectController {
    * @param next - Function to pass errors to the middleware.
    * @returns A response with the updated project or an error.
    */
-  async deleteSector(req: Request, res: Response, next: NextFunction): Promise<Response> {
+  async deleteSector(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response> {
     const { id } = req.params;
     const { sectorId } = req.body;
 
@@ -384,7 +424,6 @@ export class ProjectController {
       next(error);
     }
   }
-
 }
 // Initialize the controller with the service
 export default new ProjectController(projectService);

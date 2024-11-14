@@ -68,50 +68,26 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "id": {
-                    "type": "string",
-                    "example": "4b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
-                  },
                   "name": {
                     "type": "string",
-                    "description": "Nome do projeto.",
-                    "example": "Novo Projeto"
+                    "example": "Nome projeto"
                   },
-                  "sectors": {
-                    "type": "array",
-                    "description": "Lista de IDs dos setores associados ao projeto.",
-                    "items": {
-                      "type": "string"
-                    },
-                    "example": [
-                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
-                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
-                    ]
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-11-14T21:11:22.131Z"
                   },
-                  "coordinators": {
-                    "type": "array",
-                    "description": "Lista de IDs dos coordenadores do projeto.",
-                    "items": {
-                      "type": "string"
-                    },
-                    "example": [
-                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
-                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
-                    ]
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-11-14T21:11:22.131Z"
                   },
-                  "members": {
-                    "type": "array",
-                    "description": "Lista de IDs dos membros do projeto.",
-                    "items": {
-                      "type": "string"
-                    },
-                    "example": [
-                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a",
-                      "123454b2ca562-7b37-4b49-8ae3-17a8b9f1349a"
-                    ]
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "3ec524fc-2c67-4c75-acb6-85502ad463c6"
                   }
-                },
-                "required": ["name"]
+                }
               }
             }
           }

@@ -9,6 +9,8 @@ import Message from "../../Messaging/model/Message";
 import { messageService } from "../../Messaging/service/MessageService";
 import SectorDto from "../dto/SectorDto";
 import Sector from "../model/Sector";
+import { CustomValidationError } from "../../../error/CustomValidationError";
+import { BaseError } from "../../../error/BaseError";
 
 /**
  * Service class for handling Sector operations.
@@ -53,12 +55,24 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
     const newSector: Sector = new Sector(objectDto.name, objectDto.description);
 
     return await this.sectorRepository.save(newSector);
-}
+  }
 
   async findOne(object: Partial<Sector>): Promise<Sector> {
-    const projectRecovered: Sector = await this.sectorRepository.findOne({
-      where: object as FindOptionsWhere<Sector>,
-    });
+    // console.log(`FIND ONDE SETOR: ${JSON.stringify(object)}`);
+    let projectRecovered: Sector;
+    try {
+      projectRecovered = await this.sectorRepository.findOne({
+        where: object as FindOptionsWhere<Sector>,
+      });
+    } catch (error: any) {
+      if (error.code === "22P02")
+        throw new CustomValidationError(
+          "ID de setor inválido, deve seguir o formado UUID"
+        );
+      else {
+        throw new BaseError("Um erro inesperado aconteceu", 500, error);
+      }
+    }
 
     if (!projectRecovered) {
       throw new NotFoundError("No project found.");
@@ -83,25 +97,24 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
         users: {
           id: true,
           name: true,
-        }
-      }
+        },
+      },
     });
-  
+
     if (!sector) {
       return null;
     }
-  
+
     const sectorDto = {
       ...sector,
-      users: sector.users.map(user => ({
+      users: sector.users.map((user) => ({
         id: user.id,
-        name: user.name
-      }))
+        name: user.name,
+      })),
     };
-  
-    return sectorDto as Sector; 
+
+    return sectorDto as Sector;
   }
-  
 
   /**
    * Finds and returns all sectors in the database.
@@ -117,23 +130,21 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
         description: true,
         users: {
           id: true,
-          name: true
-        }
-      }
+          name: true,
+        },
+      },
     });
-  
 
-    const sectorsDto = sectors.map(sector => ({
+    const sectorsDto = sectors.map((sector) => ({
       ...sector,
-      users: sector.users.map(user => ({
+      users: sector.users.map((user) => ({
         id: user.id,
-        name: user.name
-      }))
+        name: user.name,
+      })),
     }));
-  
-    return sectorsDto as Sector[]; 
+
+    return sectorsDto as Sector[];
   }
-  
 
   /**
    * Updates an existing sector based on its ID or entity.
@@ -199,39 +210,39 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
       where: { id: sectorId },
       relations: ["users"],
     });
-  
+
     if (!sector) {
       throw new NotFoundError(`Sector with ID ${sectorId} not found.`);
     }
-  
+
     const user: User = await userService.findOne({ id: userId });
-  
-    if (sector.users.some(existingUser => existingUser.id === userId)) {
+
+    if (sector.users.some((existingUser) => existingUser.id === userId)) {
       throw new Error(`User with ID ${userId} is already part of the sector.`);
     }
-  
+
     // Adiciona o user ao setor e define o setor no user
     sector.users = [...(sector.users || []), user];
     user.sector = sector;
-  
+
     // Salva as duas entidades para garantir que o setor_id seja atualizado no user
-    await userService.updateUser(user);  // Salva o user com o sector_id
+    await userService.updateUser(user); // Salva o user com o sector_id
     const savedSector = await sectorRepository.save(sector);
-  
+
     interface UserDTO {
       id: string;
       name: string;
       email: string;
       phone: string;
     }
-  
-    const usersDTO: UserDTO[] = savedSector.users.map(user => ({
+
+    const usersDTO: UserDTO[] = savedSector.users.map((user) => ({
       id: user.id,
       name: user.name,
       email: user.email,
       phone: user.phone,
     }));
-  
+
     return {
       ...savedSector,
       users: usersDTO,
