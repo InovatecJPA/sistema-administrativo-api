@@ -46,15 +46,27 @@ export class SectorService implements ServiceInterface<Sector, SectorDto> {
    * @throws {InvalidObjectError} If the provided DTO is invalid.
    */
   public async save(objectDto: Partial<SectorDto>): Promise<Sector> {
-    if (!objectDto.name || !objectDto.description) {
+    if (!objectDto.name?.trim() || !objectDto.description?.trim()) {
       throw new InvalidObjectError(
-        'All fields of the new sector must be non-null or different from "" .'
+        "All fields of the new sector must be non-null and non-empty."
       );
     }
 
-    const newSector: Sector = new Sector(objectDto.name, objectDto.description);
+    const existingSector = await this.sectorRepository.findOne({
+      where: { name: objectDto.name },
+    });
+    if (existingSector) {
+      throw new CustomValidationError(
+        "A sector with the same name already exists."
+      );
+    }
 
-    return await this.sectorRepository.save(newSector);
+    const newSector = this.sectorRepository.create({
+      name: objectDto.name,
+      description: objectDto.description,
+    });
+
+    return this.sectorRepository.save(newSector);
   }
 
   async findOne(object: Partial<Sector>): Promise<Sector> {

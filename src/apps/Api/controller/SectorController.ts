@@ -32,20 +32,22 @@ export class SectorController {
           "The name of the sector is required."
         );
       }
-      
+            
       const savedSector: Sector = await this.sectorService.save(sectorDto.toSector());
 
       if (!userList || userList.length === 0) {
         return res.status(201).json(savedSector);     
       }
 
-      userList.array.forEach(async userId => {
-        const user: User = await userService.findOne({id: userId })
-        if(!user) {
-          throw new NotFoundError(`User with ID ${ user.id } not found`);
+      console.log(userList);
+
+      for (const user of userList) {
+        const foundUser: User = await userService.findOne({ id: user.id });
+        if (!foundUser) {
+          throw new NotFoundError(`User with ID ${user.id} not found`);
         }
-        this.sectorService.addUser(savedSector.id, user.id);
-      });
+        await this.sectorService.addUser(savedSector.id, foundUser.id);
+      }      
 
       return res.status(201).json(savedSector);
     } catch (error: any) {

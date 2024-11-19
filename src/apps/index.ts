@@ -10,13 +10,13 @@ import profileRouter from "./Auth/routes/profileRoutes";
 
 const router: Router = Router();
 
-router.use("/accounts", authRouter); // mapeado e documentado
-router.use("/user", userRouter); // mapeado e documentado
-router.use("/grant", grantRouter); // falta mapear
-router.use("/profile", profileRouter); // falta mapear
-router.use("/project", projectRouter); // falta doc 
-router.use("/sector", sectorRouter); // falta mapear
-router.use("/messages", messagesRouter); // falta doc
-router.use("/chat", chatRouter); // falta mapear - não é prioridade
+router.use("/accounts", authRouter);
+router.use("/user", userRouter);
+router.use("/grant", grantRouter);
+router.use("/profile", profileRouter);
+router.use("/project", projectRouter);
+router.use("/sector", sectorRouter);
+router.use("/messages", messagesRouter);
+router.use("/chat", chatRouter);
 
 export default router;
