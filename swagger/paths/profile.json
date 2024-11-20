@@ -34,7 +34,7 @@
           "name": {
             "type": "string",
             "description": "The name of the profile.",
-            "example":"Perfil administrativo"
+            "example": "Perfil administrativo"
           },
           "description": {
             "type": "string",
@@ -79,7 +79,7 @@
     "get": {
       "tags": ["Profile"],
       "summary": "Faz a seed de perfis no banco de dados.",
-      "description": "Faz a seed de perfis (admin e administrativo) no banco de dados. É utilizado apenas ao subir a aplicação. Não precisa de parâmetros.", 
+      "description": "Faz a seed de perfis (admin e administrativo) no banco de dados. É utilizado apenas ao subir a aplicação. Não precisa de parâmetros.",
       "security": [
         {
           "bearerAuth": []
@@ -141,12 +141,16 @@
         }
       },
       "responses": {
-        "200": {
+        "201": {
           "description": "Perfil criado com sucesso. Retorna o perfil criado.",
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Profile"
+              "example": {
+                "name": "Perfil administrativo",
+                "description": "Perfil com acesso total ao sistema.",
+                "id": "d2adaac2-694f-4a76-9d5d-e83e5ca2b3a7",
+                "createdAt": "2024-11-20T04:00:04.448Z",
+                "updatedAt": "2024-11-20T04:00:04.448Z"
               }
             }
           }
@@ -182,8 +186,8 @@
       "parameters": [
         {
           "name": "name",
-          "in": "query",
-          "description": "Nome do perfil.",
+          "in": "path",
+          "description": "ID do perfil.",
           "required": true,
           "schema": {
             "type": "string",
@@ -197,7 +201,38 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Profile"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "default_user",
+                    "description": "Nome do usuário padrão."
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Permissão de usuário padrão do sistema",
+                    "description": "Descrição do tipo de permissão."
+                  },
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "db3e671c-27b9-442f-abd1-959a401e6b3f",
+                    "description": "Identificador único do usuário padrão."
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-11-12T16:52:48.905Z",
+                    "description": "Data de criação do registro."
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-11-12T16:52:48.905Z",
+                    "description": "Data da última atualização do registro."
+                  }
+                },
+                "required": ["name", "id", "createdAt", "updatedAt"]
               }
             }
           }
@@ -249,7 +284,38 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Profile"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "admin",
+                    "description": "Nome do administrador do sistema."
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Administrador do sistema",
+                    "description": "Descrição do usuário administrador."
+                  },
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "a26f45a4-b9ac-4625-8ffc-8eed39f7b61d",
+                    "description": "Identificador único do administrador."
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-11-12T06:44:50.668Z",
+                    "description": "Data de criação do registro."
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-11-12T06:44:50.668Z",
+                    "description": "Data da última atualização do registro."
+                  }
+                },
+                "required": ["name", "id", "createdAt", "updatedAt"]
               }
             }
           }
@@ -354,37 +420,32 @@
         }
       ],
       "requestBody": {
-      "required": true,
-      "content": {
-        "application/json": {
-          "schema": {
-            "$ref": "#/components/schemas/Profile"
-          },
-          "example": {
-            "name": "Updated Profile Name",
-            "description": "Updated profile description."
-          }
-        }
-      }
-    },
-    "responses": {
-      "200": {
-        "description": "Perfil atualizado com sucesso.",
+        "required": true,
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Profile"
             },
             "example": {
-              "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
               "name": "Updated Profile Name",
-              "description": "Updated profile description.",
-              "createdAt": "2023-10-01T10:00:00Z",
-              "updatedAt": "2023-10-05T12:00:00Z"
+              "description": "Updated profile description."
             }
           }
         }
       },
+      "responses": {
+        "200": {
+          "description": "Perfil atualizado com sucesso.",
+          "content": {
+            "application/json": {
+              "example": {
+                "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+                "name": "Updated Profile Name",
+                "description": "Updated profile description."
+              }
+            }
+          }
+        },
         "400": {
           "$ref": "../responses/cilentError.json#/400"
         },
@@ -432,7 +493,13 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Profile deleted successfully"
+                  }
+                }
               }
             }
           }
