@@ -44,7 +44,7 @@
         },
         "required": ["id", "name", "description", "createdAt", "updatedAt"]
       }
-    }      
+    }
   },
   "/post": {
     "post": {
@@ -61,18 +61,67 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Nome do setor."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Descrição do setor."
+                },
+                "userList": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Identificador único do usuário."
+                      }
+                    },
+                    "required": ["id"]
+                  },
+                  "description": "Lista de usuários associados ao setor."
+                }
+              }
             }
           }
         }
       },
       "responses": {
-        "200": {
+        "201": {
           "description": "Setor criado com sucesso.",
           "content": {
             "application/json": {
               "schema": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "The unique identifier for the sector."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the sector."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A brief description of the sector."
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The timestamp when the sector was created."
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The timestamp when the sector was last updated."
+                  }
+                }
               }
             }
           }
@@ -123,7 +172,40 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {}
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Identificador único do setor."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Nome do setor."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Descrição do setor."
+                  },
+                  "users": {
+                    "type": "array",
+                    "description": "Lista de usuários associados ao setor.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "Identificador único do usuário."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Nome do usuário."
+                        }
+                      },
+                      "required": ["id", "name"]
+                    }
+                  }
+                }
               }
             }
           }
@@ -165,7 +247,41 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "Identificador único do setor."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nome do setor."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Descrição do setor."
+                    },
+                    "users": {
+                      "type": "array",
+                      "description": "Lista de usuários associados ao setor.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "Identificador único do usuário."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Nome do usuário."
+                          }
+                        },
+                        "required": ["id", "name"]
+                      }
+                    }
+                  },
+                  "required": ["id", "name", "description"]
                 }
               }
             }
@@ -215,7 +331,17 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Nome do setor."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Descrição do setor."
+                }
+              },
+              "required": ["name", "description"]
             }
           }
         }
@@ -227,7 +353,31 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {}
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "The unique identifier for the sector."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the sector."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A brief description of the sector."
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The timestamp when the sector was created."
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The timestamp when the sector was last updated."
+                  }
+                }
               }
             }
           }
@@ -278,7 +428,12 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {}
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Sector deleted successfully"
+                  }
+                }
               }
             }
           }
@@ -327,7 +482,13 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Identificador único do usuário."
+                }
+              }
             }
           }
         }
@@ -339,7 +500,57 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {}
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "The unique identifier for the sector."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the sector."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A brief description of the sector."
+                  },
+                  "users": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "Identificador único do usuário."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Nome do usuário."
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "Email do usuário."
+                        },
+                        "phone": {
+                          "type": "string",
+                          "description": "Telefone do usuário."
+                        }
+                      }
+                    },
+                    "description": "The users associated with this sector."
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The timestamp when the sector was created."
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The timestamp when the sector was last updated."
+                  }
+                }
               }
             }
           }
@@ -383,6 +594,22 @@
           }
         }
       ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Identificador único do usuário."
+                }
+              }
+            }
+          }
+        }
+      },
       "responses": {
         "200": {
           "description": "Usuário deletado com sucesso.",
@@ -390,7 +617,50 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {}
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "The unique identifier for the sector."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the sector."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A brief description of the sector."
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The timestamp when the sector was created."
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The timestamp when the sector was last updated."
+                  },
+                  "users": {
+                    "type": "array",
+                    "description": "Lista de usuários associados ao setor.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "Identificador único do usuário."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Nome do usuário."
+                        }
+                      },
+                      "required": ["id", "name"]
+                    }
+                  }
+                }
               }
             }
           }

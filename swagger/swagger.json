@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "API ADM inovatec-jp",
-    "description": "API REST para o sistema administrativo.\n\nStatus:\n\n- **/accounts** ➜ MAPEADO e DOCUMENTADO\n- **/user** ➜ MAPEADO e DOCUMENTADO\n- **/grant** ➜ MAPEADO e DOCUMENTADO\n- **/profile** ➜ MAPEADO e DOCUMENTADO\n- **/sector** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/project** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/messages** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*José*__\n- **/chat** ➜ MAPEADO, falta __*validar*__ documentação (não é prioritário) - Responsável: __*José*__",
+    "description": "API REST para o sistema administrativo.\n\nStatus:\n\n- **/accounts** ➜ MAPEADO e DOCUMENTADO\n- **/user** ➜ MAPEADO e DOCUMENTADO\n- **/grant** ➜ MAPEADO e DOCUMENTADO\n- **/profile** ➜ MAPEADO e DOCUMENTADO\n- **/sector** ➜ MAPEADO, falta __*completar*__ documentação (falta apenas: /postMessage e /deleteMessage) - Responsável: __*Arthur*__\n- **/project** ➜ MAPEADO, falta __*completar*__ documentação - Responsável: __*Arthur*__\n- **/messages** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*José*__\n- **/chat** ➜ MAPEADO, falta __*validar*__ documentação (não é prioritário) - Responsável: __*José*__",
     "version": "1.0.0"
   },
   "components": {
