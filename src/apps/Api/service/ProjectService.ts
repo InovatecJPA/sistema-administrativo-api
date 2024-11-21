@@ -29,19 +29,22 @@ export class ProjectService implements ServiceInterface<Project, ProjectDto> {
    */
   async save(objectDto: Partial<ProjectDto>): Promise<Project> {
     // Converte `objectDto` para uma instância completa de `ProjectDto`
-    const projectDto = new ProjectDto(objectDto.name, objectDto.sectors, objectDto.coordinators);
+    const projectDto = new ProjectDto(
+      objectDto.name,
+      objectDto.sectors,
+      objectDto.coordinators
+    );
 
     // Valida usando o método `isValid`
     if (!projectDto.isValid()) {
-        throw new InvalidObjectError(
-            'All fields of the new project must be non-null or different of "".'
-        );
+      throw new InvalidObjectError(
+        'All fields of the new project must be non-null or different of "".'
+      );
     }
 
     const newProject: Project = projectDto.toProject();
     return await this.projectRepository.save(newProject);
-}
-
+  }
 
   /**
    * Finds a project by a given set of conditions.
@@ -89,11 +92,14 @@ export class ProjectService implements ServiceInterface<Project, ProjectDto> {
    * @returns {Promise<Project[]>} - An array of all project entities.
    */
   async findAll(): Promise<Project[]> {
-    const projectsRecovered: Project[] = await this.projectRepository.find();
+    const projectsRecovered: Project[] = await this.projectRepository.find({
+      relations: ["sectors", "coordinators"],
+    });
 
     if (!projectsRecovered) {
       throw new NotFoundError("No projects found.");
     }
+    
     return projectsRecovered;
   }
 
@@ -131,15 +137,18 @@ export class ProjectService implements ServiceInterface<Project, ProjectDto> {
   }
 
   /**
- * Adds a coordinator to the project based on the coordinator's ID.
- * This method associates a user as a coordinator with the project.
- *
- * @param {string} projectId - The ID of the project to update.
- * @param {string} coordinatorId - The ID of the coordinator (user) to add to the project.
- * @throws {NotFoundError} - If the project or user (coordinator) is not found.
- * @returns {Promise<Project>} - The updated project entity.
- */
-  async addCoordinator(projectId: string, coordinatorId: string): Promise<Project> {
+   * Adds a coordinator to the project based on the coordinator's ID.
+   * This method associates a user as a coordinator with the project.
+   *
+   * @param {string} projectId - The ID of the project to update.
+   * @param {string} coordinatorId - The ID of the coordinator (user) to add to the project.
+   * @throws {NotFoundError} - If the project or user (coordinator) is not found.
+   * @returns {Promise<Project>} - The updated project entity.
+   */
+  async addCoordinator(
+    projectId: string,
+    coordinatorId: string
+  ): Promise<Project> {
     const project: Project = await this.projectRepository.findOne({
       where: { id: projectId },
       relations: ["coordinators"],

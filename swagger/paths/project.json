@@ -429,45 +429,108 @@
                   "properties": {
                     "name": {
                       "type": "string",
-                      "example": "Novo Projeto"
+                      "example": "Nome projeto"
                     },
                     "createdAt": {
                       "type": "string",
                       "format": "date-time",
-                      "example": "2024-11-14T21:25:38.063Z"
+                      "example": "2024-11-14T21:11:22.131Z"
                     },
                     "updatedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "example": "2024-11-14T21:25:38.063Z"
+                      "example": "2024-11-14T21:11:22.131Z"
                     },
                     "id": {
                       "type": "string",
                       "format": "uuid",
-                      "example": "68584c71-139b-4232-bd02-34b44d38e7e0"
+                      "example": "3ec524fc-2c67-4c75-acb6-85502ad463c6"
+                    },
+                    "sectors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "Desenvolvedor"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Setor de Desenvolvedor"
+                          },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "4b286bdf-5486-46ad-8b63-90648f26118d"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2024-11-14T17:02:35.061Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2024-11-14T17:02:35.061Z"
+                          }
+                        }
+                      }
+                    },
+                    "coordinators": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "b55bc411-0338-4a5b-900d-e8d1ac0a7690"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "John Doe"
+                          },
+                          "cpf": {
+                            "type": "string",
+                            "example": "78641844058"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "adminDaSiilva@admin.com"
+                          },
+                          "birthDate": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "1990-01-01"
+                          },
+                          "phone": {
+                            "type": "string",
+                            "example": "1234567190"
+                          },
+                          "isActive": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "passwordHash": {
+                            "type": "string",
+                            "example": "$2a$10$fXOqhOzmqybNIV8wIzq/H.mM1reTnXY5.QfBYU18w/TYqQX41tMcq"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2024-11-12T16:52:48.931Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2024-11-21T19:46:00.815Z"
+                          }
+                        }
+                      }
                     }
                   }
-                },
-                "example": [
-                  {
-                    "name": "Novo Projeto",
-                    "createdAt": "2024-11-14T21:25:38.063Z",
-                    "updatedAt": "2024-11-14T21:25:38.063Z",
-                    "id": "68584c71-139b-4232-bd02-34b44d38e7e0"
-                  },
-                  {
-                    "name": "Novo Projeto",
-                    "createdAt": "2024-11-14T21:45:12.619Z",
-                    "updatedAt": "2024-11-14T21:45:12.619Z",
-                    "id": "1a577826-15a8-4c7e-bbfd-1f90e1047e5d"
-                  },
-                  {
-                    "name": "mjbjhf",
-                    "createdAt": "2024-11-14T21:54:30.567Z",
-                    "updatedAt": "2024-11-14T21:54:30.567Z",
-                    "id": "2ba647ee-edbf-4642-898c-4d1fb6fae6b8"
-                  }
-                ]
+                }
               }
             }
           }
