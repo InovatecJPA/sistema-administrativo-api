@@ -10,6 +10,9 @@ const attachmentRouter: Router = Router();
 // Middleware para validação de respostas
 attachmentRouter.use(validateResponseMiddleware);
 
+// Middleware para autenticação
+attachmentRouter.use(authMiddleware);
+
 /**
  * Rota para fazer upload de um novo anexo
  * Método: POST
