@@ -1,7 +1,7 @@
 import { DeleteResult, Repository } from "typeorm";
 import AppDataSource from "../../../database/dbConnection";
 import { InvalidObjectError } from "../../../error/InvalidObjectError";
-import { Attachment } from "../model/Attachment";
+import Attachment from "../model/Attachment";
 
 export class AttachmentService {
   private attachmentRepository: Repository<Attachment>;
@@ -101,6 +101,10 @@ export class AttachmentService {
    */
   async findByMimeType(mimeType: string): Promise<Attachment[]> {
     return await this.attachmentRepository.find({ where: { mimeType } });
+  }
+
+  async deleteAttachmentsByRequestId(requestId: string): Promise<void> {
+    await this.attachmentRepository.delete({ request: { id: requestId } });
   }
 }
 

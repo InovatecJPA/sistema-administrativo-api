@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
-import Message from "./Message";
+import Request from "./Request";
 
 @Entity()
-export class Attachment {
+export default class Attachment {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -14,5 +14,8 @@ export class Attachment {
 
   @Column("bytea")
   data: Buffer;
+
+  @OneToOne(() => Request, (request) => request.attachments)
+  request: Request;
 
 }
