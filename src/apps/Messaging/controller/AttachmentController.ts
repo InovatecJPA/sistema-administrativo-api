@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { attachmentService } from "../service/AttachmentService";
-import { Attachment } from "../model/Attachment";
+import Attachment from "../model/Attachment";
 
 class AttachmentController {
   async uploadAttachment(req: Request, res: Response): Promise<Response> {
