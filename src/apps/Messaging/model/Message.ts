@@ -3,11 +3,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import Sector from "../../Api/model/Sector";
 import User from "../../Auth/model/User";
 import Chat from "./Chat";
+import { Attachment } from "./Attachment";
 
 /**
  * Represents a message in the system.
@@ -75,6 +77,9 @@ export default class Message {
   @JoinColumn({ name: "chat_id" })
   chat: Chat;
 
+  @OneToOne(() => Attachment, (attachment) => attachment.message, { cascade: true })
+  @JoinColumn()
+  attachment: Attachment;
 
   /**
    * The timestamp indicating when the message was sent.

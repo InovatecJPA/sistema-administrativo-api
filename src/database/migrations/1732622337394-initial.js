@@ -1,7 +1,7 @@
 const { MigrationInterface, QueryRunner } = require("typeorm");
 
-module.exports = class Init1731355489381 {
-    name = 'Init1731355489381'
+module.exports = class Initial1732622337394 {
+    name = 'Initial1732622337394'
 
     async up(queryRunner) {
         await queryRunner.query(`CREATE TABLE "chats" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, CONSTRAINT "PK_0117647b3c4a4e5ff198aeb6206" PRIMARY KEY ("id"))`);
@@ -11,7 +11,8 @@ module.exports = class Init1731355489381 {
         await queryRunner.query(`CREATE INDEX "IDX_8769073e38c365f315426554ca" ON "tokens" ("user_id") `);
         await queryRunner.query(`CREATE TABLE "users" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "cpf" character varying NOT NULL, "email" character varying NOT NULL, "birth_date" date, "phone" character varying, "is_active" boolean NOT NULL DEFAULT true, "password_hash" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "profile_id" uuid NOT NULL, "sector_id" uuid, CONSTRAINT "UQ_230b925048540454c8b4c481e1c" UNIQUE ("cpf"), CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "UQ_a000cca60bcf04454e727699490" UNIQUE ("phone"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "sectors" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "description" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "UQ_1a10b192342e5165948f4dccefc" UNIQUE ("name"), CONSTRAINT "PK_923fdda0dc12f59add7b3a1782f" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "messages" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "text" character varying NOT NULL, "sended_at" TIMESTAMP WITH TIME ZONE NOT NULL, "sender_id" uuid NOT NULL, "receiver_id" uuid NOT NULL, "receiver_sector_id" uuid, "chat_id" uuid NOT NULL, CONSTRAINT "PK_18325f38ae6de43878487eff986" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "attachment" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "file_name" character varying NOT NULL, "mime_type" character varying NOT NULL, "data" bytea NOT NULL, CONSTRAINT "PK_d2a80c3a8d467f08a750ac4b420" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "messages" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "text" character varying NOT NULL, "sended_at" TIMESTAMP WITH TIME ZONE NOT NULL, "sender_id" uuid NOT NULL, "receiver_id" uuid NOT NULL, "receiver_sector_id" uuid, "chat_id" uuid NOT NULL, "attachment_id" uuid, CONSTRAINT "REL_d2e0ab24e536e1933067c8f37e" UNIQUE ("attachment_id"), CONSTRAINT "PK_18325f38ae6de43878487eff986" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "projects" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_6271df0a7aed1d6c0691ce6ac50" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "chat_users" ("chat_id" uuid NOT NULL, "user_id" uuid NOT NULL, CONSTRAINT "PK_31efa25a44c55b3ceed47f98ba4" PRIMARY KEY ("chat_id", "user_id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_f60265ed6da63600bad2c5ee8c" ON "chat_users" ("chat_id") `);
@@ -37,6 +38,7 @@ module.exports = class Init1731355489381 {
         await queryRunner.query(`ALTER TABLE "messages" ADD CONSTRAINT "FK_b561864743d235f44e70addc1f5" FOREIGN KEY ("receiver_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "messages" ADD CONSTRAINT "FK_ae9c507fb01e4ed0defdc9b4e69" FOREIGN KEY ("receiver_sector_id") REFERENCES "sectors"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "messages" ADD CONSTRAINT "FK_7540635fef1922f0b156b9ef74f" FOREIGN KEY ("chat_id") REFERENCES "chats"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "messages" ADD CONSTRAINT "FK_d2e0ab24e536e1933067c8f37e6" FOREIGN KEY ("attachment_id") REFERENCES "attachment"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "chat_users" ADD CONSTRAINT "FK_f60265ed6da63600bad2c5ee8c4" FOREIGN KEY ("chat_id") REFERENCES "chats"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
         await queryRunner.query(`ALTER TABLE "chat_users" ADD CONSTRAINT "FK_9a5f2493e2c02490ceb527649e4" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "grants_profiles" ADD CONSTRAINT "FK_adda5fcced1f51e4873851b6e15" FOREIGN KEY ("grant_id") REFERENCES "grants"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
@@ -64,6 +66,7 @@ module.exports = class Init1731355489381 {
         await queryRunner.query(`ALTER TABLE "grants_profiles" DROP CONSTRAINT "FK_adda5fcced1f51e4873851b6e15"`);
         await queryRunner.query(`ALTER TABLE "chat_users" DROP CONSTRAINT "FK_9a5f2493e2c02490ceb527649e4"`);
         await queryRunner.query(`ALTER TABLE "chat_users" DROP CONSTRAINT "FK_f60265ed6da63600bad2c5ee8c4"`);
+        await queryRunner.query(`ALTER TABLE "messages" DROP CONSTRAINT "FK_d2e0ab24e536e1933067c8f37e6"`);
         await queryRunner.query(`ALTER TABLE "messages" DROP CONSTRAINT "FK_7540635fef1922f0b156b9ef74f"`);
         await queryRunner.query(`ALTER TABLE "messages" DROP CONSTRAINT "FK_ae9c507fb01e4ed0defdc9b4e69"`);
         await queryRunner.query(`ALTER TABLE "messages" DROP CONSTRAINT "FK_b561864743d235f44e70addc1f5"`);
@@ -90,6 +93,7 @@ module.exports = class Init1731355489381 {
         await queryRunner.query(`DROP TABLE "chat_users"`);
         await queryRunner.query(`DROP TABLE "projects"`);
         await queryRunner.query(`DROP TABLE "messages"`);
+        await queryRunner.query(`DROP TABLE "attachment"`);
         await queryRunner.query(`DROP TABLE "sectors"`);
         await queryRunner.query(`DROP TABLE "users"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_8769073e38c365f315426554ca"`);
