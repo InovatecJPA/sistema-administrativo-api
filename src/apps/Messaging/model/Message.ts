@@ -77,10 +77,6 @@ export default class Message {
   @JoinColumn({ name: "chat_id" })
   chat: Chat;
 
-  @OneToOne(() => Attachment, (attachment) => attachment.message, { cascade: true })
-  @JoinColumn()
-  attachment: Attachment;
-
   /**
    * The timestamp indicating when the message was sent.
    *

@@ -15,6 +15,4 @@ export class Attachment {
   @Column("bytea")
   data: Buffer;
 
-  @OneToOne(() => Message, (message) => message.attachment, { onDelete: "CASCADE" })
-  message: Message;
 }
