@@ -164,7 +164,6 @@ export class MessageService {
   async deleteMessagesByRequestId(requestId: string): Promise<void> {
     await this.messageRepository.delete({ request: { id: requestId } });
   }
-  
 }
 
 // Inicializa os repositórios e exporta a instância do serviço

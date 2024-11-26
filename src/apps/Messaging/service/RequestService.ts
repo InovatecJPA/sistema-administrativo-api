@@ -6,8 +6,9 @@ import { Repository } from "typeorm";
 import { userService } from "../../Auth/service/UserService";
 import { messageService } from "./MessageService";
 import { attachmentService } from "./AttachmentService";
+import AppDataSource from "../../../database/dbConnection";
 
-class RequestService {
+export class RequestService {
   private requestRepository: Repository<Request>;
 
   constructor(requestRepository: Repository<Request>) {
@@ -174,4 +175,4 @@ class RequestService {
   }
 }
 
-export default RequestService;
+export const requestService: RequestService = new RequestService(AppDataSource.getRepository(Request));
