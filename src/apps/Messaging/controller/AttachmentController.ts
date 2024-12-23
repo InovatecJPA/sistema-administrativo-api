@@ -2,6 +2,11 @@ import { Request, Response } from "express";
 import { attachmentService } from "../service/AttachmentService";
 import Attachment from "../model/Attachment";
 
+
+
+interface MulterRequest extends Request {
+  file?: Express.Multer.File;
+}
 class AttachmentController {
   async uploadAttachment(req: Request, res: Response): Promise<Response> {
     const file = req.file;
