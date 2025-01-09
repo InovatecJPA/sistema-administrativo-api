@@ -10,15 +10,17 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from "typeorm";
 
 import Sector from "../../Api/model/Sector";
-import Chat from "../../Messaging/model/Chat";
+import Chat from "../../Messaging/model/Solicitation";
 import Message from "../../Messaging/model/Message";
 import Profile from "./Profile";
 import Token from "./Token";
+import Solicitation from "../../Messaging/model/Solicitation";
 
 /**
  * Represents a user in the system.
@@ -130,13 +132,13 @@ class User {
   messagesReceived: Message[];
 
   /**
-   * The chats associated with the user.
+   * The  solicitations associated with the user.
    *
-   * @type {Chat[]}
+   * @type {Solicitation[]}
    * @memberof User
    */
-  @OneToMany(() => Chat, (chat) => chat.users) // Deve ser a propriedade correta de Chat
-  chats: Chat[];
+  @ManyToMany(() => Solicitation, (solicitation) => solicitation.users) // Deve ser a propriedade correta de Chat
+  solicitations: Solicitation[];
 
 
 

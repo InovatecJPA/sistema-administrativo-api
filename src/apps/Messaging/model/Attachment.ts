@@ -1,5 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
-import Request from "./Request";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import Chat from "./Solicitation";
+import Solicitation from "./Solicitation";
 
 @Entity()
 export default class Attachment {
@@ -15,7 +23,8 @@ export default class Attachment {
   @Column("bytea")
   data: Buffer;
 
-  @OneToOne(() => Request, (request) => request.attachments)
-  request: Request;
+  @ManyToOne(() => Solicitation, (solicitation) => solicitation.attachments, {nullable: false})
+  @JoinColumn({name: "solicitation_id"})
+  solicitation: Solicitation;
 
 }

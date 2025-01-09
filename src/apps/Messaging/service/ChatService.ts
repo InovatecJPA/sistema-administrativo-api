@@ -1,5 +1,5 @@
 import { DeleteResult, FindOptionsWhere, Repository } from "typeorm";
-import Chat from "../model/Chat";
+import Chat from "../model/Solicitation";
 import { InvalidObjectError } from "../../../error/InvalidObjectError";
 import AppDataSource from "../../../database/dbConnection";
 import User from "../../Auth/model/User";

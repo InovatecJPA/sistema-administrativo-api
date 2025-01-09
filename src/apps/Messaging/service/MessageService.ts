@@ -10,7 +10,7 @@ import Message from "../model/Message";
 import { InvalidObjectError } from "../../../error/InvalidObjectError";
 import AppDataSource from "../../../database/dbConnection";
 import User from "../../Auth/model/User";
-import Chat from "../model/Chat";
+import Chat from "../model/Solicitation";
 import { ReplicationStatus } from "@aws-sdk/client-s3";
 
 export class MessageService {
@@ -161,9 +161,6 @@ export class MessageService {
     return await this.messageRepository.delete({ id });
   }
 
-  async deleteMessagesByRequestId(requestId: string): Promise<void> {
-    await this.messageRepository.delete({ request: { id: requestId } });
-  }
 }
 
 // Inicializa os repositórios e exporta a instância do serviço
