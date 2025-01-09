@@ -1,234 +1,611 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "API ADM inovatec-jp",
-    "description": "API REST para o sistema administrativo.\n\nStatus:\n\n- **/accounts** ➜ MAPEADO e DOCUMENTADO\n- **/user** ➜ MAPEADO e DOCUMENTADO\n- **/grant** ➜ MAPEADO e DOCUMENTADO\n- **/profile** ➜ MAPEADO e DOCUMENTADO\n- **/sector** ➜ MAPEADO, falta __*completar*__ documentação (falta apenas: /postMessage e /deleteMessage) - Responsável: __*Arthur*__\n- **/project** ➜ MAPEADO e DOCUMENTADO\n- **/messages** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*José*__\n- **/chat** ➜ MAPEADO, falta __*validar*__ documentação (não é prioritário) - Responsável: __*José*__",
-    "version": "1.0.0"
-  },
-  "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+    "openapi": "3.1.0",
+    "info": {
+      "title": "API ADM inovatec-jp",
+      "description": "API REST para o sistema administrativo.\n\nStatus:\n\n- **/accounts** ➜ MAPEADO e DOCUMENTADO\n- **/user** ➜ MAPEADO e DOCUMENTADO\n- **/grant** ➜ MAPEADO e DOCUMENTADO\n- **/profile** ➜ MAPEADO e DOCUMENTADO\n- **/sector** ➜ MAPEADO, falta __*completar*__ documentação (falta apenas: /postMessage e /deleteMessage) - Responsável: __*Arthur*__\n- **/project** ➜ MAPEADO e DOCUMENTADO\n- **/messages** ➜ MAPEADO, falta __*validar*__ documentação - Responsável: __*José*__\n- **/chat** ➜ MAPEADO, falta __*validar*__ documentação (não é prioritário) - Responsável: __*José*__",
+      "version": "1.0.0"
+    },
+    "components": {
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
       }
-    }
-  },
-  "paths": {
-    "/testDB": {
-      "get": {
-        "tags": ["Teste"],
-        "summary": "Testa a conexão com o banco de dados.",
-        "description": "Verifica a conexão com o banco de dados e retorna uma mensagem de confirmação.",
-        "responses": {
-          "200": {
-            "description": "Conectado ao banco de dados.",
+    },
+    "paths": {
+      "/testDB": {
+        "get": {
+          "tags": [
+            "Teste"
+          ],
+          "summary": "Testa a conexão com o banco de dados.",
+          "description": "Verifica a conexão com o banco de dados e retorna uma mensagem de confirmação.",
+          "responses": {
+            "200": {
+              "description": "Conectado ao banco de dados.",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "string",
+                    "example": "Connected to database"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao conectar ao banco de dados.",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "string",
+                    "example": "Error connecting to database"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+  
+      "/v1/accounts/singUp": {
+        "$ref": "./paths/auth.json#/~1singUp"
+      },
+      "/v1/accounts/login": {
+        "$ref": "./paths/auth.json#/~1login"
+      },
+      "/v1/accounts/forgotPassword": {
+        "$ref": "./paths/auth.json#/~1forgotPassword"
+      },
+      "/v1/accounts/resetPassword/{token}": {
+        "$ref": "./paths/auth.json#/~1resetPassword~1{token}"
+      },
+      "/v1/accounts/changePassword": {
+        "$ref": "./paths/auth.json#/~1changePassword"
+      },
+  
+      "/v1/user": {
+        "$ref": "./paths/user.json#/~1"
+      },
+      "/v1/user/list": {
+        "$ref": "./paths/user.json#/~1list"
+      },
+      "/v1/user/listAll": {
+        "$ref": "./paths/user.json#/~1listAll"
+      },
+      "/v1/user/{id}/update": {
+        "$ref": "./paths/user.json#/~1{id}~1update"
+      },
+      "/v1/user/{id}/update/profile": {
+        "$ref": "./paths/user.json#/~1{id}~1update~1profile"
+      },
+      "/v1/user/{id}": {
+        "$ref": "./paths/user.json#/~1{id}"
+      },
+  
+      "/v1/project/post": {
+        "$ref": "./paths/project.json#/~1post"
+      },
+      "/v1/project/put/{id}": {
+        "$ref": "./paths/project.json#/~1put~1{id}"
+      },
+      "/v1/project/getById/{id}": {
+        "$ref": "./paths/project.json#/~1getById~1{id}"
+      },
+      "/v1/project/getAll": {
+        "$ref": "./paths/project.json#/~1getAll"
+      },
+      "/v1/project/delete/{id}": {
+        "$ref": "./paths/project.json#/~1delete~1{id}"
+      },
+      "/v1/project/{id}/coordinators/": {
+        "$ref": "./paths/project.json#/~1{id}~1coordinators~1"
+      },
+      "/v1/project/coordinator/{id}": {
+        "$ref": "./paths/project.json#/~1coordinator~1{id}"
+      },
+      "/v1/project/{id}/members": {
+        "$ref": "./paths/project.json#/~1{id}~1members"
+      },
+      "/v1/project/member/{id}": {
+        "$ref": "./paths/project.json#/~1member~1{id}"
+      },
+      "/v1/project/{id}/sectors/": {
+        "$ref": "./paths/project.json#/~1{id}~1sectors~1"
+      },
+  
+      "/v1/messages/post": {
+        "$ref": "./paths/messages.json#/~1post"
+      },
+      "/v1/messages/getByDate/{sendedAtDay}": {
+        "$ref": "./paths/messages.json#/~1getByDate~1{sendedAtDay}"
+      },
+      "/v1/messages/getById/{id}": {
+        "$ref": "./paths/messages.json#/~1getById~1{id}"
+      },
+      "/v1/messages/getAll": {
+        "$ref": "./paths/messages.json#/~1getAll"
+      },
+      "/v1/messages/put/{id}": {
+        "$ref": "./paths/messages.json#/~1put~1{id}"
+      },
+      "/v1/messages/delete/{id}": {
+        "$ref": "./paths/messages.json#/~1delete~1{id}"
+      },
+  
+      "/v1/grant/post": {
+        "$ref": "./paths/grants.json#/~1post"
+      },
+      "/v1/grant/getByName/{name}": {
+        "$ref": "./paths/grants.json#/~1getByName~1{name}"
+      },
+      "/v1/grant/getById/{id}": {
+        "$ref": "./paths/grants.json#/~1getById~1{id}"
+      },
+      "/v1/grant/getAll": {
+        "$ref": "./paths/grants.json#/~1getAll"
+      },
+      "/v1/grant/put/{id}": {
+        "$ref": "./paths/grants.json#/~1put~1{id}"
+      },
+      "/v1/grant/delete/{id}": {
+        "$ref": "./paths/grants.json#/~1delete~1{id}"
+      },
+      "/v1/grant/{id}/postProfile": {
+        "$ref": "./paths/grants.json#/~1{id}~1postProfile"
+      },
+      "/v1/grant/{id}/postSector": {
+        "$ref": "./paths/grants.json#/~1{id}~1postSector"
+      },
+  
+      "/v1/profile/store": {
+        "$ref": "./paths/profile.json#/~1store"
+      },
+      "/v1/profile/post": {
+        "$ref": "./paths/profile.json#/~1post"
+      },
+      "/v1/profile/getByName/{name}": {
+        "$ref": "./paths/profile.json#/~1getByName~1{name}"
+      },
+      "/v1/profile/getById/{id}": {
+        "$ref": "./paths/profile.json#/~1getById~1{id}"
+      },
+      "/v1/profile/getAll": {
+        "$ref": "./paths/profile.json#/~1getAll"
+      },
+      "/v1/profile/put/{id}": {
+        "$ref": "./paths/profile.json#/~1put~1{id}"
+      },
+      "/v1/profile/delete/{id}": {
+        "$ref": "./paths/profile.json#/~1delete~1{id}"
+      },
+  
+      "/v1/sector/post": {
+        "$ref": "./paths/sector.json#/~1post"
+      },
+      "/v1/sector/getById/{id}": {
+        "$ref": "./paths/sector.json#/~1getById~1{id}"
+      },
+      "/v1/sector/getAll": {
+        "$ref": "./paths/sector.json#/~1getAll"
+      },
+      "/v1/sector/put/{id}": {
+        "$ref": "./paths/sector.json#/~1put~1{id}"
+      },
+      "/v1/sector/delete/{id}": {
+        "$ref": "./paths/sector.json#/~1delete~1{id}"
+      },
+      "/v1/sector/{id}/postUser": {
+        "$ref": "./paths/sector.json#/~1{id}~1postUser"
+      },
+      "/v1/sector/{id}/deleteUser": {
+        "$ref": "./paths/sector.json#/~1{id}~1deleteUser"
+      },
+      "/v1/sector/{id}/postMessage": {
+        "$ref": "./paths/sector.json#/~1{id}~1postMessage"
+      },
+      "/v1/sector/{id}/deleteMessage": {
+        "$ref": "./paths/sector.json#/~1{id}~1deleteMessage"
+      },
+  
+      "/v1/chat/post": {
+        "$ref": "./paths/chat.json#/~1post"
+      },
+      "/v1/chat/getById/{id}": {
+        "$ref": "./paths/chat.json#/~1getById~1{id}"
+      },
+      "/v1/chat/getAll": {
+        "$ref": "./paths/chat.json#/~1getAll"
+      },
+      "/v1/chat/getByName/{name}": {
+        "$ref": "./paths/chat.json#/~1getByName~1{name}"
+      },
+      "/v1/chat/addUser/{id}": {
+        "$ref": "./paths/chat.json#/~1addUser~1{id}"
+      },
+      "/v1/chat/updateName/{id}": {
+        "$ref": "./paths/chat.json#/~1updateName~1{id}"
+      },
+      "/v1/chat/removeUser/{id}": {
+        "$ref": "./paths/chat.json#/~1removeUser~1{id}"
+      },
+      "/v1/chat/delete/{id}": {
+        "$ref": "./paths/chat.json#/~1delete~1{id}"
+      },
+  
+      "/attachments": {
+        "post": {
+          "tags": [
+            "Attachment"
+          ],
+          "summary": "Upload an attachment",
+          "description": "Uploads a new attachment to the system.",
+          "requestBody": {
+            "required": true,
             "content": {
-              "text/plain": {
+              "multipart/form-data": {
                 "schema": {
-                  "type": "string",
-                  "example": "Connected to database"
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string",
+                      "format": "binary",
+                      "description": "The file to upload."
+                    }
+                  },
+                  "required": [
+                    "file"
+                  ]
                 }
               }
             }
           },
-          "500": {
-            "description": "Erro ao conectar ao banco de dados.",
+          "responses": {
+            "201": {
+              "description": "Attachment uploaded successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "1"
+                      },
+                      "fileName": {
+                        "type": "string",
+                        "example": "example.pdf"
+                      },
+                      "mimeType": {
+                        "type": "string",
+                        "example": "application/pdf"
+                      },
+                      "data": {
+                        "type": "string",
+                        "format": "binary"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "No file uploaded.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "No file uploaded."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Error saving attachment.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error saving attachment."
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/attachments/{id}": {
+        "get": {
+          "tags": [
+            "Attachment"
+          ],
+          "summary": "Get an attachment by ID",
+          "description": "Retrieves an attachment by its ID.",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "example": "1"
+              },
+              "description": "ID of the attachment to retrieve."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Attachment found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "1"
+                      },
+                      "fileName": {
+                        "type": "string",
+                        "example": "example.pdf"
+                      },
+                      "mimeType": {
+                        "type": "string",
+                        "example": "application/pdf"
+                      },
+                      "data": {
+                        "type": "string",
+                        "format": "binary"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Attachment not found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Attachment not found."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Error retrieving attachment.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error retrieving attachment."
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "Attachment"
+          ],
+          "summary": "Update an attachment",
+          "description": "Updates an existing attachment by ID.",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "example": "1"
+              },
+              "description": "ID of the attachment to update."
+            }
+          ],
+          "requestBody": {
+            "required": true,
             "content": {
-              "text/plain": {
+              "multipart/form-data": {
                 "schema": {
-                  "type": "string",
-                  "example": "Error connecting to database"
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string",
+                      "format": "binary",
+                      "description": "The file to upload for updating the attachment."
+                    }
+                  },
+                  "required": [
+                    "file"
+                  ]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Attachment updated successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "1"
+                      },
+                      "fileName": {
+                        "type": "string",
+                        "example": "updated_example.pdf"
+                      },
+                      "mimeType": {
+                        "type": "string",
+                        "example": "application/pdf"
+                      },
+                      "data": {
+                        "type": "string",
+                        "format": "binary"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "No file provided for update.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "No file provided for update."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Attachment not found for update.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Attachment not found for update."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Error updating attachment.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error updating attachment."
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "Attachment"
+          ],
+          "summary": "Delete an attachment",
+          "description": "Deletes an attachment by ID.",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "example": "1"
+              },
+              "description": "ID of the attachment to delete."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Attachment deleted successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Attachment deleted successfully."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Attachment not found for deletion.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Attachment not found for deletion."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Error deleting attachment.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error deleting attachment."
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
           }
         }
       }
-    },
-    "/v1/accounts/singUp": {
-      "$ref": "./paths/auth.json#/~1singUp"
-    },
-    "/v1/accounts/login": {
-      "$ref": "./paths/auth.json#/~1login"
-    },
-    "/v1/accounts/forgotPassword": {
-      "$ref": "./paths/auth.json#/~1forgotPassword"
-    },
-    "/v1/accounts/resetPassword/{token}": {
-      "$ref": "./paths/auth.json#/~1resetPassword~1{token}"
-    },
-    "/v1/accounts/changePassword": {
-      "$ref": "./paths/auth.json#/~1changePassword"
-    },
-
-    "/v1/user": {
-      "$ref": "./paths/user.json#/~1"
-    },
-    "/v1/user/list": {
-      "$ref": "./paths/user.json#/~1list"
-    },
-    "/v1/user/listAll": {
-      "$ref": "./paths/user.json#/~1listAll"
-    },
-    "/v1/user/{id}/update": {
-      "$ref": "./paths/user.json#/~1{id}~1update"
-    },
-    "/v1/user/{id}/update/profile": {
-      "$ref": "./paths/user.json#/~1{id}~1update~1profile"
-    },
-    "/v1/user/{id}": {
-      "$ref": "./paths/user.json#/~1{id}"
-    },
-
-    "/v1/project/post": {
-      "$ref": "./paths/project.json#/~1post"
-    },
-    "/v1/project/put/{id}": {
-      "$ref": "./paths/project.json#/~1put~1{id}"
-    },
-    "/v1/project/getById/{id}": {
-      "$ref": "./paths/project.json#/~1getById~1{id}"
-    },
-    "/v1/project/getAll": {
-      "$ref": "./paths/project.json#/~1getAll"
-    },
-    "/v1/project/delete/{id}": {
-      "$ref": "./paths/project.json#/~1delete~1{id}"
-    },
-    "/v1/project/{id}/coordinators/": {
-      "$ref": "./paths/project.json#/~1{id}~1coordinators~1"
-    },
-    "/v1/project/coordinator/{id}": {
-      "$ref": "./paths/project.json#/~1coordinator~1{id}"
-    },
-    "/v1/project/{id}/members": {
-      "$ref": "./paths/project.json#/~1{id}~1members"
-    },
-    "/v1/project/member/{id}": {
-      "$ref": "./paths/project.json#/~1member~1{id}"
-    },
-    "/v1/project/{id}/sectors/": {
-      "$ref": "./paths/project.json#/~1{id}~1sectors~1"
-    },
-
-    "/v1/messages/post": {
-      "$ref": "./paths/messages.json#/~1post"
-    },
-    "/v1/messages/getByDate/{sendedAtDay}": {
-      "$ref": "./paths/messages.json#/~1getByDate~1{sendedAtDay}"
-    },
-    "/v1/messages/getById/{id}": {
-      "$ref": "./paths/messages.json#/~1getById~1{id}"
-    },
-    "/v1/messages/getAll": {
-      "$ref": "./paths/messages.json#/~1getAll"
-    },
-    "/v1/messages/put/{id}": {
-      "$ref": "./paths/messages.json#/~1put~1{id}"
-    },
-    "/v1/messages/delete/{id}": {
-      "$ref": "./paths/messages.json#/~1delete~1{id}"
-    },
-
-    "/v1/grant/post": {
-      "$ref": "./paths/grants.json#/~1post"
-    },
-    "/v1/grant/getByName/{name}": {
-      "$ref": "./paths/grants.json#/~1getByName~1{name}"
-    },
-    "/v1/grant/getById/{id}": {
-      "$ref": "./paths/grants.json#/~1getById~1{id}"
-    },
-    "/v1/grant/getAll": {
-      "$ref": "./paths/grants.json#/~1getAll"
-    },
-    "/v1/grant/put/{id}": {
-      "$ref": "./paths/grants.json#/~1put~1{id}"
-    },
-    "/v1/grant/delete/{id}": {
-      "$ref": "./paths/grants.json#/~1delete~1{id}"
-    },
-    "/v1/grant/{id}/postProfile": {
-      "$ref": "./paths/grants.json#/~1{id}~1postProfile"
-    },
-    "/v1/grant/{id}/postSector": {
-      "$ref": "./paths/grants.json#/~1{id}~1postSector"
-    },
-
-    "/v1/profile/store": {
-      "$ref": "./paths/profile.json#/~1store"
-    },
-    "/v1/profile/post": {
-      "$ref": "./paths/profile.json#/~1post"
-    },
-    "/v1/profile/getByName/{name}": {
-      "$ref": "./paths/profile.json#/~1getByName~1{name}"
-    },
-    "/v1/profile/getById/{id}": {
-      "$ref": "./paths/profile.json#/~1getById~1{id}"
-    },
-    "/v1/profile/getAll": {
-      "$ref": "./paths/profile.json#/~1getAll"
-    },
-    "/v1/profile/put/{id}": {
-      "$ref": "./paths/profile.json#/~1put~1{id}"
-    },
-    "/v1/profile/delete/{id}": {
-      "$ref": "./paths/profile.json#/~1delete~1{id}"
-    },
-
-    "/v1/sector/post": {
-      "$ref": "./paths/sector.json#/~1post"
-    },
-    "/v1/sector/getById/{id}": {
-      "$ref": "./paths/sector.json#/~1getById~1{id}"
-    },
-    "/v1/sector/getAll": {
-      "$ref": "./paths/sector.json#/~1getAll"
-    },
-    "/v1/sector/put/{id}": {
-      "$ref": "./paths/sector.json#/~1put~1{id}"
-    },
-    "/v1/sector/delete/{id}": {
-      "$ref": "./paths/sector.json#/~1delete~1{id}"
-    },
-    "/v1/sector/{id}/postUser": {
-      "$ref": "./paths/sector.json#/~1{id}~1postUser"
-    },
-    "/v1/sector/{id}/deleteUser": {
-      "$ref": "./paths/sector.json#/~1{id}~1deleteUser"
-    },
-    "/v1/sector/{id}/postMessage": {
-      "$ref": "./paths/sector.json#/~1{id}~1postMessage"
-    },
-    "/v1/sector/{id}/deleteMessage": {
-      "$ref": "./paths/sector.json#/~1{id}~1deleteMessage"
-    },
-
-    "/v1/chat/post": {
-      "$ref": "./paths/chat.json#/~1post"
-    },
-    "/v1/chat/getById/{id}": {
-      "$ref": "./paths/chat.json#/~1getById~1{id}"
-    },
-    "/v1/chat/getAll": {
-      "$ref": "./paths/chat.json#/~1getAll"
-    },
-    "/v1/chat/getByName/{name}": {
-      "$ref": "./paths/chat.json#/~1getByName~1{name}"
-    },
-    "/v1/chat/addUser/{id}": {
-      "$ref": "./paths/chat.json#/~1addUser~1{id}"
-    },
-    "/v1/chat/updateName/{id}": {
-      "$ref": "./paths/chat.json#/~1updateName~1{id}"
-    },
-    "/v1/chat/removeUser/{id}": {
-      "$ref": "./paths/chat.json#/~1removeUser~1{id}"
-    },
-    "/v1/chat/delete/{id}": {
-      "$ref": "./paths/chat.json#/~1delete~1{id}"
     }
   }
-}
+  
