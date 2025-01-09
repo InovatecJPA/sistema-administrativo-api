@@ -103,7 +103,9 @@ export class AttachmentService {
     return await this.attachmentRepository.find({ where: { mimeType } });
   }
 
-
+  async deleteAttachmentsByRequestId(requestId: string): Promise<void> {
+    await this.attachmentRepository.delete({ request: { id: requestId } });
+  }
 }
 
 // Initialize and export the service instance

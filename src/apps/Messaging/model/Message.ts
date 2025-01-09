@@ -8,9 +8,8 @@ import {
 } from "typeorm";
 import Sector from "../../Api/model/Sector";
 import User from "../../Auth/model/User";
-import Chat from "./Solicitation";
-import Solicitation from "./Solicitation";
-
+import Chat from "./Chat";
+import Request from "./Request";
 
 /**
  * Represents a message in the system.
@@ -74,11 +73,13 @@ export default class Message {
    * @type {Chat}
    * @memberof Message
    */
-  @ManyToOne(() => Solicitation, (solicitation) => solicitation.messages, { nullable: false })
-  @JoinColumn({ name: "solicitation_id" })
-  solicitation: Solicitation;
+  @ManyToOne(() => Chat, (chat) => chat.messages, { nullable: false })
+  @JoinColumn({ name: "chat_id" })
+  chat: Chat;
 
-
+  @ManyToOne(() => Request, (request) => request.messages, { nullable: false })
+  @JoinColumn({ name: "request_id" })
+  request: Request;
 
   /**
    * The timestamp indicating when the message was sent.

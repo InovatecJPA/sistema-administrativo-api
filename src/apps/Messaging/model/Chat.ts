@@ -8,16 +8,15 @@ import {
 } from "typeorm";
 import User from "../../Auth/model/User";
 import Message from "./Message";
-import Attachment from "./Attachment";
 
-@Entity("solicitations")
-export default class Solicitation {
+@Entity("chats")
+export default class Chat {
 
     /**
      * The unique identifier for the chat.
      *
      * @type {string}
-     * @memberof Solicitation
+     * @memberof Chat
      */
     @PrimaryGeneratedColumn("uuid")
     id: string;
@@ -26,23 +25,23 @@ export default class Solicitation {
      * The name of the chat.
      *
      * @type {string}
-     * @memberof Solicitation
+     * @memberof Chat
      */
 
     @Column({ type: "varchar", nullable: false })
-    solicitationName: string;
+    name: string;
 
     /**
      * The users that are part of the chat.
      * Many users can participate in many chats.
      *
      * @type {User[]}
-     * @memberof Solicitation
+     * @memberof Chat
      */
-    @ManyToMany(() => User, (user) => user.solicitations, { eager: true })
+    @ManyToMany(() => User, (user) => user.chats)
     @JoinTable({
-        name: "solititation_users",
-        joinColumn: { name: "solicitation_id", referencedColumnName: "id" },
+        name: "chat_users",
+        joinColumn: { name: "chat_id", referencedColumnName: "id" },
         inverseJoinColumn: { name: "user_id", referencedColumnName: "id" },
     })
     users: User[];
@@ -54,11 +53,7 @@ export default class Solicitation {
      * @type {Message[]}
      * @memberof Chat
      */
-    @OneToMany(() => Message, (message) => message.solicitation, { eager: true })
+    @OneToMany(() => Message, (message) => message.chat, { eager: true })
     messages: Message[];
-
-
-    @OneToMany(() => Attachment, (attachment) => attachment.solicitation, { eager: true })
-    attachments: Attachment[];
 
 }

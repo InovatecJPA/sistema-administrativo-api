@@ -8,10 +8,10 @@ import upload from "../../../middlewares/multer";
 const attachmentRouter: Router = Router();
 
 // Middleware para validação de respostas
-// attachmentRouter.use(validateResponseMiddleware);
+attachmentRouter.use(validateResponseMiddleware);
 
-// // Middleware para autenticação
-// attachmentRouter.use(authMiddleware);
+// Middleware para autenticação
+attachmentRouter.use(authMiddleware);
 
 /**
  * Rota para fazer upload de um novo anexo
