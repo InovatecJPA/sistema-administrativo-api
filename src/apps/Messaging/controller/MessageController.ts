@@ -5,6 +5,7 @@ import MessageDto from "../dto/MessageDto";
 import { InvalidObjectError } from "../../../error/InvalidObjectError";
 import { sectorService } from "../../Api/service/SectorService";
 import { userService } from "../../Auth/service/UserService";
+import { requestService } from "../service/RequestService";
 
 export class MessageController {
 
@@ -26,11 +27,12 @@ export class MessageController {
      */
     public post = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
       try {
-        const { text, senderId, receiverId, receiverSectorName } = req.body;
+        const { text, senderId, receiverId, requestId, receiverSectorName } = req.body;
         const sender = await userService.findOne({ id: senderId });
         const receiver = await userService.findOne({ id: receiverId });
+        const request = await requestService.getRequestById(requestId);
         const receiverSector = await sectorService.findOne({ name: receiverSectorName })
-        const messageDto: MessageDto = new MessageDto(text, sender, receiver, receiverSector);
+        const messageDto: MessageDto = new MessageDto(text, sender, receiver, receiverSector, request);
 
         if (!messageDto.isValid()) {
           throw new InvalidObjectError('All fields of the new message must be non-null or different of "".');

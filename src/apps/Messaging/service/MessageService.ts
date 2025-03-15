@@ -37,6 +37,7 @@ export class MessageService {
     const sender = messageDto.getSender();
     const receiver = messageDto.getReceiver();
     const text = messageDto.getText();
+    const request = messageDto.getRequest();
 
 
     if (!sender || !receiver) {
@@ -66,6 +67,7 @@ export class MessageService {
       sender,
       receiver,
       chat,
+      request,
       sendedAt: new Date(),
     });
 

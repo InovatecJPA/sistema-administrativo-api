@@ -1,6 +1,7 @@
 import Sector from "../../Api/model/Sector";
 import User from "../../Auth/model/User";
 import Message from "../model/Message";
+import Request from "../model/Request";
 
 /**
  * Data Transfer Object (DTO) for the `Message` entity.
@@ -12,17 +13,27 @@ export default class MessageDto {
   private sender: User;
   private receiver?: User;
   private receiverSector?: Sector;
+  private request?: Request;
 
   constructor(
     text: string,
     sender: User,
     receiver?: User,
-    receiverSector?: Sector
+    receiverSector?: Sector,
+    request?: Request
   ) {
     this.text = text;
     this.sender = sender;
     this.receiver = receiver;
     this.receiverSector = receiverSector;
+    this.request = request;
+  }
+
+  public getRequest(): Request {
+    return this.request;
+  }
+  public setRequest(id: Request): void {
+    this.request = id;
   }
 
   public getId(): string | undefined {
@@ -102,7 +113,8 @@ export default class MessageDto {
       this.text &&
       this.text.trim() !== "" &&
       this.sender !== null &&
-      (this.receiver !== undefined || this.receiverSector !== undefined)
+      (this.receiver !== undefined || this.receiverSector !== undefined) &&
+      this.request !== undefined 
     );
   }
 
